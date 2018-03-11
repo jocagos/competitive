@@ -13,7 +13,7 @@ int main()
   scanf("%d", &T);
   while(T--){
     scanf("%d", &N);
-    printf("%d\n", abs((235*(63*N +7492)/47-498)/10 % 10));
+    printf("%d\n", abs((315*N +36972)/10 % 10));
   }
   return 0;
 }

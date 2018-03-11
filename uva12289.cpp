@@ -13,9 +13,9 @@ int main(){
     cin >> s;
     if( s.length() == 3 ){
       if( s.at(0) == 'o' and s.at(2) == 'e' or s.at(1) == 'n' and s.at(2) == 'e' or s.at(0) == 'o' and s.at(1) == 'n')
-	cout << 1 << endl;
+        cout << 1 << endl;
       else
-	cout << 2 << endl;
+        cout << 2 << endl;
     }
     else
       cout << 3 << endl;

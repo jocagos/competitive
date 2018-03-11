@@ -30,5 +30,6 @@ int main()
     R = max(arr, N);
     printf("%d\n", 2*(R-L));
   }
+  free(arr);
   return 0;
 }
