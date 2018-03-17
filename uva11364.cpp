@@ -1,35 +1,18 @@
 #include <stdio.h>
 
-int max(int *arr, int n){
-  int m = arr[0];
-  for(int i = 1; i < n; ++i)
-    if( arr[i] > m)
-      m = arr[i];
-  return m;
-}
-
-int min(int *arr, int n){
-  int m = arr[0];
-  for(int i = 1; i < n; ++i)
-    if( arr[i] < m )
-      m = arr[i];
-  return m;
-}
-
 int main()
 {
-  int T, N, L, R, *arr;
+  int T, N, L, R, arr[100];
   scanf("%d", &T);
   while(T--){
+    L = 100, R = -1;
     scanf("%d", &N);
-    arr = new int[N];
     for(int i = 0; i < N; ++i){
       scanf("%d", &arr[i]);
+      if( arr[i] < L ) L = arr[i];
+      if( arr[i] > R ) R = arr[i];
     }
-    L = min(arr, N);
-    R = max(arr, N);
-    printf("%d\n", 2*(R-L));
+    printf("%d\n",2*(R-L));
   }
-  free(arr);
   return 0;
 }
