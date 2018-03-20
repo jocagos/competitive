@@ -32,19 +32,21 @@ int knap (int cap)
         return max;
     
 }
-int knapReloaded(int cap) //el problema de la bolsa del ladron con programación dinámica 
+pair<int, vector<char>> knapReloaded(int cap) //el problema de la bolsa del ladron con programación dinámica 
 {
     int i,space,max,maxi=-1,t;
     int desconocido=0;
     Item itemConocido[MAXBOLSA];
-    
-    if(maximoConocido[cap].first!=desconocido) return maximoConocido[cap].first;
+    vector<char> config;
+    if(maximoConocido[cap].first!=desconocido) return maximoConocido[cap];
     for(i=0,max=0;i<N;i++)
     {
         space = cap - items[i].size; // Separé estas líneas
         if(space >= 0)
         {
-            t = knapReloaded(space) + items[i].val; // Igual
+            pair<int, vector<char>> ivc = knapReloaded(space);
+            t = ivc.first + items[i].val; // Igual
+            config = ivc.second;
             if(t>max)
             {
                 max=t; 
@@ -61,10 +63,8 @@ int knapReloaded(int cap) //el problema de la bolsa del ladron con programación
             break;
         }
     // Buscar el valor máximo para ese subvalor
-    if( !inserted )
-        for( i = 0; i < cap; ++i )
-            if( maximoConocido[i].first == max )
-                for( int j = 0; j < maximoConocido[i].second.size(); ++j ) maximoConocido[cap].second.push_back(maximoConocido[i].second[j]);
+    pair<int, vector<char>> ans;
+    if( !inserted ) ans.second = config;
     
     // En teoría esto debería guardarlas pero no lo hace bien
     // Hay que leer bien las llamadas recursivas entonces pues parece que esto da una respuesta incorrecta
@@ -73,7 +73,8 @@ int knapReloaded(int cap) //el problema de la bolsa del ladron con programación
     // Si no, es lo que faltaría, u omitirse o 'arreglar' el vector de chars
     // De ese modo, en teoría, tendríamos los nombres de los objetos por cada posición del memo
     itemConocido[cap]=items[maxi];
-    return max;
+    ans.first = max;
+    return ans;
 }
 
 /*
@@ -110,7 +111,7 @@ int main ()
     items[2].name='C'; items[2].size= 7; items[2].val= 10;
     items[3].name='D'; items[3].size= 8; items[3].val= 11;
     items[4].name='E'; items[4].size= 9; items[4].val= 13;
-    maxValue = knapReloaded(17);
+    maxValue = knapReloaded(17).first;
     //int maxim=Config(17);
     cout << "config_val: " << maxValue << "\tall_configs_up_to_config_val: ";
     for( int i = 0; i <= 17; ++i )
