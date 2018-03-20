@@ -13,6 +13,9 @@
 *.class
 *.exe
 *.in
+*.in~
+.\#*
+\#*.*
 *.c~
 *.cpp~
 *.out
