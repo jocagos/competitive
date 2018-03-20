@@ -52,15 +52,28 @@ int knapReloaded(int cap) //el problema de la bolsa del ladron con programación
             }
         }
     }
-        maximoConocido[cap].first=max;
-        maximoConocido[cap].second.push_back(items[maxi].name); // En teoría esto debería guardarlas pero no lo hace bien
-        // Hay que leer bien las llamadas recursivas entonces pues parece que esto da una respuesta incorrecta
-        // Una solución que se me ocurre es iterar a través de los objetos y comparar el valor de max con el de un objeto
-        // Si es igual a un objeto, hacer 'push_back' del nombre a 'maximoConocido[cap].second'
-        // Si no, es lo que faltaría, u omitirse o 'arreglar' el vector de chars
-        // De ese modo, en teoría, tendríamos los nombres de los objetos por cada posición del memo
-        itemConocido[cap]=items[maxi];
-        return max;
+    bool inserted = false;
+    maximoConocido[cap].first=max;
+    for( i = 0; i < 5; ++i )
+        if( max == items[i].val ){
+            maximoConocido[cap].second.push_back(items[i].name);
+            inserted = true;
+            break;
+        }
+    // Buscar el valor máximo para ese subvalor
+    if( !inserted )
+        for( i = 0; i < cap; ++i )
+            if( maximoConocido[i].first == max )
+                for( int j = 0; j < maximoConocido[i].second.size(); ++j ) maximoConocido[cap].second.push_back(maximoConocido[i].second[j]);
+    
+    // En teoría esto debería guardarlas pero no lo hace bien
+    // Hay que leer bien las llamadas recursivas entonces pues parece que esto da una respuesta incorrecta
+    // Una solución que se me ocurre es iterar a través de los objetos y comparar el valor de max con el de un objeto
+    // Si es igual a un objeto, hacer 'push_back' del nombre a 'maximoConocido[cap].second'
+    // Si no, es lo que faltaría, u omitirse o 'arreglar' el vector de chars
+    // De ese modo, en teoría, tendríamos los nombres de los objetos por cada posición del memo
+    itemConocido[cap]=items[maxi];
+    return max;
 }
 
 /*
@@ -99,8 +112,14 @@ int main ()
     items[4].name='E'; items[4].size= 9; items[4].val= 13;
     maxValue = knapReloaded(17);
     //int maxim=Config(17);
-    cout << "config_val: " << maxValue << "\tconfig_items: ";
-    for( int i = 0; i < maximoConocido[17].second.size(); ++i ) cout << maximoConocido[17].second[i] << " ";
+    cout << "config_val: " << maxValue << "\tall_configs_up_to_config_val: ";
+    for( int i = 0; i <= 17; ++i )
+    {
+        cout << "val = " << maximoConocido[i].first << "\ti = " << i << ": ";
+        for( int j = 0; j < maximoConocido[i].second.size(); ++j)
+            cout << maximoConocido[i].second[j] << " ";
+        cout << endl;
+    }
     cout << endl;
     //maxValue1=knap(170);
     //cout<<endl<<" Monto maximo del robo :"<<maxValue<<endl;
