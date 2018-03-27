@@ -10,8 +10,8 @@ int main(){
     while(c--){
       scanf("%d %d", &n, &s);
       if( b ) {
-	if( d != -1 && n - s + 1 != d ) b = 0;
-	else d = n - s + 1;
+	      if( d != -1 && n - s + 1 != d ) b = 0;
+	      else d = n - s + 1;
       }
     }
     if( b ) printf("yes\n");
