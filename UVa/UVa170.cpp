@@ -6,36 +6,45 @@ typedef pair<int, char> ic;
 
 int main(){
   vector<stack<ic>> clk(13);
+  map<char, int> _atoi;
+  _atoi['A'] = 0; _atoi['2'] = 1;_atoi['3'] = 2; _atoi['4'] = 3;_atoi['5'] = 4; _atoi['6'] = 5;
+  _atoi['7'] = 6; _atoi['8'] = 7;_atoi['9'] = 8; _atoi['T'] = 9;_atoi['J'] = 10; _atoi['Q'] = 11;
+  _atoi['K'] = 12;
   string s;
-  for( int i = 0; i < 52; ++i ){
-    cin >> s;
-    ic tmp = { (isdigit(s[0]) ? s[0]-'0' : (s[0] == 'T' ? 10 : (s[0] == 'J' ? 11 : (s[0] == 'Q' ? 12 : ( s[0] == 'K' ? 13 : 1 ) ) ) ) ), s[1] };
-    clk[i%13].push(tmp);
-  }
-  // Next routine will print out ALL the elements in the stacks!
-  /*
-  for( int i = 0; i < clk.size(); ++i ){
-    cout << "Stack " << i+1 << "\t";
-    while( !clk[i].empty() ){
-      cout << "(" << clk[i].top().first << ", " << clk[i].top().second << ") ";
-      clk[i].pop();
+  vector<string> vs;
+  while( cin >> s ){
+    if( s == "#" ) break;
+    vs.clear();
+    vs.push_back(s);
+    // Clear stacks
+    for( int i = 0; i < clk.size(); ++i ){
+      while( !clk[i].empty() ) clk[i].pop();
     }
-    cout << endl;
-  }
-  */
-  bool game = true;
-  int count = 0;
-  ic tmp = clk[12].top(); clk[12].pop(); count++;
-  while( game ){
-    int idx = tmp.first-1;
-    if( !clk[idx].empty() ){
+    // Fill deck
+    for( int i = 0; i < 51; ++i ){
+      cin >> s;
+      vs.push_back(s);
+    }
+    // Fill stacks
+    for( int i = 51, j = 0; i >= 0; --i, ++j ){
+      s = vs[i];
+      ic tmp = { _atoi[s[0]], s[1] };
+      clk[j%13].push(tmp);
+    }
+    // Play the game
+    int count = 0;
+    ic tmp; int idx = 12;
+    while( true  ){
+      if( clk[idx].empty() ) break;
       tmp = clk[idx].top();
       clk[idx].pop();
+      idx = tmp.first;
       count++;
     }
-    else game = false;
+    char key;
+    for( auto it = _atoi.begin(); it != _atoi.end(); it++ ) if( it->second == idx ) key = it->first;
+    if( count < 10 ) cout << "0";
+    cout << count << "," << key << tmp.second << endl;
   }
-  printf("%d,%c%c\n", count,
-	 ( tmp.first == 13 ? 'K' : ( tmp.first == 12 ? 'Q' : (tmp.first == 11 ? 'J' : ( tmp. first == 10 ? 'T' : (tmp.first == 1 ? 'A' : (char) tmp.first + '0' ) ) ) ) ), tmp.second);
   return 0;
 }
