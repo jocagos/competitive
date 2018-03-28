@@ -11,11 +11,11 @@ int main(){
   _atoi['7'] = 6; _atoi['8'] = 7;_atoi['9'] = 8; _atoi['T'] = 9;_atoi['J'] = 10; _atoi['Q'] = 11;
   _atoi['K'] = 12;
   string s;
-  vector<string> vs;
+  string deck;
   while( cin >> s ){
     if( s == "#" ) break;
-    vs.clear();
-    vs.push_back(s);
+    deck.clear();
+    deck += s; deck += " ";
     // Clear stacks
     for( int i = 0; i < clk.size(); ++i ){
       while( !clk[i].empty() ) clk[i].pop();
@@ -23,18 +23,21 @@ int main(){
     // Fill deck
     for( int i = 0; i < 51; ++i ){
       cin >> s;
-      vs.push_back(s);
+      deck += s;
+      if( i != 50 ) deck += " ";
     }
+    istringstream iss(deck);
+    vector<string> vs(52); int k = 0;
+    while( iss ) iss >> vs[k++];
     // Fill stacks
     for( int i = 51, j = 0; i >= 0; --i, ++j ){
       s = vs[i];
-      ic tmp = { _atoi[s[0]], s[1] };
-      clk[j%13].push(tmp);
+      clk[j%13].push( (ic){ _atoi[s[0]], s[1] } );
     }
     // Play the game
     int count = 0;
     ic tmp; int idx = 12;
-    while( true  ){
+    while( true ){
       if( clk[idx].empty() ) break;
       tmp = clk[idx].top();
       clk[idx].pop();
