@@ -13,14 +13,10 @@ long long f( long long n ){
 }
 
 int main(){
-  long long i, j, v[10000];
-  for( i = 1; i < 10000; ++i ) v[i] = f(i);
+  long long i, j;
   while( scanf("%lld %lld", &i, &j) != EOF ){
-    long long m = 0;
-    for( int k = min(i, j); k <= max(i,j); ++k ){
-      long long tmp = f(k);
-      if( tmp > m ) m = tmp;
-    }
+    long long m = f(min(i,j));
+    for( int k = min(i, j)+1; k <= max(i, j); ++k ) if( f(k) > m ) m = f(k);
     cout << i << " " << j << " " << m << endl;
   }
   return 0;
