@@ -44,6 +44,5 @@ int main()
     else if (c == 'G') break;
     else rolls.push_back(c);
   }
-
   return 0;
 }

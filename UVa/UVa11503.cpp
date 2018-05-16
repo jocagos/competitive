@@ -1,6 +1,6 @@
 #include <iostream>
 #include <vector>
-#include <sstream>
+#include <unordered_map>
 
 using namespace std;
 
@@ -31,25 +31,20 @@ public:
 int main(){
   int t;
   scanf("%d", &t);
-  for( int i = 0; i < t; ++i ){
-    int n, a, b;
-    string line, c;
-    scanf("%d\n", &n);
-    UnionFind computers(n+1);
-    long success = 0, unsuccess = 0;
-    while( getline(cin, line) and line.length() ){
-      // Without this line this blatantly fails. Try it!
-      if( line == "\n" or line == "\r" or line == "\r\n" ) break;
-      istringstream iss(line);
-      iss >> c >> a >> b;
-      // Pretty straightforward problem:
-      // If connection then join sets
-      if( c == "c" ) computers.unionSet(a, b);
-      // else just query and log it
-      else (computers.isSameSet( a, b ) ? success++ : unsuccess++ );
+  while(t--){
+    int n;
+    scanf("%d", &n);
+    UnionFind friendships(2 * n);
+    unordered_map<string, int> people;
+    int idx = 0;
+    string l, r;
+    while(n--){
+      cin >> l >> r;
+      if( people.find(l) == people.end() ) people[l] = idx++;
+      if( people.find(r) == people.end() ) people[r] = idx++;
+      if( !friendships.isSameSet( people[l], people[r] ) ) friendships.unionSet(people[l], people[r]);
+      cout << friendships.sizeOfSet( people[l] ) << endl;
     }
-    cout << success << "," << unsuccess << endl;
-    if( t != i + 1 ) cout << endl;
   }
   return 0;
 }
