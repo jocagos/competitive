@@ -7,8 +7,7 @@ using namespace std;
 int main(){
     int m, n;
     scanf("%d %d", &m, &n);
-    vector<vector<char>> mat(m);
-    for( int i = 0; i < m; ++ i ) mat[i].resize(n);
+    vector<vector<char>> mat(m, vector<char>(n));
     for( int i = 0; i < m; ++ i ){
         for( int j = 0; j < n; ++ j ) scanf("%c", &mat[i][j] );
         scanf("\n");
