@@ -62,24 +62,19 @@ const double pi = acos(-1.0);
 #define cntSetBitsl(x) __builtin_popcountl(x)
 #define cntSetBitsll(x) __builtin_popcountll(x)
 
-class DecNum{
-private:
-  string num;
-  int sign;
-public:
-  DecNum( string& s ) : num(s), sign( s[0] == '-' ? -1 : 1 ) {}
-  DecNum( long long n ) : num(to_string(n)), sign( n >= 0 ? 1 : -1 ) {}
-  DecNum( size_t n, char c ) : num(n, c), sign(1) {}
-
-  DecNum operator+( DecNum& right ){
-    string ans(max(this->num.length(), right.length()), '0');
-    if( this->num.length()
-  }
-}
-
 int main(void){
-  int n;
-  cin >> n;
-
+  long long t, n;
+  ios_base::sync_with_stdio(0);
+  cin.tie(0);
+  cin >> t;
+  for( int i = 1; i <= t; ++ i ){
+    cin >> n;
+    if( n * (n-1) % 4 == 0 ) cout << "Case " << i << ": " << n*(n-1) / 4 << endl;
+    else{
+      long long a = n * (n - 1), b = 4, c = gcd(a, b);
+      a /= c, b /= c;
+      cout << "Case " << i << ": " << a << "/" << b << endl;
+    }
+  }
   return 0;
 }

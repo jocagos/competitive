@@ -2,10 +2,6 @@ import sys
 from decimal import *
 
 
-def _abs( s ):
-    if type(s) == type(''):
-        return int(s) if int(s) > 0 else -1 * int(s)
-
 def fsum( l ):
     if len(l) == 0:
         return Decimal('0')
@@ -17,22 +13,6 @@ def fsum( l ):
     for i in range(1, len(l)):
         n = n + l[i]
     return n
-
-def to_real_str( eng_str ):
-    s = eng_str.split('E')
-    left, right = s[0], s[1]
-    if '.' in left:
-        return 0
-    else:
-        if right[0] == '-':
-            for i in range(_abs(right)):
-                left = '0' + left
-            left = '-0.' + left
-        else:
-            for i in range(_abs(right)):
-                left += '0'
-        return 0
-
 
 cont = Context(prec=31)
 setcontext(cont)

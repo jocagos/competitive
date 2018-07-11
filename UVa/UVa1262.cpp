@@ -22,6 +22,7 @@ template <class T> using minBinHeap = __gnu_pbds::priority_queue<T, greater<T>, 
 template <class T> using minFHeap = __gnu_pbds::priority_queue<T, greater<T>, thin_heap_tag>;
 template <class T> using maxFHeap = __gnu_pbds::priority_queue<T, less<T>, thin_heap_tag>;
 template <class T> using maxBinHeap = __gnu_pbds::priority_queue<T, less<T>, rc_binomial_heap_tag>;
+template <class T> using maxHeap = __gnu_pbds::priority_queue<T, less<T>, pairing_heap_tag>;
 // ordered set and map with policy, policy based data structures
 template <class T> using oSet = tree<T, null_type, less<T>, rb_tree_tag, tree_order_statistics_node_update>;
 template <class T, class U> using oMap = tree<T, U, less<T>, rb_tree_tag, tree_order_statistics_node_update>;
@@ -62,24 +63,74 @@ const double pi = acos(-1.0);
 #define cntSetBitsl(x) __builtin_popcountl(x)
 #define cntSetBitsll(x) __builtin_popcountll(x)
 
-class DecNum{
-private:
-  string num;
-  int sign;
-public:
-  DecNum( string& s ) : num(s), sign( s[0] == '-' ? -1 : 1 ) {}
-  DecNum( long long n ) : num(to_string(n)), sign( n >= 0 ? 1 : -1 ) {}
-  DecNum( size_t n, char c ) : num(n, c), sign(1) {}
-
-  DecNum operator+( DecNum& right ){
-    string ans(max(this->num.length(), right.length()), '0');
-    if( this->num.length()
-  }
-}
-
 int main(void){
-  int n;
-  cin >> n;
-
+  int t, k;
+  char c;
+  cin >> t;
+  while( t-- ){
+    cin >> k;
+    //vector<vector<char>> first(5, vector<char>(6)), second(5, vector<char>(6));
+    vector< set< char > > first(5), second(5);
+    REP(i, 12){
+      REP(j, 5){
+	cin >> c;
+	if( i < 6 ) first[j].insert(c);
+	else second[j].insert(c);
+	/*
+	if( i < 6 ) cin >> first[j][i];
+	else cin >> second[j][i-6];
+	*/
+      }
+    }
+    // added
+    vector<vector<char>> chars(5, vector<char>(6) );
+    REP(i, 5){
+      auto it = set_intersection( all(first[i]), all(second[i]), chars[i].begin() );
+      chars[i].resize( it - chars[i].begin() );
+      /*sort( all(first[i]) );
+	sort( all(second[i]) );*/
+    }
+    // set<string> left, right;
+    // added
+    oSet<string> answers;
+    for( auto i : chars[0] ){
+      for( auto j : chars[1] ){
+	for( auto k : chars[2] ){
+	  for( auto l : chars[3] ){
+	    for( auto m : chars[4] ){
+	      string s {i, j, k, l, m};
+	      answers.insert(s);
+	    }
+	  }
+	}
+      }
+    }
+    auto a = answers.find_by_order(k-1);
+    if( a == answers.end() ) cout << "NO" << endl;
+    else cout << *a << endl;
+    /*
+    REP( i, 6 ){
+      REP( j, 6 ){
+	REP( k, 6 ){
+	  REP( l, 6 ){
+	    REP( m, 6 ){
+	      
+	      string s {first[0][i], first[1][j], first[2][k], first[3][l], first[4][m]};
+	      left.insert(s);
+	      string t {second[0][i], second[1][j], second[2][k], second[3][l], second[4][m]};
+	      right.insert(t);
+	    }
+	  }
+	}
+      }
+    }
+    
+    vector<string> matches(100000);
+    auto it = set_intersection( all(left), all(right), matches.begin() );
+    matches.resize(it - matches.begin() );
+    if( k <= matches.size() ) cout << matches[k-1] << endl;
+    else cout << "NO" << endl;
+    */
+  }
   return 0;
 }

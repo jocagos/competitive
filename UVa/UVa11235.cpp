@@ -20,11 +20,12 @@ private: vi st, A;            // recall that vi is: typedef vector<int> vi;
       build(left(p) , L              , (L + R) / 2);
       build(right(p), (L + R) / 2 + 1, R          );
       int p1 = st[left(p)], p2 = st[right(p)];
-      st[p] = (A[p1] <= A[p2]) ? p1 : p2;
+      st[p] = (A[p1] > A[p2]) ? p1 : p2;
   } }
 
   int rmq(int p, int L, int R, int i, int j) {                  // O(log n)
     if (i >  R || j <  L) return -1; // current segment outside query range
+    if ( i == j ) return 2;
     if (L >= i && R <= j) return st[p];               // inside query range
 
      // compute the min position in the left and right part of the interval
@@ -33,7 +34,7 @@ private: vi st, A;            // recall that vi is: typedef vector<int> vi;
 
     if (p1 == -1) return p2;   // if we try to access segment outside query
     if (p2 == -1) return p1;                               // same as above
-    return (A[p1] <= A[p2]) ? p1 : p2; }          // as as in build routine
+    return (A[p1] > A[p2]) ? p1 : p2; }          // as as in build routine
 
   int update_point(int p, int L, int R, int idx, int new_value) {
     // this update code is still preliminary, i == j
@@ -59,7 +60,7 @@ private: vi st, A;            // recall that vi is: typedef vector<int> vi;
     p2 = update_point(right(p), (L + R) / 2 + 1, R          , idx, new_value);
 
     // return the pition where the overall minimum is
-    return st[p] = (A[p1] <= A[p2]) ? p1 : p2;
+    return st[p] = (A[p1] > A[p2]) ? p1 : p2;
   }
 
 public:
@@ -73,12 +74,34 @@ public:
 
   int update_point(int idx, int new_value) {
     return update_point(1, 0, n - 1, idx, new_value); }
+
+  void printST( void ){
+    cout << "st is" << endl;
+    for( auto& x : st ) cout << x << " ";
+    cout << "\n\nA is" << endl;
+    for( auto& x : A ) cout << x << " ";
+    cout << endl;
+  }
 };
 
 int main(){
   int n, q;
-  while( scanf("%d %d", &n, &q) == 2, n ){
-    
+  while( scanf("%d %d", &n, &q), n ){
+    vector<int> vals(n), ans(n);
+    for( int i = 0; i < n; ++ i ){
+      scanf("%d", &vals[i]);
+      if( i != 0 ){
+	if( vals[i-1] == vals[i] ) ans[i] = ans[i-1] + 1;
+	else ans[i] = 1;
+      }
+      else ans[i] = 1;
+    }
+    SegmentTree st(ans);
+    int a, b;
+    for( int i = 0; i < q; ++ i ){
+      scanf("%d %d", &a, &b);
+      printf("%d\n", st.rmq(--a, --b)-1 );
+    }
   }
   return 0;
 }

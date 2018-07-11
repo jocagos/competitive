@@ -10,18 +10,18 @@ using namespace __gnu_pbds;
 typedef long long ll;
 typedef long double ld;
 typedef pair<int, int> ii;
-typedef pair<ii, int> tern;
+typedef pair<ii, i> tern;
 typedef pair<ii, ii> quad;
 typedef vector<int> vi;
 typedef vector<ii> vii;
 typedef vector<tern> vtern;
 typedef vector<quad> vquad;
 // minHeap, BinomialHeap and FibonacciHeap for later use, policy based data structures
-template <class T> using minHeap = __gnu_pbds::priority_queue<T, greater<T>, pairing_heap_tag>;
-template <class T> using minBinHeap = __gnu_pbds::priority_queue<T, greater<T>, rc_binomial_heap_tag>;
-template <class T> using minFHeap = __gnu_pbds::priority_queue<T, greater<T>, thin_heap_tag>;
-template <class T> using maxFHeap = __gnu_pbds::priority_queue<T, less<T>, thin_heap_tag>;
-template <class T> using maxBinHeap = __gnu_pbds::priority_queue<T, less<T>, rc_binomial_heap_tag>;
+template <class T> using minHeap = priority_queue<T, vector<T>, greater<T>>;
+template <class T> using minBinHeap = priority_queue<T, greater<T>, rc_binomial_heap_tag>;
+template <class T> using minFHeap = priority_queue<T, greater<T>, thin_heap_tag>;
+template <class T> using maxFHeap = priority_queue<T, less<T>, thin_heap_tag>;
+template <class T> using maxBinHeap = priority_queue<T, less<T>, rc_binomial_heap_tag>;
 // ordered set and map with policy, policy based data structures
 template <class T> using oSet = tree<T, null_type, less<T>, rb_tree_tag, tree_order_statistics_node_update>;
 template <class T, class U> using oMap = tree<T, U, less<T>, rb_tree_tag, tree_order_statistics_node_update>;
@@ -62,24 +62,9 @@ const double pi = acos(-1.0);
 #define cntSetBitsl(x) __builtin_popcountl(x)
 #define cntSetBitsll(x) __builtin_popcountll(x)
 
-class DecNum{
-private:
-  string num;
-  int sign;
-public:
-  DecNum( string& s ) : num(s), sign( s[0] == '-' ? -1 : 1 ) {}
-  DecNum( long long n ) : num(to_string(n)), sign( n >= 0 ? 1 : -1 ) {}
-  DecNum( size_t n, char c ) : num(n, c), sign(1) {}
-
-  DecNum operator+( DecNum& right ){
-    string ans(max(this->num.length(), right.length()), '0');
-    if( this->num.length()
-  }
-}
-
 int main(void){
-  int n;
-  cin >> n;
+    int n;
+    cin >> n;
 
-  return 0;
+    return 0;
 }

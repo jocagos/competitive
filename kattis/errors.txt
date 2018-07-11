@@ -1,0 +1,16 @@
+problemCPAT.cpp: In function ‘int main()’:
+problemCPAT.cpp:136:42: warning: ignoring return value of ‘int scanf(const char*, ...)’, declared with attribute warn_unused_result [-Wunused-result]
+   scanf("%d %d", &nMapHeight, &nMapWidth);
+                                          ^
+problemCPAT.cpp:140:24: warning: ignoring return value of ‘int scanf(const char*, ...)’, declared with attribute warn_unused_result [-Wunused-result]
+       scanf("%d", &tmp);
+                        ^
+problemCPAT.cpp:144:38: warning: ignoring return value of ‘int scanf(const char*, ...)’, declared with attribute warn_unused_result [-Wunused-result]
+   scanf("%d %d", &nStartX, &nStartY );
+                                      ^
+problemCPAT.cpp:145:36: warning: ignoring return value of ‘int scanf(const char*, ...)’, declared with attribute warn_unused_result [-Wunused-result]
+   scanf("%d %d", &nGoalX, &nGoalY );
+                                    ^
+problemCPAT.cpp:146:25: warning: ignoring return value of ‘int scanf(const char*, ...)’, declared with attribute warn_unused_result [-Wunused-result]
+   scanf("%d", &bufSize );
+                         ^

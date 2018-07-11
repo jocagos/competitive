@@ -62,24 +62,37 @@ const double pi = acos(-1.0);
 #define cntSetBitsl(x) __builtin_popcountl(x)
 #define cntSetBitsll(x) __builtin_popcountll(x)
 
-class DecNum{
-private:
-  string num;
-  int sign;
-public:
-  DecNum( string& s ) : num(s), sign( s[0] == '-' ? -1 : 1 ) {}
-  DecNum( long long n ) : num(to_string(n)), sign( n >= 0 ? 1 : -1 ) {}
-  DecNum( size_t n, char c ) : num(n, c), sign(1) {}
-
-  DecNum operator+( DecNum& right ){
-    string ans(max(this->num.length(), right.length()), '0');
-    if( this->num.length()
-  }
-}
-
 int main(void){
   int n;
-  cin >> n;
-
+  vector<long> vals;
+  bool first = true;
+  while( cin >> n ){
+    if( first ) first = false;
+    else cout << "\n";
+    long m;
+    vals.clear();
+    vals.resize(n);
+    fill( all(vals), 0 );
+    REP(i, n) cin >> vals[i];
+    cin >> m;
+    sort( all(vals) );
+    long a, ansA = 0, ansB = 0;
+    // get first value equal to half the sum requested then go down from it
+    for( auto it = lower_bound(all(vals), m/2.0); it >= vals.begin(); -- it){
+      a = *it; // save it
+      // if there exists a number x such that x = m - a
+      if( binary_search( all(vals), m - a) ){
+        // we found our answer: save it
+	ansA = a, ansB = *lower_bound( all(vals), m - a );
+	// if it's a special case and it's the same value but there's only one
+	// then repeat the search again, but now from a value a little less (it--)
+	if( ansA == ansB and count( all(vals), ansA ) < 2 ) continue;
+	break;
+      }
+    }
+    cout << "Peter should buy books whose prices are " << min(ansA, ansB) << " and " << max(ansB, ansA) << ".\n";
+  }
+  cout << endl;
   return 0;
 }
+

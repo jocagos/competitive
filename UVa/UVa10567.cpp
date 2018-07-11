@@ -48,6 +48,7 @@ const double pi = acos(-1.0);
 #define REP(i, end) FOR(i, 0, end)
 #define FORD(i, start, end) for( int i(start); i >= end; -- i )
 #define gcd(a, b) __gcd(a, b)
+#define getIdx(x) find_by_order(x)
 // bit related builtin functions
 #define idxLSB(x) __builtin_ffs(x)
 #define idxLSBl(x) __builtin_ffsl(x)
@@ -61,25 +62,58 @@ const double pi = acos(-1.0);
 #define cntSetBits(x) __builtin_popcount(x)
 #define cntSetBitsl(x) __builtin_popcountl(x)
 #define cntSetBitsll(x) __builtin_popcountll(x)
-
-class DecNum{
-private:
-  string num;
-  int sign;
-public:
-  DecNum( string& s ) : num(s), sign( s[0] == '-' ? -1 : 1 ) {}
-  DecNum( long long n ) : num(to_string(n)), sign( n >= 0 ? 1 : -1 ) {}
-  DecNum( size_t n, char c ) : num(n, c), sign(1) {}
-
-  DecNum operator+( DecNum& right ){
-    string ans(max(this->num.length(), right.length()), '0');
-    if( this->num.length()
-  }
-}
-
+/*
 int main(void){
+  string s;
+  vector<int> vals(52, 0);
+  vector<int> query(52, 0);
   int n;
+  cin >> s;
+  for( int i = 0; i < s.length(); ++ i ){
+    if( s[i] >= 'A' and s[i] <= 'Z' ) vals[s[i]-'A']++;
+    else if( s[i] >= 'a' and s[i] <= 'z' ) vals[s[i]-'a' + 26]++;
+  }
   cin >> n;
+  REP( i, n ){
+    // Fill query
+    cin >> s;
+    for( int i = 0; i < s.length(); ++ i ){
+      if( s[i] >= 'A' and s[i] <= 'Z' ) query[s[i]-'A']++;
+      else if( s[i] >= 'a' and s[i] <= 'z' ) query[s[i]-'a' + 26]++;
+    }
+    
+    // Reset query
+    fill( all(query), 0 );
+  }
+  return 0;
+}
+*/
 
+int main(){
+  fastio;
+  // hash table to optimize memory and look-ups a little
+  unordered_map<char, int> code { {'a', 0}, {'A', 26} };
+  FOR( i, 1, 26 ) code['a' + i] = i, code['A' + i] = i + 26;
+  vector<vector<int>> vals(52);
+  string s, q;
+  int n;
+  cin >> s;
+  FOR( i, 0, s.length() ) vals[code[s[i]]].emplace_back(i);
+  cin >> n;
+  while( n -- ){
+    cin >> q;
+    int to = -1, from = 0;
+    bool _end = true;
+    FOR( i, 0, q.length() ){
+      if( !_end ) break;
+      auto low = upper_bound( all(vals[code[q[i]]]), to );
+      to = low - vals[code[q[i]]].begin();
+      if( low == vals[code[q[i]]].end() ) _end = false;
+      to = vals[code[q[i]]][to];
+      if( i == 0 ) from = to;
+    }
+    if( _end ) cout << "Matched " << from << " " << to << "\n";
+    else cout << "Not matched\n";
+  }
   return 0;
 }

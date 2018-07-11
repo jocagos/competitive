@@ -62,24 +62,46 @@ const double pi = acos(-1.0);
 #define cntSetBitsl(x) __builtin_popcountl(x)
 #define cntSetBitsll(x) __builtin_popcountll(x)
 
-class DecNum{
-private:
-  string num;
-  int sign;
-public:
-  DecNum( string& s ) : num(s), sign( s[0] == '-' ? -1 : 1 ) {}
-  DecNum( long long n ) : num(to_string(n)), sign( n >= 0 ? 1 : -1 ) {}
-  DecNum( size_t n, char c ) : num(n, c), sign(1) {}
+#define EPS 1.0e-7L
 
-  DecNum operator+( DecNum& right ){
-    string ans(max(this->num.length(), right.length()), '0');
-    if( this->num.length()
+int p, q, r, s, t, u;
+
+inline double f( double x ){
+  return p * exp( -x ) + q * sin( x ) + r * cos( x ) + s * tan( x ) + t * x * x + u;
+}
+
+inline double fp( double x ){
+  return -p * exp( -x ) + q * cos( x ) - r * sin( x ) + s / ( cos( x ) * cos( x ) ) + 2 * t * x;
+}
+
+
+inline double newton(){
+  if( f(0) == 0 ) return 0;
+  double x1 = 0.5;
+  for( double x = 0.5; ; x = x1 ){
+    x1 = x - f(x) / fp(x);
+    if( fabs( x1 - x ) < EPS ) return x1;
   }
 }
 
 int main(void){
-  int n;
-  cin >> n;
-
+  fastio;
+  while( cin >> p ){
+    cin >> q >> r >> s >> t >> u;
+    bool sol = false, flesser = ( f( 0.0 ) < 0 ? true : false ), sgreater = ( f( 1.0 ) > 0 ? true : false );
+    if( (flesser and sgreater) or (!flesser and !sgreater) ) sol = true;
+    else sol = false;
+    if( sol ){
+      double ans = newton();
+      // double x0 = 0.5L, xn = x0, eval = f( x0 );
+      // REP( i, 10 ){
+      // 	if( fabs(eval) < EPS ) break;
+      // 	xn = xn - f( xn ) / fp( xn );
+      // 	eval = f( xn);
+      // }
+      cout << setprecision(4) << fixed << ans << endl;
+    }
+    else cout << "No solution\n";
+  }
   return 0;
 }
