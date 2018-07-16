@@ -39,6 +39,7 @@ const double pi = acos(-1.0);
 #define view(x) cout << #x << ": " << x << endl;
 #define sz(c) (int)((c).size())
 #define all(c) (c).begin(), (c).end()
+#define justN(c, n) (c).begin(), (c).begin() + n
 #define sq(a) (a) * (a)
 #define fi first
 #define se second
