@@ -10,13 +10,10 @@ using namespace __gnu_pbds;
 typedef long long ll;
 typedef long double ld;
 typedef pair<int, int> ii;
-typedef pair<double, double> dd;
 typedef pair<ii, int> tern;
 typedef pair<ii, ii> quad;
 typedef vector<int> vi;
-typedef vector<double> vd;
 typedef vector<ii> vii;
-typedef vector<dd> vdd;
 typedef vector<tern> vtern;
 typedef vector<quad> vquad;
 // minHeap, BinomialHeap and FibonacciHeap for later use, policy based data structures
@@ -35,7 +32,7 @@ const int INF = (int) 1e9 + 7;
 const ll LLINF = (ll) 4e18 + 7;
 const double pi = acos(-1.0);
 // easy access/use
-#define fastio ios::sync_with_stdio(0); cin.tie(0); cout.tie(0)
+#define fastio ios::sync_with_stdio(0); cin.tie(0)
 #define view(x) cout << #x << ": " << x << endl;
 #define sz(c) (int)((c).size())
 #define all(c) (c).begin(), (c).end()
@@ -66,8 +63,19 @@ const double pi = acos(-1.0);
 #define cntSetBitsll(x) __builtin_popcountll(x)
 
 int main(void){
-    int n;
-    cin >> n;
-
-    return 0;
+  int n;
+  fastio;
+  while( cin >> n, n ){
+    vector<int> v(n);
+    int sum = 0, mx = 0;
+    for( int i = 0; i < n; ++ i ){
+      cin >> v[i];
+      sum += v[i];
+      if( sum < 0 ) sum = 0;
+      if( sum > mx ) mx = sum;
+    }
+    if( mx > 0 ) cout << "The maximum winning streak is " << mx << ".\n";
+    else cout << "Losing streak.\n";
+  }
+  return 0;
 }

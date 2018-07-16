@@ -9,6 +9,9 @@ for i in range(n):
     line = sys.stdin.readline().split()
     left, right = Decimal(line[0]), Decimal(line[1])
     ans = left + right
-    # Need to remove trailing zeros to only one
-    print(ans)
+    ans = ans.normalize()
+    if ans % 1 == 0:
+        print(str(ans) + '.0')
+    else:
+        print(ans)
     

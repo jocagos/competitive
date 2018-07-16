@@ -9,14 +9,12 @@ using namespace __gnu_pbds;
 
 typedef long long ll;
 typedef long double ld;
-typedef pair<int, int> ii;
 typedef pair<double, double> dd;
+typedef pair<int, int> ii;
 typedef pair<ii, int> tern;
 typedef pair<ii, ii> quad;
 typedef vector<int> vi;
-typedef vector<double> vd;
 typedef vector<ii> vii;
-typedef vector<dd> vdd;
 typedef vector<tern> vtern;
 typedef vector<quad> vquad;
 // minHeap, BinomialHeap and FibonacciHeap for later use, policy based data structures
@@ -64,10 +62,46 @@ const double pi = acos(-1.0);
 #define cntSetBits(x) __builtin_popcount(x)
 #define cntSetBitsl(x) __builtin_popcountl(x)
 #define cntSetBitsll(x) __builtin_popcountll(x)
+const double EPS = 1e-6;
 
 int main(void){
-    int n;
-    cin >> n;
-
-    return 0;
+  int n, d, tc = 1;
+  vector<dd> intervals(1000);
+  while( cin >> n >> d, n | d ){
+    double x, y;
+    bool able = true;
+    for( int i = 0; i < n; ++ i ){
+      cin >> x >> y;
+      if( y <= d and able ){
+	double dist = sqrt( sq(d) - sq(y) );
+	intervals[i] = { x - dist, x + dist };
+      }
+      else able = false;
+    }
+    cout << "Case " << tc ++ << ": ";
+    if( !able ){
+      cout << "-1\n";
+      continue;
+    }
+    else{
+      int count = 0;
+      /* Ok here's a trick: the right lambda/comparator is key.
+       * Try with `[]( dd left, dd right ) -> bool { return ( left.fi != right.fi ? left.fi < right.fi : right.se < left.se ); }'
+       * instead and the order given (maximum coverage from left to right first)
+       * will make the algorithm run into a bug in some test cases
+       * thus yielding WA despite the optimizations done
+       * I could not find the bug until I saw a solution like mine that differed in cmp.
+       */
+      sort( intervals.begin(), intervals.begin() + n, []( dd left, dd right ) -> bool { return (left.se == right.se ? left.fi < right.fi : left.se < right.se); } );      
+      for( int i = 0; i < n; ){
+	int j;
+	for( j = 0; j < n; ++ j )
+	  if( intervals[j].fi > intervals[i].se ) break;
+	i = j;
+	count ++;
+      }
+      cout << count << '\n';
+    }
+  }
+  return 0;
 }

@@ -14,9 +14,7 @@ typedef pair<double, double> dd;
 typedef pair<ii, int> tern;
 typedef pair<ii, ii> quad;
 typedef vector<int> vi;
-typedef vector<double> vd;
 typedef vector<ii> vii;
-typedef vector<dd> vdd;
 typedef vector<tern> vtern;
 typedef vector<quad> vquad;
 // minHeap, BinomialHeap and FibonacciHeap for later use, policy based data structures
@@ -64,10 +62,48 @@ const double pi = acos(-1.0);
 #define cntSetBits(x) __builtin_popcount(x)
 #define cntSetBitsl(x) __builtin_popcountl(x)
 #define cntSetBitsll(x) __builtin_popcountll(x)
+const double EPS = 1e-6;
 
 int main(void){
-    int n;
-    cin >> n;
-
-    return 0;
+  int n, l, w;
+  vector<dd> sprinklers(10000);
+  fastio;
+  auto sorter = []( dd left, dd right ) -> bool {
+    return ( abs( left.fi - right.fi ) > EPS ? left.fi < right.fi : right.se < left.se );
+  };
+  while( cin >> n >> l >> w ){
+    int pos, idx = 0;
+    double r, d = 0.0L;
+    for( int i = 0; i < n; ++ i ){
+      cin >> pos >> r;
+      if( r > w / 2.0 ){
+	d = sqrt( r * r - w * w / 4.0 );
+	sprinklers[idx++] = {pos - d, pos + d};
+      }
+    }
+    sort( sprinklers.begin(), sprinklers.begin()+idx, sorter );
+    double right = 0.0L;
+    int i = 0, j, farthest;
+    bool done = false;
+    for( i = 0, j = 0; i < idx; ++ i ){
+      double tmp = right;
+      farthest = -1;
+      while( j < idx and sprinklers[j].fi <= right ){
+	if( sprinklers[j].se > tmp ){
+	  tmp = sprinklers[j].se;
+	  farthest = j;
+	}
+	++ j;
+      }
+      if( tmp >= l ){
+	cout << (i+1) << '\n';
+	done = true;
+	break;
+      }
+      if( farthest == -1 ) break;
+      right = tmp;
+    }
+    if( !done ) cout << "-1\n";
+  }
+  return 0;
 }

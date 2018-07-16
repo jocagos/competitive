@@ -10,13 +10,10 @@ using namespace __gnu_pbds;
 typedef long long ll;
 typedef long double ld;
 typedef pair<int, int> ii;
-typedef pair<double, double> dd;
 typedef pair<ii, int> tern;
 typedef pair<ii, ii> quad;
 typedef vector<int> vi;
-typedef vector<double> vd;
 typedef vector<ii> vii;
-typedef vector<dd> vdd;
 typedef vector<tern> vtern;
 typedef vector<quad> vquad;
 // minHeap, BinomialHeap and FibonacciHeap for later use, policy based data structures
@@ -66,8 +63,32 @@ const double pi = acos(-1.0);
 #define cntSetBitsll(x) __builtin_popcountll(x)
 
 int main(void){
+  int t;
+  cin >> t;
+  while( t -- ){
     int n;
     cin >> n;
-
-    return 0;
+    vector<vector<long long>> v(n, vector<long long>(n, 0));
+    long long tmp;
+    REP(i, n){
+      REP(j, n){
+	cin >> tmp;
+	if( i ) v[i][j] += v[i-1][j];
+	if( j ) v[i][j] += v[i][j-1];
+	if( i and j ) v[i][j] -= v[i-1][j-1];
+	v[i][j] += tmp;
+      }
+    }
+    long long maxSum = -INF;
+    REP(i, n){
+      REP(j, n){
+	REP(k, n){
+	  REP(l, n){
+	    
+	  }
+	}
+      }
+    }
+  }
+  return 0;
 }
