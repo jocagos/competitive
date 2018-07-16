@@ -21,6 +21,8 @@
 *.py~
 *.out
 *.out~
+\#*
+*sol.cpp
 
 # Ignore `bin` dir
 bin/
