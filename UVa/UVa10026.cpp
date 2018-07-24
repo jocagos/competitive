@@ -10,10 +10,13 @@ using namespace __gnu_pbds;
 typedef long long ll;
 typedef long double ld;
 typedef pair<int, int> ii;
+typedef pair<double, double> dd;
 typedef pair<ii, int> tern;
 typedef pair<ii, ii> quad;
 typedef vector<int> vi;
+typedef vector<double> vd;
 typedef vector<ii> vii;
+typedef vector<dd> vdd;
 typedef vector<tern> vtern;
 typedef vector<quad> vquad;
 // minHeap, BinomialHeap and FibonacciHeap for later use, policy based data structures
@@ -36,6 +39,7 @@ const double pi = acos(-1.0);
 #define view(x) cout << #x << ": " << x << endl;
 #define sz(c) (int)((c).size())
 #define all(c) (c).begin(), (c).end()
+#define justN(c, n) (c).begin(), (c).begin() + n
 #define sq(a) (a) * (a)
 #define fi first
 #define se second
@@ -63,31 +67,18 @@ const double pi = acos(-1.0);
 #define cntSetBitsll(x) __builtin_popcountll(x)
 
 int main(void){
-  /*  int n;
-      cin >> n;*/
+  int t;
   fastio;
-  vector<vector<long long>> v( 100, vector<long long>( 100, 0 ) ), s( 100, vector<long long>( 101, 0 ) );
-  vector<long long> dp( 101, 0 );
-  /*while( t -- ){*/
-  int n;
-  cin >> n;
-  REP(i, n){
-    REP(j, n) cin >> v[i][j];
+  cin >> t;
+  vector<tern> jobs(1000);
+  while( t -- ){
+    int n;
+    cin >> n;
+    REP( i, n ) cin >> jobs[i].fi.fi >> jobs[i].fi.se, jobs[i].se = i + 1;
+    // sort by greater fine per day then index
+    sort( justN( jobs, n ), []( tern left, tern right ) -> bool { return 1.0 * left.fi.se / left.fi.fi != 1.0 * right.fi.se / right.fi.fi ? 1.0 * left.fi.se / left.fi.fi > 1.0 * right.fi.se / right.fi.fi : left.se < right.se; } );
+    REP( i, n ){ cout << jobs[i].se << ( i + 1 == n ? '\n' : ' ' ); }
+    if( t ) cout << '\n';
   }
-  REP( i, n ){
-    s[i][0] = 0;
-    FOR( j, 1, n+1 ) s[i][j] = s[i][j-1] + v[i][j-1];
-  }
-  long long maxSum = -INF;
-  REP(i, n){
-    FOR(j, i, n){
-      dp[0] = 0;
-      REP(k, n){
-	dp[k+1] = max( s[k][j+1] - s[k][i] + dp[k], s[k][j+1] - s[k][i] );
-	maxSum = max( maxSum, dp[k+1] );
-      }
-    }
-  }
-  cout << maxSum << '\n';
   return 0;
 }

@@ -10,10 +10,13 @@ using namespace __gnu_pbds;
 typedef long long ll;
 typedef long double ld;
 typedef pair<int, int> ii;
+typedef pair<double, double> dd;
 typedef pair<ii, int> tern;
 typedef pair<ii, ii> quad;
 typedef vector<int> vi;
+typedef vector<double> vd;
 typedef vector<ii> vii;
+typedef vector<dd> vdd;
 typedef vector<tern> vtern;
 typedef vector<quad> vquad;
 // minHeap, BinomialHeap and FibonacciHeap for later use, policy based data structures
@@ -36,6 +39,7 @@ const double pi = acos(-1.0);
 #define view(x) cout << #x << ": " << x << endl;
 #define sz(c) (int)((c).size())
 #define all(c) (c).begin(), (c).end()
+#define justN(c, n) (c).begin(), (c).begin() + n
 #define sq(a) (a) * (a)
 #define fi first
 #define se second
@@ -63,31 +67,16 @@ const double pi = acos(-1.0);
 #define cntSetBitsll(x) __builtin_popcountll(x)
 
 int main(void){
-  /*  int n;
-      cin >> n;*/
+  int n, d, r;
+  vector<int> morning(100, 0), night(100, 0);
   fastio;
-  vector<vector<long long>> v( 100, vector<long long>( 100, 0 ) ), s( 100, vector<long long>( 101, 0 ) );
-  vector<long long> dp( 101, 0 );
-  /*while( t -- ){*/
-  int n;
-  cin >> n;
-  REP(i, n){
-    REP(j, n) cin >> v[i][j];
+  while( cin >> n >> d >> r, n | d | r ){
+    for( int i = 0; i < 2 * n; ++ i ) if( i < n ) cin >> morning[i]; else cin >> night[i-n];
+    sort( justN( morning, n ) );
+    sort( justN( night, n ), greater<int>() );
+    int sum = 0;
+    REP( i, n ) sum += max( 0, morning[i] + night[i] - d ) * r;
+    cout << sum << '\n';
   }
-  REP( i, n ){
-    s[i][0] = 0;
-    FOR( j, 1, n+1 ) s[i][j] = s[i][j-1] + v[i][j-1];
-  }
-  long long maxSum = -INF;
-  REP(i, n){
-    FOR(j, i, n){
-      dp[0] = 0;
-      REP(k, n){
-	dp[k+1] = max( s[k][j+1] - s[k][i] + dp[k], s[k][j+1] - s[k][i] );
-	maxSum = max( maxSum, dp[k+1] );
-      }
-    }
-  }
-  cout << maxSum << '\n';
   return 0;
 }

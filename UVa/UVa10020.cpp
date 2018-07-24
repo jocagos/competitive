@@ -10,10 +10,13 @@ using namespace __gnu_pbds;
 typedef long long ll;
 typedef long double ld;
 typedef pair<int, int> ii;
+typedef pair<double, double> dd;
 typedef pair<ii, int> tern;
 typedef pair<ii, ii> quad;
 typedef vector<int> vi;
+typedef vector<double> vd;
 typedef vector<ii> vii;
+typedef vector<dd> vdd;
 typedef vector<tern> vtern;
 typedef vector<quad> vquad;
 // minHeap, BinomialHeap and FibonacciHeap for later use, policy based data structures
@@ -36,6 +39,7 @@ const double pi = acos(-1.0);
 #define view(x) cout << #x << ": " << x << endl;
 #define sz(c) (int)((c).size())
 #define all(c) (c).begin(), (c).end()
+#define justN(c, n) (c).begin(), (c).begin() + n
 #define sq(a) (a) * (a)
 #define fi first
 #define se second
@@ -63,31 +67,39 @@ const double pi = acos(-1.0);
 #define cntSetBitsll(x) __builtin_popcountll(x)
 
 int main(void){
-  /*  int n;
-      cin >> n;*/
+  int t;
+  vector<ii> intervals(100000);
   fastio;
-  vector<vector<long long>> v( 100, vector<long long>( 100, 0 ) ), s( 100, vector<long long>( 101, 0 ) );
-  vector<long long> dp( 101, 0 );
-  /*while( t -- ){*/
-  int n;
-  cin >> n;
-  REP(i, n){
-    REP(j, n) cin >> v[i][j];
-  }
-  REP( i, n ){
-    s[i][0] = 0;
-    FOR( j, 1, n+1 ) s[i][j] = s[i][j-1] + v[i][j-1];
-  }
-  long long maxSum = -INF;
-  REP(i, n){
-    FOR(j, i, n){
-      dp[0] = 0;
-      REP(k, n){
-	dp[k+1] = max( s[k][j+1] - s[k][i] + dp[k], s[k][j+1] - s[k][i] );
-	maxSum = max( maxSum, dp[k+1] );
+  cin >> t;
+  while( t -- ){
+    int n, idx = 0;
+    cin >> n;
+    // we just store intervals that are 'good': ending is non negative, until we get two zeroes (a | b)
+    while( cin >> intervals[idx].fi >> intervals[idx].se, intervals[idx].fi | intervals[idx].se ) if( intervals[idx].fi < n and intervals[idx].se > 0 ) ++ idx;
+    // idx holds how much good intervals there are so we can sort them
+    sort( justN( intervals, idx ), []( ii l, ii r ) -> bool { return ( l.fi != r.fi ? l.fi < r.fi : r.se < l.se ); } );
+    vector<ii> ans; // to hold solutions, no need to sort them now since `intervals' is sorted
+    int last = 0; // to hold the rightmost part
+    auto it = intervals.begin(); // to iterate the intervals
+    if( idx > 0 ){
+      ii p; // temporal pair
+      while( last < n ){ // while we aren't done yet
+        int tmp = last; // to check if we have advanced or not
+        while( it != intervals.begin() + idx and it->fi <= last ){ // iterate vector and check there's an upgrade
+          if( it->se > tmp ) tmp = it->se, p = *it; // if there's one interval better, take it and save it
+          ++ it; // and keep moving
+        }
+        if( last == tmp ) break; // If there's no advance, we're done here, no answer
+        ans.push_back( p ); // otherwise save the values found
+        last = tmp; // and keep moving forward
       }
     }
+    if( last < n ) cout << "0\n"; // No answer, move on
+    else{
+      cout << sz(ans) << '\n'; // we got an answer, print it
+      for( auto a : ans ) cout << a.fi << ' ' << a.se << '\n'; // then print the intervals used
+    }
+    if( t ) cout << '\n'; // if there are more cases, print a blank line in between
   }
-  cout << maxSum << '\n';
   return 0;
 }

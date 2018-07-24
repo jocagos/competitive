@@ -10,10 +10,13 @@ using namespace __gnu_pbds;
 typedef long long ll;
 typedef long double ld;
 typedef pair<int, int> ii;
+typedef pair<double, double> dd;
 typedef pair<ii, int> tern;
 typedef pair<ii, ii> quad;
 typedef vector<int> vi;
+typedef vector<double> vd;
 typedef vector<ii> vii;
+typedef vector<dd> vdd;
 typedef vector<tern> vtern;
 typedef vector<quad> vquad;
 // minHeap, BinomialHeap and FibonacciHeap for later use, policy based data structures
@@ -36,6 +39,7 @@ const double pi = acos(-1.0);
 #define view(x) cout << #x << ": " << x << endl;
 #define sz(c) (int)((c).size())
 #define all(c) (c).begin(), (c).end()
+#define justN(c, n) (c).begin(), (c).begin() + n
 #define sq(a) (a) * (a)
 #define fi first
 #define se second
@@ -63,31 +67,23 @@ const double pi = acos(-1.0);
 #define cntSetBitsll(x) __builtin_popcountll(x)
 
 int main(void){
-  /*  int n;
-      cin >> n;*/
   fastio;
-  vector<vector<long long>> v( 100, vector<long long>( 100, 0 ) ), s( 100, vector<long long>( 101, 0 ) );
-  vector<long long> dp( 101, 0 );
-  /*while( t -- ){*/
-  int n;
-  cin >> n;
-  REP(i, n){
-    REP(j, n) cin >> v[i][j];
-  }
-  REP( i, n ){
-    s[i][0] = 0;
-    FOR( j, 1, n+1 ) s[i][j] = s[i][j-1] + v[i][j-1];
-  }
-  long long maxSum = -INF;
-  REP(i, n){
-    FOR(j, i, n){
-      dp[0] = 0;
-      REP(k, n){
-	dp[k+1] = max( s[k][j+1] - s[k][i] + dp[k], s[k][j+1] - s[k][i] );
-	maxSum = max( maxSum, dp[k+1] );
-      }
+  int heads, knights;
+  vi dragon(20000, 0), kingdom(20000, 0);
+  while( cin >> heads >> knights, heads | knights ){
+    int cost = 0, d = 0, k = 0;
+    REP( i, heads ) cin >> dragon[i];
+    REP( i, knights ) cin >> kingdom[i];
+    sort( justN( dragon, heads ) );
+    sort( justN( kingdom, knights ) );
+    while( d < heads and k < knights ){
+      while( dragon[d] > kingdom[k] and k < knights ) ++ k;
+      if( k == knights ) break;
+      cost += kingdom[k];
+      ++ d, ++ k;
     }
+    if( d == heads ) cout << cost << '\n';
+    else cout << "Loowater is doomed!\n";
   }
-  cout << maxSum << '\n';
   return 0;
 }
