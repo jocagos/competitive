@@ -23,6 +23,7 @@
 *.out~
 \#*
 *s*.cpp
+*.txt*
 
 # Ignore `bin` dir
 bin/
