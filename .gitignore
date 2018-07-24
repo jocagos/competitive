@@ -22,7 +22,7 @@
 *.out
 *.out~
 \#*
-*sol.cpp
+*s*.cpp
 
 # Ignore `bin` dir
 bin/
