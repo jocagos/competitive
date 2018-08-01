@@ -76,17 +76,16 @@ int main(void){
     while( cin >> tmp ){
       student[tmp] = answers[0];
       FOR( i, 1, n ){
-	cin >> tmp;
+        cin >> tmp;
         student[tmp] = answers[i];
       }
       int largest = 0, m;
       FOR( i, 1, n + 1 ){
-	m = 0;
-	FORD( j, i - 1, 0 ){
-	  if( student[i] > student[j] and dp[j] > m ) m = dp[j];
-	}
-	dp[i] = m + 1;
-	if( m > largest ) largest = m;
+        m = 0;
+        FORD( j, i - 1, 0 )
+          if( student[i] > student[j] and dp[j] > m ) m = dp[j];
+        dp[i] = m + 1;
+        if( m > largest ) largest = m;
       }
       cout << largest + 1 << '\n';
     }
