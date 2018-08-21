@@ -1,4 +1,4 @@
- #include <bits/stdc++.h>
+#include <bits/stdc++.h>
 #include <ext/pb_ds/tree_policy.hpp>
 #include <ext/pb_ds/trie_policy.hpp>
 #include <ext/pb_ds/assoc_container.hpp>
@@ -67,27 +67,39 @@ const double pi = acos(-1.0);
 #define cntSetBitsll(x) __builtin_popcountll(x)
 
 int main(void){
-  int n, i = 0, tc = 1, ans = 0, prev = 0;
+  int tc, n, m;
+  vector<vector<int>> strips( 110, vector<int>( 110, 0 ) );
+  ll k, s = 0, p = 0, currentArea = 0, currentCost = 0, minCost = INF, c1, area;
   fastio;
-  vector<int> heights( 1000000, 0 ), values( 1000000, 0 ), dp( 1000000, 0 ), values_id( 1000000, 0 );
-  while( cin >> n ){
-    if( prev == -1 and n == -1 ) break;
-    if( n == -1 ){
-      /* L(M)IS (Longest Monotonic Increasing Subsequence) */
-      int lisB = 0, lisE = 0;
-      FOR( j, 0, i ){
-	int pos = upper_bound( justN( values, lisB ), heights[j] ) - values.begin();
-	values[pos] = heights[j];
-	values_id[pos] = j; // you can get back the sequence with this
-	dp[j] = pos ? values_id[pos - 1] : -1; // and this
-	if( pos + 1 >= lisB ) lisB = pos + 1, lisE = j; // and lisE and a stack
+  cin >> tc;
+  FOR( t, 1, tc + 1 ){
+    cin >> n >> m >> k;
+    FOR( i, 1, n + 1 ){
+      strips[0][i] = 0;
+      FOR( j, 1, m + 1 ){
+	cin >> strips[i][j];
+	strips[i][j] += strips[i - 1][j];
       }
-      ans = lisB;
-      if( ans > 0 ) cout << "Test #" << tc ++ << ":\n  maximum possible interceptions: " << ans << '\n';
-      i = 0;
-      prev = n;
     }
-    else heights[i++] = -n, cout << (prev == -1 ? "\n" : ""), prev = n;
+    area = 0, minCost = INF, c1 = 0;
+    FOR( r1, 1, n + 1 ){
+      FOR( r2, r1, n + 1 ){
+	c1 = 1;
+	currentCost = 0;
+	FOR( c2, 1, m + 1 ){
+	  currentCost += strips[r2][c2] - strips[r1 - 1][c2];
+	  while( c1 <= c2 and currentCost > k ){
+	    currentCost -= strips[r2][c1] - strips[r1 - 1][c1];
+	    ++ c1;
+	  }
+	  currentArea = (r2 - r1 + 1) * (c2 - c1 + 1);
+	  if( currentArea > area or ( currentArea == area and currentCost < minCost ) ) area = currentArea, minCost = currentCost;
+	}
+      }
+    }
+    s = area;
+    p = minCost;
+    cout << "Case #" << t << ": " << s << " " << p << '\n';
   }
   return 0;
 }

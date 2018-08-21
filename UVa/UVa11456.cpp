@@ -1,4 +1,4 @@
- #include <bits/stdc++.h>
+#include <bits/stdc++.h>
 #include <ext/pb_ds/tree_policy.hpp>
 #include <ext/pb_ds/trie_policy.hpp>
 #include <ext/pb_ds/assoc_container.hpp>
@@ -66,28 +66,39 @@ const double pi = acos(-1.0);
 #define cntSetBitsl(x) __builtin_popcountl(x)
 #define cntSetBitsll(x) __builtin_popcountll(x)
 
+// This version should be faster as we access directly the vectors
+template <typename RAI, typename Compare>
+ll LIDS( RAI beginning, RAI ending, Compare comp ){
+  auto s = distance( beginning, ending );
+  vector<ll> L( s );
+  auto source = beginning;
+  ll lisCount = 0, length = 0;
+  REP( i, s ){
+    size_t pos = lower_bound( L.begin(), L.begin() + lisCount, source[i], comp ) - L.begin(); // can't go negative
+    L[pos] = source[i];
+    length = pos + 1;
+    if( pos == lisCount ) lisCount ++;
+  }
+  return length;
+}
+
 int main(void){
-  int n, i = 0, tc = 1, ans = 0, prev = 0;
+  int tc, n;
+  vector<ll> a( 2001, 0 );
   fastio;
-  vector<int> heights( 1000000, 0 ), values( 1000000, 0 ), dp( 1000000, 0 ), values_id( 1000000, 0 );
-  while( cin >> n ){
-    if( prev == -1 and n == -1 ) break;
-    if( n == -1 ){
-      /* L(M)IS (Longest Monotonic Increasing Subsequence) */
-      int lisB = 0, lisE = 0;
-      FOR( j, 0, i ){
-	int pos = upper_bound( justN( values, lisB ), heights[j] ) - values.begin();
-	values[pos] = heights[j];
-	values_id[pos] = j; // you can get back the sequence with this
-	dp[j] = pos ? values_id[pos - 1] : -1; // and this
-	if( pos + 1 >= lisB ) lisB = pos + 1, lisE = j; // and lisE and a stack
-      }
-      ans = lisB;
-      if( ans > 0 ) cout << "Test #" << tc ++ << ":\n  maximum possible interceptions: " << ans << '\n';
-      i = 0;
-      prev = n;
+  cin >> tc;
+  while( tc -- ){
+    cin >> n;
+    FOR( i, 0, n ) cin >> a[i];
+    // LIS
+    ll longestTrain = 0;
+    // You need not to store them so you can just do this
+    FOR( i, 0, n ){
+      ll lis = LIDS( reverse_iterator<vector<ll>::iterator>( a.begin() + n ), reverse_iterator<vector<ll>::iterator>( a.begin() + i ), less<ll>() );
+      ll lds = LIDS( reverse_iterator<vector<ll>::iterator>( a.begin() + n ), reverse_iterator<vector<ll>::iterator>( a.begin() + i ), greater<ll>() );
+      longestTrain = max( longestTrain, lis + lds - 1 );
     }
-    else heights[i++] = -n, cout << (prev == -1 ? "\n" : ""), prev = n;
+    cout << longestTrain << '\n';
   }
   return 0;
 }

@@ -1,4 +1,4 @@
- #include <bits/stdc++.h>
+#include <bits/stdc++.h>
 #include <ext/pb_ds/tree_policy.hpp>
 #include <ext/pb_ds/trie_policy.hpp>
 #include <ext/pb_ds/assoc_container.hpp>
@@ -67,27 +67,36 @@ const double pi = acos(-1.0);
 #define cntSetBitsll(x) __builtin_popcountll(x)
 
 int main(void){
-  int n, i = 0, tc = 1, ans = 0, prev = 0;
+  constexpr short SIZE = 150;
+  int tc, n;
+  vector<vector<ll>> matrix( SIZE, vector<ll>( SIZE, 0 ) ), dp( SIZE, vector<ll>( SIZE, 0 ) );
   fastio;
-  vector<int> heights( 1000000, 0 ), values( 1000000, 0 ), dp( 1000000, 0 ), values_id( 1000000, 0 );
-  while( cin >> n ){
-    if( prev == -1 and n == -1 ) break;
-    if( n == -1 ){
-      /* L(M)IS (Longest Monotonic Increasing Subsequence) */
-      int lisB = 0, lisE = 0;
-      FOR( j, 0, i ){
-	int pos = upper_bound( justN( values, lisB ), heights[j] ) - values.begin();
-	values[pos] = heights[j];
-	values_id[pos] = j; // you can get back the sequence with this
-	dp[j] = pos ? values_id[pos - 1] : -1; // and this
-	if( pos + 1 >= lisB ) lisB = pos + 1, lisE = j; // and lisE and a stack
+  cin >> tc;
+  while( tc -- ){
+    cin >> n;
+    REP( i, n ){
+      REP( j, n ){
+	cin >> matrix[i][j];
+	dp[i][j] = dp[i + n][j] = dp[i][j + n] = dp[i + n][j + n] = matrix[i][j + n] = matrix[i + n][j] = matrix[i + n][j + n] = matrix[i][j];
       }
-      ans = lisB;
-      if( ans > 0 ) cout << "Test #" << tc ++ << ":\n  maximum possible interceptions: " << ans << '\n';
-      i = 0;
-      prev = n;
     }
-    else heights[i++] = -n, cout << (prev == -1 ? "\n" : ""), prev = n;
+    REP( i, 2 * n ){
+      REP( j, 2 * n ){
+	dp[i][j] += ( i ? dp[i - 1][j] : 0 ) + ( j ? dp[i][j - 1] : 0 ) - ( i and j ? dp[i - 1][j - 1] : 0 );
+      }
+    }
+    ll sum = -INF, sub = -INF;
+    REP( i, n ){
+      REP( j, n ){
+	for( int k = i; k < n + i and k < 2 * n; ++ k ){
+	  for( int l = j; l < n + j and l < 2 * n; ++ l ){
+	    sub = dp[k][l] - ( i ? dp[i - 1][l] : 0 ) - ( j ? dp[k][j - 1] : 0 ) + ( i and j ? dp[i - 1][j - 1] : 0 );
+	    sum = max( sub, sum );
+	  }
+	}
+      }
+    }
+    cout << sum << '\n';
   }
   return 0;
 }

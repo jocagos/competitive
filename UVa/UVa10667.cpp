@@ -1,4 +1,4 @@
- #include <bits/stdc++.h>
+#include <bits/stdc++.h>
 #include <ext/pb_ds/tree_policy.hpp>
 #include <ext/pb_ds/trie_policy.hpp>
 #include <ext/pb_ds/assoc_container.hpp>
@@ -66,28 +66,46 @@ const double pi = acos(-1.0);
 #define cntSetBitsl(x) __builtin_popcountl(x)
 #define cntSetBitsll(x) __builtin_popcountll(x)
 
-int main(void){
-  int n, i = 0, tc = 1, ans = 0, prev = 0;
+int main( void ){
+  int tc, b, n, rl, cl, rr, cr;
+  constexpr int MAXN = 100;
+  constexpr int MINF = -MAXN * MAXN;
+  string s;
+  vector<vector<ll>> matrix( MAXN, vector<ll>( MAXN, 1 ) );
   fastio;
-  vector<int> heights( 1000000, 0 ), values( 1000000, 0 ), dp( 1000000, 0 ), values_id( 1000000, 0 );
-  while( cin >> n ){
-    if( prev == -1 and n == -1 ) break;
-    if( n == -1 ){
-      /* L(M)IS (Longest Monotonic Increasing Subsequence) */
-      int lisB = 0, lisE = 0;
-      FOR( j, 0, i ){
-	int pos = upper_bound( justN( values, lisB ), heights[j] ) - values.begin();
-	values[pos] = heights[j];
-	values_id[pos] = j; // you can get back the sequence with this
-	dp[j] = pos ? values_id[pos - 1] : -1; // and this
-	if( pos + 1 >= lisB ) lisB = pos + 1, lisE = j; // and lisE and a stack
+  cin >> tc;
+  while( tc -- ){
+    cin >> b >> n;
+    for( auto& vec : matrix ) fill( all( vec ), 1 );
+    while( n -- ){
+      cin >> rl >> cl >> rr >> cr;
+      FOR( i, rl - 1, rr ){
+	FOR( j, cl - 1, cr ){
+	  matrix[i][j] = MINF;
+	}
       }
-      ans = lisB;
-      if( ans > 0 ) cout << "Test #" << tc ++ << ":\n  maximum possible interceptions: " << ans << '\n';
-      i = 0;
-      prev = n;
     }
-    else heights[i++] = -n, cout << (prev == -1 ? "\n" : ""), prev = n;
+    REP( i, b ){
+      REP( j, b ){
+	matrix[i][j] += ( i ? matrix[i - 1][j] : 0 ) + ( j ? matrix[i][j - 1] : 0 ) - ( i and j ? matrix[i - 1][j - 1] : 0 );
+      }
+    }
+    // might be able to use kadane to make it faster (from O(n^4) to O(n^3))
+    int maxArea = MINF;
+    REP( i, b ){
+      REP( j, b ){
+	FOR( k, i, b ){
+	  FOR( m, j, b ){
+	    int sub = matrix[k][m];
+	    if( i ) sub -= matrix[i - 1][m];
+	    if( j ) sub -= matrix[k][j - 1];
+	    if( i and j ) sub += matrix[i - 1][j - 1];
+	    maxArea = max( maxArea, sub );
+	  }
+	}
+      }
+    }
+    cout << ( maxArea == MINF ? 0 : maxArea ) << '\n';
   }
   return 0;
 }

@@ -1,4 +1,4 @@
- #include <bits/stdc++.h>
+#include <bits/stdc++.h>
 #include <ext/pb_ds/tree_policy.hpp>
 #include <ext/pb_ds/trie_policy.hpp>
 #include <ext/pb_ds/assoc_container.hpp>
@@ -66,28 +66,39 @@ const double pi = acos(-1.0);
 #define cntSetBitsl(x) __builtin_popcountl(x)
 #define cntSetBitsll(x) __builtin_popcountll(x)
 
-int main(void){
-  int n, i = 0, tc = 1, ans = 0, prev = 0;
-  fastio;
-  vector<int> heights( 1000000, 0 ), values( 1000000, 0 ), dp( 1000000, 0 ), values_id( 1000000, 0 );
-  while( cin >> n ){
-    if( prev == -1 and n == -1 ) break;
-    if( n == -1 ){
-      /* L(M)IS (Longest Monotonic Increasing Subsequence) */
-      int lisB = 0, lisE = 0;
-      FOR( j, 0, i ){
-	int pos = upper_bound( justN( values, lisB ), heights[j] ) - values.begin();
-	values[pos] = heights[j];
-	values_id[pos] = j; // you can get back the sequence with this
-	dp[j] = pos ? values_id[pos - 1] : -1; // and this
-	if( pos + 1 >= lisB ) lisB = pos + 1, lisE = j; // and lisE and a stack
-      }
-      ans = lisB;
-      if( ans > 0 ) cout << "Test #" << tc ++ << ":\n  maximum possible interceptions: " << ans << '\n';
-      i = 0;
-      prev = n;
+vector<tern> boxes( 100, { {0, 0}, 0 } );
+vector<ll> dp( 100, -1 );
+int best;
+
+int lis( int idx, int n ){
+  int m = 0;
+
+  if( dp[idx] != - 1 ) return dp[idx];
+  REP( v, n ){
+    if( ( boxes[idx].fi.fi > boxes[v].fi.fi and boxes[idx].fi.se > boxes[v].fi.se ) or ( boxes[idx].fi.fi > boxes[v].fi.se and boxes[idx].fi.se > boxes[v].fi.fi ) ){
+      int t = lis( v, n );
+      if( t > m ) m = t;
     }
-    else heights[i++] = -n, cout << (prev == -1 ? "\n" : ""), prev = n;
+  }
+  return dp[idx] = m + boxes[idx].se;
+}
+
+int main(void){
+  int n, tc = 1;
+  fastio;
+  while( cin >> n, n ){
+    best = 0;
+    fill( all( dp ), -1 );
+    REP( i, n ){
+      cin >> boxes[3 * i].fi.fi >> boxes[3 * i].fi.se >> boxes[3 * i].se; // (x, y, z)
+      boxes[3 * i + 1] = { { boxes[3 * i].fi.fi, boxes[3 * i].se }, boxes[3 * i].fi.se }; // (x, z, y)
+      boxes[3 * i + 2] = { { boxes[3 * i].fi.se, boxes[3 * i].se }, boxes[3 * i].fi.fi }; // (y, z, x)
+    }
+    REP( i, n * 3 ){
+      int v = lis( i, n * 3 );
+      if( v > best ) best = v;
+    }
+    cout << "Case " << tc ++ << ": maximum height = " << best << '\n';
   }
   return 0;
 }

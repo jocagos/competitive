@@ -1,4 +1,4 @@
- #include <bits/stdc++.h>
+#include <bits/stdc++.h>
 #include <ext/pb_ds/tree_policy.hpp>
 #include <ext/pb_ds/trie_policy.hpp>
 #include <ext/pb_ds/assoc_container.hpp>
@@ -66,28 +66,39 @@ const double pi = acos(-1.0);
 #define cntSetBitsl(x) __builtin_popcountl(x)
 #define cntSetBitsll(x) __builtin_popcountll(x)
 
+// Pure LIS problem, O(n lg n) with reconstruction using stack
+
 int main(void){
-  int n, i = 0, tc = 1, ans = 0, prev = 0;
+  int n = 0;
   fastio;
-  vector<int> heights( 1000000, 0 ), values( 1000000, 0 ), dp( 1000000, 0 ), values_id( 1000000, 0 );
-  while( cin >> n ){
-    if( prev == -1 and n == -1 ) break;
-    if( n == -1 ){
-      /* L(M)IS (Longest Monotonic Increasing Subsequence) */
-      int lisB = 0, lisE = 0;
-      FOR( j, 0, i ){
-	int pos = upper_bound( justN( values, lisB ), heights[j] ) - values.begin();
-	values[pos] = heights[j];
-	values_id[pos] = j; // you can get back the sequence with this
-	dp[j] = pos ? values_id[pos - 1] : -1; // and this
-	if( pos + 1 >= lisB ) lisB = pos + 1, lisE = j; // and lisE and a stack
-      }
-      ans = lisB;
-      if( ans > 0 ) cout << "Test #" << tc ++ << ":\n  maximum possible interceptions: " << ans << '\n';
-      i = 0;
-      prev = n;
+  vector<ll> a( 1000001, 0 ), Lid, L, P; // If you need to repeat the process, procure to initialize L, Lid, and P, with n + 1 elements and using only the k needed (justN( container_name, k ).
+  while( cin >> a[n++] ); // while we keep getting input, save it
+  -- n; // and make a little check to the number of elements
+  // LIS
+  int lisB = 0, lisE = 0;
+  FOR( i, 0, n ){
+    int pos = lower_bound( all( L ), a[i] ) - L.begin();
+    if( pos == L.size() ){
+      L.EB( a[i] );
+      Lid.EB( i );
     }
-    else heights[i++] = -n, cout << (prev == -1 ? "\n" : ""), prev = n;
+    else{
+      L[pos] = a[i];
+      Lid[pos] = i;
+    }
+    P.EB( pos ? Lid[ pos - 1 ] : -1 );
+    if( pos + 1 >= lisB ) lisB = pos + 1, lisE = i;
   }
+  cout << lisB << "\n-\n";
+  int x = lisE;
+  stack<ll> s;
+  do{
+    s.push( a[x] );
+    x = P[x];
+  } while( P[x] >= 0 );
+  s.push( a[x] );
+  //   for( ; P[ x ] >= 0; x = P[ x ] ) s.push( a[x] );
+  //  s.push( a[x] );
+  while( !s.empty() ) cout << s.top() << '\n', s.pop();
   return 0;
 }
