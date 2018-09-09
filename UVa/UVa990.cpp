@@ -66,45 +66,34 @@ const double pi = acos(-1.0);
 #define cntSetBitsl(x) __builtin_popcountl(x)
 #define cntSetBitsll(x) __builtin_popcountll(x)
 
-// This version should be faster as we access directly the vectors
-template <typename RAI, typename Compare>
-ll LIDS( RAI beginning, RAI ending, Compare comp ){
-  auto s = distance( beginning, ending );
-  vector<ll> L( s );
-  auto source = beginning;
-  ll lisCount = 0, length = 0;
-  REP( i, s ){
-    size_t pos = lower_bound( L.begin(), L.begin() + lisCount, source[i], comp ) - L.begin(); // can't go negative
-    L[pos] = source[i];
-    length = pos + 1;
-    if( pos == lisCount ) lisCount ++;
-  }
-  return length;
-}
+int n, t, w, weights[32], values[32], ts[32], dp[1010];
 
 int main(void){
-  int tc, n;
-  vector<ll> a( 2001, 0 );
   fastio;
-  cin >> tc;
-  while( tc -- ){ // let tc = k
-    cin >> n;
-    FOR( i, 0, n ) cin >> a[i];
-    // LIS
-    ll longestTrain = 0;
-    // You need not to store them so you can just do this
-    // Complexity:
-    FOR( i, 0, n ){ // O(n) times
-      ll lis = LIDS( reverse_iterator<vector<ll>::iterator>( a.begin() + n ),
-		     reverse_iterator<vector<ll>::iterator>( a.begin() + i ),
-		     less<ll>() ); // O(n lgn)
-      ll lds = LIDS( reverse_iterator<vector<ll>::iterator>( a.begin() + n ),
-		     reverse_iterator<vector<ll>::iterator>( a.begin() + i ),
-		     greater<ll>() ); // O(n lgn)
-      longestTrain = max( longestTrain, lis + lds - 1 ); // O(1)
+  bool f = false;
+  while( cin >> t ){
+    cin >> w >> n;
+    FOR( i, 0, n ){
+      cin >> weights[i] >> values[i];
+      ts[i] = weights[i] * w * 3;
     }
-    // Thus, O(k) times O(n) times O(n lgn) + O(1) => O(k * n^2 * lgn)
-    cout << longestTrain << '\n';
+    int rec[32][1010] = {0}, count[1010] = { 0 };
+    memset( dp, 0, sizeof dp );
+    memset( count, 0, sizeof count );
+    FORD( i, n - 1, 0 ){
+      FORD( j, t, ts[i] ){
+	if( dp[j - ts[i] ] + values[i] > dp[j] ){
+	  dp[j] = dp[j - ts[i] ] + values[i];
+	  count[j] = count[j - ts[i] ] + 1;
+	  rec[i][j] = 1;
+	}
+      }
+    }
+    if( f ) cout << '\n';
+    f = true;
+    cout << dp[t] << '\n' << count[t] << '\n';
+    for( int i = 0, j = t; i < n; ++ i )
+      if( rec[i][j] ) cout << weights[i] << " " << values[i] << '\n', j -= ts[i];
   }
   return 0;
 }

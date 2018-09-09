@@ -1,0 +1,35 @@
+D.cpp: In function ‘int sssp(int, int)’:
+D.cpp:18:82: error: template argument 2 is invalid
+   priority_queue<pair<int, int>, vector<pair<int, int>, greater<pair<int, int>>> pq;
+                                                                                  ^
+D.cpp:18:82: error: template argument 3 is invalid
+D.cpp:20:27: warning: suggest parentheses around assignment used as truth value [-Wparentheses]
+     if( x.second = target ) return x.first + cost;
+                           ^
+D.cpp:21:10: error: ‘pq’ was not declared in this scope
+     else pq.push( x );
+          ^
+D.cpp:23:11: error: ‘pq’ was not declared in this scope
+   while( !pq.empty() ){
+           ^
+D.cpp:31:29: warning: suggest parentheses around assignment used as truth value [-Wparentheses]
+       if( x.second = target ) return x.first + cost;
+                             ^
+D.cpp: In function ‘int main()’:
+D.cpp:47:41: error: no matching function for call to ‘std::vector<std::pair<int, int> >::emplace(int&, int&)’
+       AdjList[from].emplace( weight, to );
+                                         ^
+In file included from /usr/include/c++/5/vector:64:0,
+                 from /usr/include/c++/5/bits/random.h:34,
+                 from /usr/include/c++/5/random:49,
+                 from /usr/include/c++/5/bits/stl_algo.h:66,
+                 from /usr/include/c++/5/algorithm:62,
+                 from /usr/include/x86_64-linux-gnu/c++/5/bits/stdc++.h:64,
+                 from D.cpp:1:
+/usr/include/c++/5/bits/stl_vector.h:970:9: note: candidate: template<class ... _Args> std::vector<_Tp, _Alloc>::iterator std::vector<_Tp, _Alloc>::emplace(std::vector<_Tp, _Alloc>::const_iterator, _Args&& ...) [with _Args = {_Args ...}; _Tp = std::pair<int, int>; _Alloc = std::allocator<std::pair<int, int> >]
+         emplace(const_iterator __position, _Args&&... __args);
+         ^
+/usr/include/c++/5/bits/stl_vector.h:970:9: note:   template argument deduction/substitution failed:
+D.cpp:47:41: note:   cannot convert ‘weight’ (type ‘int’) to type ‘std::vector<std::pair<int, int> >::const_iterator {aka __gnu_cxx::__normal_iterator<const std::pair<int, int>*, std::vector<std::pair<int, int> > >}’
+       AdjList[from].emplace( weight, to );
+                                         ^

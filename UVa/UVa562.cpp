@@ -66,45 +66,31 @@ const double pi = acos(-1.0);
 #define cntSetBitsl(x) __builtin_popcountl(x)
 #define cntSetBitsll(x) __builtin_popcountll(x)
 
-// This version should be faster as we access directly the vectors
-template <typename RAI, typename Compare>
-ll LIDS( RAI beginning, RAI ending, Compare comp ){
-  auto s = distance( beginning, ending );
-  vector<ll> L( s );
-  auto source = beginning;
-  ll lisCount = 0, length = 0;
-  REP( i, s ){
-    size_t pos = lower_bound( L.begin(), L.begin() + lisCount, source[i], comp ) - L.begin(); // can't go negative
-    L[pos] = source[i];
-    length = pos + 1;
-    if( pos == lisCount ) lisCount ++;
+int n, tc, dp[25001];
+vi v( 101, 0 );
+
+
+int knapsack( int id, int w ){
+  memset( dp, 0, sizeof dp );
+  for( int i = 0; i <= n; ++ i ){
+    for( int j = w; j > 0; -- j ){
+      if( v[i] <= j ) dp[j] = max( dp[j], v[i] + dp[j - v[i]] );
+    }
   }
-  return length;
+  return dp[w];
 }
 
-int main(void){
-  int tc, n;
-  vector<ll> a( 2001, 0 );
+int main(void){  
   fastio;
   cin >> tc;
-  while( tc -- ){ // let tc = k
+  while( tc -- ){
+    ll sum(0);
     cin >> n;
-    FOR( i, 0, n ) cin >> a[i];
-    // LIS
-    ll longestTrain = 0;
-    // You need not to store them so you can just do this
-    // Complexity:
-    FOR( i, 0, n ){ // O(n) times
-      ll lis = LIDS( reverse_iterator<vector<ll>::iterator>( a.begin() + n ),
-		     reverse_iterator<vector<ll>::iterator>( a.begin() + i ),
-		     less<ll>() ); // O(n lgn)
-      ll lds = LIDS( reverse_iterator<vector<ll>::iterator>( a.begin() + n ),
-		     reverse_iterator<vector<ll>::iterator>( a.begin() + i ),
-		     greater<ll>() ); // O(n lgn)
-      longestTrain = max( longestTrain, lis + lds - 1 ); // O(1)
+    for( int i = 1; i <= n; ++ i ){
+      cin >> v[i];
+      sum += v[i];
     }
-    // Thus, O(k) times O(n) times O(n lgn) + O(1) => O(k * n^2 * lgn)
-    cout << longestTrain << '\n';
+    cout << sum - 2 * knapsack( n, sum / 2 ) << '\n';
   }
   return 0;
 }
