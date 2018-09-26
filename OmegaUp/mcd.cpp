@@ -8,7 +8,6 @@ using namespace std;
 using namespace __gnu_pbds;
 
 typedef long long ll;
-typedef unsigned long long i64;
 typedef long double ld;
 typedef pair<int, int> ii;
 typedef pair<double, double> dd;
@@ -67,10 +66,74 @@ const double pi = acos(-1.0);
 #define cntSetBitsl(x) __builtin_popcountl(x)
 #define cntSetBitsll(x) __builtin_popcountll(x)
 
-int main(void){
+int minMoves( const vector<int>& a, int n ){
+  int ones = 0;
+  REP( i, n ) ones += (a[i] == 1);
+  if( ones > 0 ) return n - ones;
+  int mi = INF;
+  REP( i, n ){
+    int d = a[i];
+    FOR( j, i + 1, n ){
+      d = gcd( d, a[j] );
+      if( d == 1 ){
+	mi = min( mi, j - i );
+	break;
+      }
+    }
+  }
+  if( mi == INF ) return -1;
+  else return n + mi - 1;
+}
+
+int main( void ){
   int n;
   fastio;
   cin >> n;
-
+  vector<int> a( n );
+  REP( i, n ) cin >> a[i];
+  int ans = minMoves( a, n );
+  cout << ans << '\n';
   return 0;
 }
+
+// int main(void){
+//   int n;
+//   fastio;
+//   cin >> n;
+//   vector<int> a( n );
+//   vector<int> b( n );
+//   long steps = 0;
+//   bool ones = true, zero = false;
+//   REP( i, n ){
+//     if( zero == true ) cin >> a[i];
+//     else cin >> a[i], zero = (a[i] == 0);
+//     if( a[i] != 1 ) ones = false;
+//   }
+//   if( zero ){
+//     cout << -1 << '\n';
+//     return 0;
+//   }
+//   bool s = true;
+//   if( !ones ){
+//     long o = 0;
+//     while( !ones ){
+//       o = 0;
+//       if( s ){
+// 	REP( i, n ) b[i] = gcd( a[i], a[(i+1) % n] );
+// 	REP( i, n ) if( b[i] == 1 ) ++ o;
+// 	if( o == n ) ones = true;
+// 	s = !s;
+//       }
+//       else{
+// 	REP( i, n ) a[i] = gcd( b[i], b[(i+1) % n] );
+// 	REP( i, n ) if( a[i] == 1 ) ++ o;
+// 	if( o == n ) ones = true;
+// 	s = !s;
+//       }
+//       ++ steps;
+//     }
+//     cout << steps << '\n';
+//   }
+//   else cout << 0 << '\n';
+//   return 0;
+// }

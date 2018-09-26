@@ -8,7 +8,6 @@ using namespace std;
 using namespace __gnu_pbds;
 
 typedef long long ll;
-typedef unsigned long long i64;
 typedef long double ld;
 typedef pair<int, int> ii;
 typedef pair<double, double> dd;
@@ -67,10 +66,33 @@ const double pi = acos(-1.0);
 #define cntSetBitsl(x) __builtin_popcountl(x)
 #define cntSetBitsll(x) __builtin_popcountll(x)
 
-int main(void){
-  int n;
-  fastio;
-  cin >> n;
+#define MAXN 1001
 
+void reconstruct( int end, vector<pair<long, long>>& a, vector<long>& p ){
+  int x = end;
+  stack<long> st;
+  for( ; p[x] >= 0; x = p[x] ) st.push( x );
+  cout << p[x] << '\n';
+  while( !st.empty() ) cout << st.top() << '\n', st.pop();
+}
+
+int main(void){
+  int idx = 0;
+  vector<pair<long, long>> a( 1001, {0, 0} ), L( 1001, {0, 0} );
+  vector<long> L_id( 1001, 0 ), P( 1001, 0 );
+  fastio;
+  while( cin >> a[idx].fi ) cin >> a[idx++].se;
+    // auto lambda = []( pair<long, long> left, pair<long, long> right ){ return (left.fi != right.fi ? left.fi < right.fi : left.se > right.se ); };
+    // sort( all( a ), lambda );
+  int lis = 0, lisEnd = 0;
+  for( int i = 0; i < idx; ++ i ){
+    int pos = lower_bound( justN( L, lis ), a[i] ) - L.begin();
+    L[pos] = a[i];
+    L_id[pos] = i;
+    P[i] = pos ? L_id[pos - 1] : -1;
+    if( pos + 1 > lis ) lis = pos + 1, lisEnd = i;
+  }
+  cout << lis << '\n';
+  reconstruct( lisEnd, a, P );
   return 0;
 }

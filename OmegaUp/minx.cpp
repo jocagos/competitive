@@ -8,7 +8,6 @@ using namespace std;
 using namespace __gnu_pbds;
 
 typedef long long ll;
-typedef unsigned long long i64;
 typedef long double ld;
 typedef pair<int, int> ii;
 typedef pair<double, double> dd;
@@ -68,9 +67,8 @@ const double pi = acos(-1.0);
 #define cntSetBitsll(x) __builtin_popcountll(x)
 
 int main(void){
-  int n;
-  fastio;
-  cin >> n;
+    int n;
+    cin >> n;
 
-  return 0;
+    return 0;
 }

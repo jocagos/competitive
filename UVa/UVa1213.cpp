@@ -31,9 +31,9 @@ template <class T, class U> using oMap = tree<T, U, less<T>, rb_tree_tag, tree_o
 // patricia trie, policy based data structure
 typedef trie<string, null_type, trie_string_access_traits<>, pat_trie_tag, trie_prefix_search_node_update> Trie;
 // constants
-const int INF = (int) 1e9 + 7;
-const ll LLINF = (ll) 4e18 + 7;
-const double pi = acos(-1.0);
+constexpr int INF = (int) 1e9 + 7;
+constexpr ll LLINF = (ll) 4e18 + 7;
+constexpr double pi = acos(-1.0);
 // easy access/use
 #define fastio ios::sync_with_stdio(0); cin.tie(0); cout.tie(0)
 #define view(x) cout << #x << ": " << x << endl;
@@ -65,10 +65,60 @@ const double pi = acos(-1.0);
 #define cntSetBits(x) __builtin_popcount(x)
 #define cntSetBitsl(x) __builtin_popcountl(x)
 #define cntSetBitsll(x) __builtin_popcountll(x)
+#define MAXN 1120
+
+/* Fast sieve for primes (atkin > erathostenes) */
+
+bitset<MAXN+1> sieve; // Initialized with zeroes
+vector<int> primes;
+
+void atkin(){
+  if( MAXN > 2 ) primes.EB( 2 );
+  if( MAXN > 3 ) primes.EB( 3 );
+
+  for( int x = 1; x * x < MAXN; ++ x ){
+    for( int y = 1; y * y < MAXN; ++ y ){
+      int n = 4 * x * x + y * y;
+      if( n <= MAXN and ( n % 12 == 1 or n % 12 == 5 ) ) sieve[n] = sieve[n] ^ 1;
+      n = 3 * x * x + y * y;
+      if( n <= MAXN and n % 12 == 7 ) sieve[n] = sieve[n] ^ 1;
+      n -= 2 * y * y;
+      if( x > y and n <= MAXN and n % 12 == 11 ) sieve[n] = sieve[n] ^ 1;
+    }
+  }
+  for( int r = 5; r * r < MAXN; ++ r )
+    if( sieve[r] ) for( int i = r * r; i < MAXN; i += r * r ) sieve.reset(i);
+  for( int a = 5; a < MAXN; ++ a ) if( sieve[a] ) primes.EB( a );
+}
+
+long long dp[190][1130][16];
+long n, k;
+
+
+long long value( int id, int remN, int remK ){
+  if( remN == 0 ){
+    if( remK == k ) return 1;
+    else return 0;
+  }
+  if( remK == k ) return 0; // We already tested remN!
+  if( id == primes.size() ) return 0; // No more to test for
+  if( remN - primes[id] < 0 or remN < 0 ) return 0;
+  if( dp[id][remN][remK] != -1 ) return dp[id][remN][remK];
+  return dp[id][remN][remK] = value( id + 1, remN, remK ) + value( id + 1, remN - primes[id], remK + 1 );
+}
+
+
+void init(){
+  REP( i, 190 ) REP( j, 1130 ) REP( k, 16 ) dp[i][j][k] = -1;
+}
 
 int main(void){
-    int n;
-    cin >> n;
-
-    return 0;
+  fastio;
+  init();
+  atkin();
+  while( cin >> n >> k, n | k ){
+    cout << value( 0, n, 0 ) << '\n';
+    memset( dp, -1, sizeof dp );
+  }
+  return 0;
 }

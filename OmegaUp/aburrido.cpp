@@ -8,7 +8,6 @@ using namespace std;
 using namespace __gnu_pbds;
 
 typedef long long ll;
-typedef unsigned long long i64;
 typedef long double ld;
 typedef pair<int, int> ii;
 typedef pair<double, double> dd;
@@ -71,6 +70,10 @@ int main(void){
   int n;
   fastio;
   cin >> n;
-
+  vector<ll> a( n + 1 );
+  a[0] = 0, a[1] = 3;
+  ll add = 3;
+  FOR( i, 2, n + 1 ) a[i] = a[i - 1] + add, add += 2;
+  cout << a[n] << '\n';
   return 0;
 }

@@ -8,7 +8,6 @@ using namespace std;
 using namespace __gnu_pbds;
 
 typedef long long ll;
-typedef unsigned long long i64;
 typedef long double ld;
 typedef pair<int, int> ii;
 typedef pair<double, double> dd;
@@ -67,10 +66,33 @@ const double pi = acos(-1.0);
 #define cntSetBitsl(x) __builtin_popcountl(x)
 #define cntSetBitsll(x) __builtin_popcountll(x)
 
-int main(void){
-  int n;
-  fastio;
-  cin >> n;
+int t, n, g;
+vector<long> prices( 1001 ), weights( 1001 );
+long long dp[1010][40];
 
+long long knapsack( int id, int w ){
+  if( id == n or w == 0 ) return 0;
+  if( dp[id][w] != -1 ) return dp[id][w];
+  if( weights[id] > w ) return dp[id][w] = knapsack( id + 1, w );
+  return dp[id][w] = max( knapsack( id + 1, w ), prices[id] + knapsack( id + 1, w - weights[id] ) );
+}
+
+int main(void){
+  fastio;
+  cin >> t;
+  while( t -- ){
+    // Clean memo table
+    memset( dp, -1, sizeof dp );
+    // Read data
+    cin >> n;
+    REP( i, n ) cin >> prices[i] >> weights[i];
+    cin >> g;
+    long long ans = 0, mw = 0;
+    REP( i, g ){
+      cin >> mw;
+      ans += knapsack( 0, mw );
+    }
+    cout << ans << '\n';
+  }
   return 0;
 }

@@ -32,9 +32,9 @@ template <class T, class U> using oMap = tree<T, U, less<T>, rb_tree_tag, tree_o
 // patricia trie, policy based data structure
 typedef trie<string, null_type, trie_string_access_traits<>, pat_trie_tag, trie_prefix_search_node_update> Trie;
 // constants
-const int INF = (int) 1e9 + 7;
-const ll LLINF = (ll) 4e18 + 7;
-const double pi = acos(-1.0);
+constexpr int INF = (int) 1e9 + 7;
+constexpr ll LLINF = (ll) 4e18 + 7;
+constexpr double pi = acos(-1.0);
 // easy access/use
 #define fastio ios::sync_with_stdio(0); cin.tie(0); cout.tie(0)
 #define view(x) cout << #x << ": " << x << endl;
@@ -68,9 +68,22 @@ const double pi = acos(-1.0);
 #define cntSetBitsll(x) __builtin_popcountll(x)
 
 int main(void){
-  int n;
+  int n, m, k;
+  
   fastio;
-  cin >> n;
-
+  cin >> n >> m >> k;
+  vector<bool> bakeries( n );
+  vector<tern> edgeList( m );
+  REP( i, m ) cin >> edgeList[i].fi.fi >> edgeList[i].fi.se >> edgeList[i].se;
+  REP( i, k ){
+    int u;
+    cin >> u;
+    bakeries[u] = true;
+  }
+  ll MAX = LLINF;
+  for( int i = 0; i < m; ++ i )
+    if( (bakeries[edgeList[i].fi.fi] and !bakeries[edgeList[i].fi.se]) or (!bakeries[edgeList[i].fi.fi] and bakeries[edgeList[i].fi.se]) )
+      MAX = min( MAX, (ll) edgeList[i].se );
+  cout << ( MAX == LLINF ? -1 : MAX ) << '\n';
   return 0;
 }

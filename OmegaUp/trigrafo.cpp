@@ -8,7 +8,6 @@ using namespace std;
 using namespace __gnu_pbds;
 
 typedef long long ll;
-typedef unsigned long long i64;
 typedef long double ld;
 typedef pair<int, int> ii;
 typedef pair<double, double> dd;
@@ -71,6 +70,8 @@ int main(void){
   int n;
   fastio;
   cin >> n;
-
+  vector<vector<long>> trigraph( n, vector<long>( 3, 0 ) );
+  REP( i, n ) cin >> trigraph[i][0] >> trigraph[i][1] >> trigraph[i][2];
+  
   return 0;
 }

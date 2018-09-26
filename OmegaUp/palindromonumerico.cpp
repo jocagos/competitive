@@ -8,7 +8,6 @@ using namespace std;
 using namespace __gnu_pbds;
 
 typedef long long ll;
-typedef unsigned long long i64;
 typedef long double ld;
 typedef pair<int, int> ii;
 typedef pair<double, double> dd;
@@ -71,6 +70,20 @@ int main(void){
   int n;
   fastio;
   cin >> n;
-
+  vector<int> a( n );
+  REP( i, n ) cin >> a[i];
+  bool pal = true;
+  if( a[0] == 0 or a[n-1] == 0 ){
+    pal = false;
+    goto Skip;
+  }
+  REP( i, n / 2 ){
+    if( a[i] != a[n - 1 - i] ){
+      pal = false;
+      goto Skip;
+    }
+  }
+  Skip:
+  cout << ( pal ? "SI\n" : "NO\n" );
   return 0;
 }

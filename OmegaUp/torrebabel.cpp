@@ -8,7 +8,6 @@ using namespace std;
 using namespace __gnu_pbds;
 
 typedef long long ll;
-typedef unsigned long long i64;
 typedef long double ld;
 typedef pair<int, int> ii;
 typedef pair<double, double> dd;
@@ -67,10 +66,39 @@ const double pi = acos(-1.0);
 #define cntSetBitsl(x) __builtin_popcountl(x)
 #define cntSetBitsll(x) __builtin_popcountll(x)
 
-int main(void){
-  int n;
-  fastio;
-  cin >> n;
+vector<ii> legos( 2010, { 0, 0 } );
+vector<ll> dp( 1000, -1 );
+int ans = 0;
 
+int lis( int idx, int n ){
+  int m = 0;
+
+  if( dp[idx] != -1 ) return dp[idx];
+  REP( v, n ){
+    if( ( legos[idx].fi > legos[v].fi and legos[idx].se > legos[v].se ) or (legos[idx].se > legos[v].fi and legos[idx].fi > legos[v].se ) ){
+      int t = lis( v, n );
+      if( t > m ) m = t;
+    }
+  }
+  return dp[idx] = m + 1;
+}
+
+int main(void){
+  int tc, n;
+  fastio;
+  cin >> tc;
+  REP( _i, tc ){
+    ans = 0;
+    cin >> n;
+    REP( i, n ){
+      cin >> legos[2 * i].fi >> legos[2 * i].se; // ( x, y )
+      legos[2 * i + 1] = { legos[2 * i].se, legos[2 * i].fi }; // ( y, x )
+    }
+    REP( i, n * 2 ){
+      int v = lis( i, n * 2 );
+      if( v > ans ) ans = v;
+    }
+    cout << "Caso " << _i + 1 << ": " << setfill('0') << setw(4) << ans << '\n';
+  }
   return 0;
 }

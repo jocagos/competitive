@@ -5,7 +5,7 @@ using namespace std;
 bool sieve[MAXN]; // Check list
 vector<int> primes;
 
-int atkin(){
+void atkin(){
   if (MAXN > 2)
     primes.push_back(2);
   if (MAXN > 3)

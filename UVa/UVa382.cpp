@@ -8,7 +8,6 @@ using namespace std;
 using namespace __gnu_pbds;
 
 typedef long long ll;
-typedef unsigned long long i64;
 typedef long double ld;
 typedef pair<int, int> ii;
 typedef pair<double, double> dd;
@@ -68,9 +67,19 @@ const double pi = acos(-1.0);
 #define cntSetBitsll(x) __builtin_popcountll(x)
 
 int main(void){
-  int n;
+  int n, m;
   fastio;
-  cin >> n;
-
+  cout << "PERFECTION OUTPUT\n";
+  while( cin >> m, m ){
+    int s = 0;
+    if( m == 1 ) goto skip;
+    for( int i = 1; i <= sqrt( m ); ++ i )
+      if( m % i == 0 ) s += i, s += ( i == 1 ? 0 : ( i == sqrt( m ) ? 0 : m / i ) );
+  skip:
+    string _s = ( s == m ? "PERFECT\n" : ( s < m ? "DEFICIENT\n" : "ABUNDANT\n" ) );
+    cout << setw(5) << right << m;
+    cout << "  " << _s;
+  }
+  cout << "END OF OUTPUT\n";
   return 0;
 }
