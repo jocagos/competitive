@@ -8,6 +8,7 @@ using namespace std;
 using namespace __gnu_pbds;
 
 typedef long long ll;
+typedef unsigned long long i64;
 typedef long double ld;
 typedef pair<int, int> ii;
 typedef pair<double, double> dd;
@@ -67,22 +68,21 @@ const double pi = acos(-1.0);
 #define cntSetBitsll(x) __builtin_popcountll(x)
 
 int main(void){
-  int n, t, tmp;
+  int n, t;
   fastio;
   cin >> n >> t;
-  vector<bool> v( n + 1 );
-  v[0] = true; v[n] = false;
-  vector<vector<int>> adjList( n + 1 );
-  FOR( i, 1, n ){
-    cin >> tmp;
-    adjList[i].EB( i + tmp );
-  }
-  FOR( i, 1, n + 1 ){
-    if( i == t ) continue;
-    int p = i;
-    while( !v[p] ){
-      
+  vector<int> a( n + 1, 0 );
+  vector<bool> va( n + 1, false );
+  FOR( i, 1, n ) cin >> a[i];
+  int p = 1;
+  while( !va[p] ){
+    if( p == t ){
+      va[0] = true;
+      break;
     }
+    va[p] = true;
+    p += a[p];
   }
+  cout << ( va[0] ? "YES\n" : "NO\n" );
   return 0;
 }
