@@ -40,7 +40,6 @@ const double pi = acos(-1.0);
 #define view(x) cout << #x << ": " << x << endl;
 #define sz(c) (int)((c).size())
 #define all(c) (c).begin(), (c).end()
-#define in( a, b, x ) ( (a) <= (x) and (x) <= (b) )
 #define justN(c, n) (c).begin(), (c).begin() + n
 #define sq(a) (a) * (a)
 #define fi first
@@ -68,10 +67,52 @@ const double pi = acos(-1.0);
 #define cntSetBitsl(x) __builtin_popcountl(x)
 #define cntSetBitsll(x) __builtin_popcountll(x)
 
-int main(void){
-  int n;
-  fastio;
-  cin >> n;
+unordered_multimap<string, pair<string, pair<int, int>>> hashes;
+unordered_map<string, vector<pair<string, int>>> EdgeList;
+vector<pair<string, string>> queries;
+unordered_map<string, bool> visited;
+string key;
 
+void dfs( );
+
+int main(void){
+  string line;
+  fastio;  
+  while( getline( cin, line ) ){
+    istringstream iss( line );
+    if( line[0] == '!' ){ // assertion
+      string s, t, dummy;
+      int a, b, g;
+      // get rid of '!' and '=' then continue
+      iss >> dummy >> a >> s >> dummy >> b >> t; // easily read line!
+      g = gcd( a, b );
+      EdgeList[s].EB( t, a / g ); // a bidirectional edge is composed of two edges
+      EdgeList[t].EB( t, b / g );
+      // hashes.insert( { s, { t, { a/g, b/g } } } );
+      // hashes.insert( { t, { s, { b/g, a/g } } } );
+      visited[s] = false; // add key to know it
+      visited[t] = false; // add key to know it
+    }
+    else if( line[0] == '?' ){ // query
+      string dummy, s, t;
+      iss >> dummy >> s >> dummy >> t;
+      for( auto &x : visited ) x.se = false; // we have not visited anything yet
+      // time to do a dfs!
+      bool connected = false;
+      int a, b, k, start; a = b = k = start = 1;
+      // implicit dfs here
+      auto vals = hashes.equal_range( s ); // find first range
+      for( auto it = vals.fi; it != vals.se; ++ it ){
+	if( );
+      }
+    }
+    else{ // reaching a dot
+      break;
+    }
+  }
   return 0;
+}
+
+void dfs( string s, string target, int a, int b ){
+  
 }

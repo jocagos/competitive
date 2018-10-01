@@ -20,6 +20,7 @@ typedef vector<ii> vii;
 typedef vector<dd> vdd;
 typedef vector<tern> vtern;
 typedef vector<quad> vquad;
+//typedef vector<vector<int>> grid;
 // minHeap, BinomialHeap and FibonacciHeap for later use, policy based data structures
 template <class T> using minHeap = __gnu_pbds::priority_queue<T, greater<T>, pairing_heap_tag>;
 template <class T> using minBinHeap = __gnu_pbds::priority_queue<T, greater<T>, rc_binomial_heap_tag>;
@@ -40,7 +41,7 @@ const double pi = acos(-1.0);
 #define view(x) cout << #x << ": " << x << endl;
 #define sz(c) (int)((c).size())
 #define all(c) (c).begin(), (c).end()
-#define in( a, b, x ) ( (a) <= (x) and (x) <= (b) )
+#define in( a, b, x ) ( (a) <= (x) and (x) < (b) )
 #define justN(c, n) (c).begin(), (c).begin() + n
 #define sq(a) (a) * (a)
 #define fi first
@@ -67,11 +68,49 @@ const double pi = acos(-1.0);
 #define cntSetBits(x) __builtin_popcount(x)
 #define cntSetBitsl(x) __builtin_popcountl(x)
 #define cntSetBitsll(x) __builtin_popcountll(x)
+#define WATER -2
+
+int grid[100][100], even, odd, n, tc, r, c, m, w;
+vector<ii> moves { { 1, 1 }, { 1, -1 }, { -1, 1 }, { -1, -1 } };
+
+void dfs( int x, int y ){
+  grid[x][y] = 1;
+  unordered_map<int, bool> used;
+  REP( _, (int) moves.size() ){
+    int f = x + moves[_].fi * m, s = y + moves[_].se * n;
+    if( in( 0, r, f ) and in( 0, c, s ) and grid[f][s] != WATER and !used[f * 100 + s] ){
+      grid[x][y] ++;
+      used[f * 100 + s] = true;
+      if( grid[f][s] == 0 ) dfs( f, s );
+    }
+    f = x + moves[_].fi * n, s = y + moves[_].se * m;
+    if( in( 0, r, f ) and in( 0, c, s ) and grid[f][s] != WATER and !used[f * 100 + s] ){
+      grid[x][y] ++;
+      used[f * 100 + s] = true;
+      if( grid[f][s] == 0 ) dfs( f, s );
+    }
+  }
+  if( grid[x][y] > 0 ){
+    if( grid[x][y] % 2 ) ++ odd;
+    else if( grid[x][y] % 2 == 0 ) ++ even;
+  }
+}
 
 int main(void){
-  int n;
+  n = tc = r = c = m = w = 0;
   fastio;
-  cin >> n;
-
+  cin >> tc;
+  FOR( _, 1, tc + 1 ){
+    cin >> r >> c >> m >> n >> w;
+    memset( grid, 0, sizeof grid );
+    REP( i, w ){
+      int x, y;
+      cin >> x >> y;
+      grid[x][y] = WATER;
+    }
+    even = 0, odd = 0;
+    if( grid[0][0] == 0 ) dfs( 0, 0 );
+    cout << "Case " << _ << ": " << odd << " " << even << '\n';
+  }
   return 0;
 }
