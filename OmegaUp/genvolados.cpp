@@ -69,16 +69,17 @@ const double pi = acos(-1.0);
 #define cntSetBitsll(x) __builtin_popcountll(x)
 
 int main(void){
-  int n, tc, ans = 0;
   fastio;
-  cin >> tc;
-  FOR( _, 1, tc + 1 ){
-    ans = 0;
-    cin >> n;
-    vector<ii> v( n, { 0, 0 } );
-    REP( i, n ) cin >> v[i].fi >> v[i].se;
-    
-    cout << "Case " << _ << ": " << setw(5) << setfill('0') << ans << '\n';
+  constexpr int L = 1000, n = 100000;
+  random_device rd;
+  mt19937 mt( rd() );
+  uniform_int_distribution<long> dist( 1, n );
+  uniform_int_distribution<int> d( 0, 2 );
+  cout << L << '\n' << n << '\n';
+  FOR( i, 0, n ){
+    FOR( j, 0, L ){
+      cout << dist( mt ) << " " << d( mt ) << ( j + 1 == L ? "\n" : " " );
+    }
   }
   return 0;
 }
