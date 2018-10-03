@@ -37,9 +37,11 @@ const ll LLINF = (ll) 4e18 + 7;
 const double pi = acos(-1.0);
 // easy access/use
 #define fastio ios::sync_with_stdio(0); cin.tie(0); cout.tie(0)
+#define prtCntP(cnt) for( auto _ : cnt ) cout << "( " << _.first << ", " << _.second << " )\n";
 #define view(x) cout << #x << ": " << x << endl;
 #define sz(c) (int)((c).size())
 #define all(c) (c).begin(), (c).end()
+#define in( a, b, x ) ( (a) <= (x) and (x) <= (b) )
 #define justN(c, n) (c).begin(), (c).begin() + n
 #define sq(a) (a) * (a)
 #define fi first
@@ -67,52 +69,64 @@ const double pi = acos(-1.0);
 #define cntSetBitsl(x) __builtin_popcountl(x)
 #define cntSetBitsll(x) __builtin_popcountll(x)
 
-unordered_multimap<string, pair<string, pair<int, int>>> hashes;
-unordered_map<string, vector<pair<string, int>>> EdgeList;
-vector<pair<string, string>> queries;
-unordered_map<string, bool> visited;
-string key;
+int ________[66][66];
+int _0xFFFF;
 
-void dfs( );
+int _0x0047_0x0043_0x0044( int _0x0041, int _0x0042 ){
+  while( _0x0041 and _0x0042 ){
+    if( _0x0041 > _0x0042 ) _0x0041 %= _0x0042;
+    else _0x0042 %= _0x0041;
+  }
+  return _0x0041 + _0x0042;
+}
+
+void dfs( int _0x0058, int _0x0059 ){
+  int _0x0041, _0x0042, _0x0043, _0x0044, _0x0045, _0x0046, _0x0047;
+  REP( _0x005A, _0xFFFF ){
+    if( _0x0058 != _0x005A and ________[_0x0059][_0x005A] and !________[_0x0058][_0x005A] ){
+      _0x0041 = ________[_0x0058][_0x0059];
+      _0x0042 = ________[_0x0059][_0x0058];
+      _0x0043 = ________[_0x0059][_0x005A];
+      _0x0044 = ________[_0x005A][_0x0059];
+      _0x0045 = _0x0047_0x0043_0x0044( _0x0042, _0x0043 );
+      _0x0046 = _0x0043 / _0x0045;
+      _0x0047 = _0x0042 / _0x0045;
+      _0x0045 = _0x0047_0x0043_0x0044( _0x0041 * _0x0046, _0x0044 * _0x0047 );
+      ________[_0x0058][_0x005A] = _0x0041 * _0x0046 / _0x0045;
+      ________[_0x005A][_0x0058] = _0x0044 * _0x0047 / _0x0045;
+      dfs( _0x0058, _0x005A );
+    }
+  }
+}
 
 int main(void){
+  fastio;
   string line;
-  fastio;  
+  map<string, int> _FEDCBA;
+  _0xFFFF = 0;
   while( getline( cin, line ) ){
+    if( line == "." ) break;
     istringstream iss( line );
-    if( line[0] == '!' ){ // assertion
-      string s, t, dummy;
-      int a, b, g;
-      // get rid of '!' and '=' then continue
-      iss >> dummy >> a >> s >> dummy >> b >> t; // easily read line!
-      g = gcd( a, b );
-      EdgeList[s].EB( t, a / g ); // a bidirectional edge is composed of two edges
-      EdgeList[t].EB( t, b / g );
-      // hashes.insert( { s, { t, { a/g, b/g } } } );
-      // hashes.insert( { t, { s, { b/g, a/g } } } );
-      visited[s] = false; // add key to know it
-      visited[t] = false; // add key to know it
+    string type, _0x0051, _0x0052; // no need of a dummy str
+    int _0x0041, _0x0042, _0x0058, _0x0059;
+    iss >> type;
+    if( type == "!" ){
+      iss >> _0x0041 >> _0x0051 >> type >> _0x0042 >> _0x0052;
+      if( _FEDCBA.find(_0x0051) == _FEDCBA.end() ) _FEDCBA[_0x0051] = _0xFFFF ++;
+      if( _FEDCBA.find(_0x0052) == _FEDCBA.end() ) _FEDCBA[_0x0052] = _0xFFFF ++;
+      _0x0058 = _FEDCBA[_0x0051], _0x0059 = _FEDCBA[_0x0052];
+      int _0x0043 = _0x0047_0x0043_0x0044( _0x0041, _0x0042 );
+      ________[_0x0058][_0x0059] = _0x0041 / _0x0043, ________[_0x0059][_0x0058] = _0x0042 / _0x0043;
     }
-    else if( line[0] == '?' ){ // query
-      string dummy, s, t;
-      iss >> dummy >> s >> dummy >> t;
-      for( auto &x : visited ) x.se = false; // we have not visited anything yet
-      // time to do a dfs!
-      bool connected = false;
-      int a, b, k, start; a = b = k = start = 1;
-      // implicit dfs here
-      auto vals = hashes.equal_range( s ); // find first range
-      for( auto it = vals.fi; it != vals.se; ++ it ){
-	if( );
-      }
-    }
-    else{ // reaching a dot
-      break;
+    else if( type == "?" ){
+      iss >> _0x0051 >> type >> _0x0052;
+      if( _FEDCBA.find(_0x0051) == _FEDCBA.end() ) _FEDCBA[_0x0051] = _0xFFFF ++;
+      if( _FEDCBA.find(_0x0052) == _FEDCBA.end() ) _FEDCBA[_0x0052] = _0xFFFF ++;
+      _0x0058 = _FEDCBA[_0x0051], _0x0059 = _FEDCBA[_0x0052];
+      REP( _, _0xFFFF ){ if( ________[_0x0058][_] ) dfs( _0x0058, _ );}
+      if( ________[_0x0058][_0x0059] ) cout << ________[_0x0058][_0x0059] << " " << _0x0051 << " = " << ________[_0x0059][_0x0058] << " " <<  _0x0052 << '\n';
+      else cout << "? " << _0x0051 << " = ? " << _0x0052 << '\n';
     }
   }
   return 0;
-}
-
-void dfs( string s, string target, int a, int b ){
-  
 }

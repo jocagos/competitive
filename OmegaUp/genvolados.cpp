@@ -73,8 +73,8 @@ int main(void){
   constexpr int L = 1000, n = 100000;
   random_device rd;
   mt19937 mt( rd() );
-  uniform_int_distribution<long> dist( 1, n );
-  uniform_int_distribution<int> d( 0, 2 );
+  uniform_int_distribution<long> dist( 1, n + 1 );
+  uniform_int_distribution<int> d( 0, 1 );
   cout << L << '\n' << n << '\n';
   FOR( i, 0, n ){
     FOR( j, 0, L ){
