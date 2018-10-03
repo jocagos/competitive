@@ -35,6 +35,20 @@ typedef trie<string, null_type, trie_string_access_traits<>, pat_trie_tag, trie_
 const int INF = (int) 1e9 + 7;
 const ll LLINF = (ll) 4e18 + 7;
 const double pi = acos(-1.0);
+// /* slaps vector */ This bad boy can hold SO MANY
+// values to compare a value to!
+template<typename T>
+bool isIn( T const &value, std::vector<T>& v ){
+  return std::find( v.begin(), v.end(), value ) != v.end();
+}
+// /* slaps initializer_list */ And THIS bad boy can hold
+// ANY initializer_list with the same type as the value
+// to look forward!
+template<typename T>
+bool isIn( T const &value, std::initializer_list<T> v ){
+  return std::find( v.begin(), v.end(), value ) != v.end();
+}
+
 // easy access/use
 #define fastio ios::sync_with_stdio(0); cin.tie(0); cout.tie(0)
 #define view(x) cout << #x << ": " << x << endl;
@@ -68,10 +82,52 @@ const double pi = acos(-1.0);
 #define cntSetBitsl(x) __builtin_popcountl(x)
 #define cntSetBitsll(x) __builtin_popcountll(x)
 
-int main(void){
-  int n;
-  fastio;
-  cin >> n;
+char arena[101][101];
+bool stickers[101][101];
+unordered_map<char, char> D{ {'N', 'E'}, {'E', 'S'}, {'S', 'W'}, {'W', 'N'} },
+			       E{ {'N', 'W'}, {'W', 'S'}, {'S', 'E'}, {'E', 'N'} };
 
+int main(void){
+  int n, m, s;
+  string line;
+  fastio;
+  while( getline( cin, line ) ){
+    istrinstream iss( line );
+    iss >> n >> m >> s;
+    if( not (n & m & s) ) break;
+    ii b;
+    char face;
+    bool pos = false;
+    REP( i, n ){
+      getline( cin, line );
+      REP( j, m ){
+	arena[i][j] = line[j];
+	if( arena[i][j] == '*' ) stickers[i][j] = true;
+	if( not pos and isIn( arena[i][j], { 'N', 'W', 'E', 'S' } ) ){
+	  pos = true;
+	  b.fi = i;
+	  b.se = j;
+	  face = arena[i][j];
+	}
+      }
+    }
+    getline( cin, line ); //save instructions
+    REP( i, line.size() ){
+      if( !in( 0, n, b.fi ) or !in( 0, m, b.se ) ){
+	if( b.fi < 0 ) b.fi = 0;
+	if( b.se < 0 ) b.se = 0;
+	if( b.fi >= n ) b.fi = n - 1;
+	if( b.se >= m ) b.se = m - 1;
+      }
+      if( line[i] == 'D' ) face = D[face];
+      if( line[i] == 'E' ) face = E[face];
+      if( line[i] == 'F' ){
+	if( face == 'N' ) b.fi --;
+	else if( face == 'S' ) b.fi ++;
+	else if( face == 'E' ) b.se ++;
+	else if( face == 'W' ) b.se --;
+      }
+    }
+  }
   return 0;
 }
