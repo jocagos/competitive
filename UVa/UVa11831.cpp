@@ -64,7 +64,7 @@ bool isIn( T const &value, std::initializer_list<T> v ){
 #define MP make_pair
 #define MT make_tuple
 #define UNIQUE(a) sort(all(a)), (a).erase(unique(all(a)), (a).end())
-#define FOR(i, start, end) for( int i(start); i < (end); ++ i )
+#define FOR(i, start, end) for( int i(start); i < (int)(end); ++ i )
 #define REP(i, end) FOR(i, 0, end)
 #define FORD(i, start, end) for( int i(start); i >= end; -- i )
 #define gcd(a, b) __gcd(a, b)
@@ -92,12 +92,14 @@ int main(void){
   string line;
   fastio;
   while( getline( cin, line ) ){
-    istrinstream iss( line );
+    istringstream iss( line );
+    // issue while reading matrix of values
     iss >> n >> m >> s;
     if( not (n & m & s) ) break;
     ii b;
     char face;
     bool pos = false;
+    int count = 0;
     REP( i, n ){
       getline( cin, line );
       REP( j, m ){
@@ -113,11 +115,9 @@ int main(void){
     }
     getline( cin, line ); //save instructions
     REP( i, line.size() ){
-      if( !in( 0, n, b.fi ) or !in( 0, m, b.se ) ){
-	if( b.fi < 0 ) b.fi = 0;
-	if( b.se < 0 ) b.se = 0;
-	if( b.fi >= n ) b.fi = n - 1;
-	if( b.se >= m ) b.se = m - 1;
+      if( arena[b.fi][b.se] == '*' and stickers[b.fi][b.se] ){
+	count ++;
+	stickers[b.fi][b.se] = false;
       }
       if( line[i] == 'D' ) face = D[face];
       if( line[i] == 'E' ) face = E[face];
@@ -127,7 +127,14 @@ int main(void){
 	else if( face == 'E' ) b.se ++;
 	else if( face == 'W' ) b.se --;
       }
+      if( !in( 0, n, b.fi ) or !in( 0, m, b.se ) ){
+	if( b.fi < 0 ) b.fi = 0;
+	if( b.se < 0 ) b.se = 0;
+	if( b.fi >= n ) b.fi = n - 1;
+	if( b.se >= m ) b.se = m - 1;
+      }
     }
+    cout << count << '\n';
   }
   return 0;
 }
