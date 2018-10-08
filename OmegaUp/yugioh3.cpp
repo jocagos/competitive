@@ -35,6 +35,20 @@ typedef trie<string, null_type, trie_string_access_traits<>, pat_trie_tag, trie_
 const int INF = (int) 1e9 + 7;
 const ll LLINF = (ll) 4e18 + 7;
 const double pi = acos(-1.0);
+// /* slaps vector */ This bad boy can hold SO MANY
+// values to compare a value to!
+template<typename T>
+bool isIn( T const &value, std::vector<T>& v ){
+  return std::find( v.begin(), v.end(), value ) != v.end();
+}
+// /* slaps initializer_list */ And THIS bad boy can hold
+// ANY initializer_list with the same type as the value
+// to look forward!
+template<typename T>
+bool isIn( T const &value, std::initializer_list<T> v ){
+  return std::find( v.begin(), v.end(), value ) != v.end();
+}
+
 // easy access/use
 #define fastio ios::sync_with_stdio(0); cin.tie(0); cout.tie(0)
 #define view(x) cout << #x << ": " << x << endl;
@@ -68,53 +82,22 @@ const double pi = acos(-1.0);
 #define cntSetBitsl(x) __builtin_popcountl(x)
 #define cntSetBitsll(x) __builtin_popcountll(x)
 
-ll binExp( ll a, ll b ){
-  ll res = 1;
-  while( b > 0 ){
-    if( b & 1 ) res = res * a;
-    a = a * a;
-    b >>= 1;
-  }
-  return res;
-}
+int d, n, k;
+vector<int> values, costs;
+int dp[][];
 
-int countLIS( vector<ii>& v )
-{
-  vector<int> aux( (int)v.size(), 1 );
-  int result = 0;
-  FOR( i, 1, (int)v.size() ){
-    FOR( j, 0, i ){
-      if ( v[i] > v[j] )
-	aux[i] += aux[j];
-    }
-  }
-  for( auto x : aux ) result += x;
-  return result;
+int score( int id, int w ){
+  if( id == n or w == 0 ) return 0;
+  if( 
 }
 
 int main(void){
-  int n, tc;
-  ll ans = 0;
   fastio;
-  cin >> tc;
-  FOR( _, 1, tc + 1 ){
-    ans = 0;
-    cin >> n;
-    vector<ii> v( n, { 0, 0 } );
-    set<ii> s;
-    int repeats = 0;
-    REP( i, n ){
-      cin >> v[i].fi >> v[i].se;
-      auto p = s.insert( v[i] );
-      if( not p.se ) repeats ++;
-    }
-    // ans = countLIS( v );
-    // if( s.size() == v.size() )
-    ans = binExp( 2, n ) - 1;
-    if( s.size() == 1 ) ans = ans * 2 + 1;
-    // else ans = s.size() + v.size() * ( repeats + 1 );
-    // cout << "Ans >" << ans << "<\n";
-    cout << "Case " << _ << ": " << setw(5) << setfill('0') << ans % 100 << '\n';
+  cin >> d >> n >> k;
+  values.resize( n );
+  costs.resize( n );
+  REP( i, n ){
+    cin >> values[i] >> costs[i];
   }
   return 0;
 }
