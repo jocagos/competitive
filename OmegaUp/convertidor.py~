@@ -1,0 +1,13 @@
+import sys
+
+
+t = int(sys.stdin.readline())
+if t == 0:
+    # str to int
+    line = sys.stdin.readline()
+    val = 0
+    for c in reversed(line):
+        
+elif t == 1:
+    # int to str
+    line = sys.stdin.readline()
