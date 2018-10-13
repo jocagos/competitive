@@ -8,6 +8,7 @@ using namespace std;
 using namespace __gnu_pbds;
 
 typedef long long ll;
+typedef unsigned long long i64;
 typedef long double ld;
 typedef pair<int, int> ii;
 typedef pair<double, double> dd;
@@ -34,11 +35,26 @@ typedef trie<string, null_type, trie_string_access_traits<>, pat_trie_tag, trie_
 const int INF = (int) 1e9 + 7;
 const ll LLINF = (ll) 4e18 + 7;
 const double pi = acos(-1.0);
+// /* slaps vector */ This bad boy can hold SO MANY
+// values to compare a value to!
+template<typename T>
+bool isIn( T const &value, std::vector<T>& v ){
+  return std::find( v.begin(), v.end(), value ) != v.end();
+}
+// /* slaps initializer_list */ And THIS bad boy can hold
+// ANY initializer_list with the same type as the value
+// to look forward!
+template<typename T>
+bool isIn( T const &value, std::initializer_list<T> v ){
+  return std::find( v.begin(), v.end(), value ) != v.end();
+}
+
 // easy access/use
 #define fastio ios::sync_with_stdio(0); cin.tie(0); cout.tie(0)
 #define view(x) cout << #x << ": " << x << endl;
 #define sz(c) (int)((c).size())
 #define all(c) (c).begin(), (c).end()
+#define in( a, b, x ) ( (a) <= (x) and (x) <= (b) )
 #define justN(c, n) (c).begin(), (c).begin() + n
 #define sq(a) (a) * (a)
 #define fi first
@@ -66,65 +82,44 @@ const double pi = acos(-1.0);
 #define cntSetBitsl(x) __builtin_popcountl(x)
 #define cntSetBitsll(x) __builtin_popcountll(x)
 
-constexpr int MAXN(1000001);
-constexpr int MOD(987654321);
+constexpr int MAXN = 50000;
+constexpr int DUMMY = -1234;
 
-bool sieve[MAXN]; // Check list
-vector<int> primes( 100000, 0 );
-int idx = 0;
+vector<int> el( MAXN, DUMMY ), sum( MAXN, 0 );
+vector<bool> v( MAXN, false );
 
-void atkin(){
-  if (MAXN > 2)
-    primes[idx ++] = 2;
-  if (MAXN > 3)
-    primes[idx ++] = 3;
-
-  for (int i = 0; i < MAXN; i++)
-    sieve[i] = false;
-
-  for (int x = 1; x * x < MAXN; x++) {
-    for (int y = 1; y * y < MAXN; y++) {
-      int n = (4 * x * x) + (y * y);
-      if (n <= MAXN && (n % 12 == 1 || n % 12 == 5))
-	sieve[n] ^= true;
-      n = (3 * x * x) + (y * y);
-      if (n <= MAXN && n % 12 == 7)
-	sieve[n] ^= true;
-      n = (3 * x * x) - (y * y);
-      if (x > y && n <= MAXN && n % 12 == 11)
-	sieve[n] ^= true;
-    }
-  }
-  for (int r = 5; r * r < MAXN; r++) {
-    if (sieve[r])
-      for (int i = r * r; i < MAXN; i += r * r)
-	sieve[i] = false;
-  }
-
-  for (int a = 5; a < MAXN; a++)
-    if (sieve[a])
-      primes[idx ++] = a;
-}
-
-unsigned long long divs( unsigned long long n ){
-  unsigned long long res = 1;
-  FOR( i, 0, idx ){
-    if( n < primes[i] ) break;
-    unsigned long long p = primes[i];
-    unsigned long long xp = 0;
-    while( p <= n ) xp += n / p, p *= primes[i];
-    res = (res * (xp + 1)) % MOD;
-    // res *= (xp + 1);
-    // res %= MOD;
-  }
-  return res % MOD;
+ll dfs( int u ){
+  v[u] = true;
+  ll ans = 0;
+  if( el[u] != DUMMY and (not v[el[u]]) ) ans += 1 + dfs( el[u] );
+  v[u] = false;
+  return sum[u] = ans;
 }
 
 int main(void){
-  int n;
+  int n, tc;
   fastio;
-  atkin();
-  cin >> n;
-  cout << divs( n ) << '\n';
+  cin >> tc;
+  FOR( _, 1, tc + 1 ){
+    cin >> n;
+    fill( justN( el, n ), DUMMY );
+    fill( justN( sum, n ), 0 );
+    fill( justN( v, n ), false );
+    REP( i, n ){
+      int u, v;
+      cin >> u >> v;
+      el[u - 1] = v - 1;
+    }
+    ll ans = 0, b = 0;
+    REP( i, n ){
+      if( sum[i] == DUMMY ) dfs( i );
+      if( sum[i] > b ) b = sum[i], ans = i;
+    }
+    REP( i, n ){
+      view(sum[i]);
+      view(el[i]);
+    }
+    cout << "Case " << _ << ": " << ans + 1 << '\n';
+  }
   return 0;
 }

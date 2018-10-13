@@ -8,6 +8,7 @@ using namespace std;
 using namespace __gnu_pbds;
 
 typedef long long ll;
+typedef unsigned long long i64;
 typedef long double ld;
 typedef pair<int, int> ii;
 typedef pair<double, double> dd;
@@ -34,11 +35,26 @@ typedef trie<string, null_type, trie_string_access_traits<>, pat_trie_tag, trie_
 const int INF = (int) 1e9 + 7;
 const ll LLINF = (ll) 4e18 + 7;
 const double pi = acos(-1.0);
+// /* slaps vector */ This bad boy can hold SO MANY
+// values to compare a value to!
+template<typename T>
+bool isIn( T const &value, std::vector<T>& v ){
+  return std::find( v.begin(), v.end(), value ) != v.end();
+}
+// /* slaps initializer_list */ And THIS bad boy can hold
+// ANY initializer_list with the same type as the value
+// to look forward!
+template<typename T>
+bool isIn( T const &value, std::initializer_list<T> v ){
+  return std::find( v.begin(), v.end(), value ) != v.end();
+}
+
 // easy access/use
 #define fastio ios::sync_with_stdio(0); cin.tie(0); cout.tie(0)
 #define view(x) cout << #x << ": " << x << endl;
 #define sz(c) (int)((c).size())
 #define all(c) (c).begin(), (c).end()
+#define in( a, b, x ) ( (a) <= (x) and (x) <= (b) )
 #define justN(c, n) (c).begin(), (c).begin() + n
 #define sq(a) (a) * (a)
 #define fi first
@@ -66,65 +82,20 @@ const double pi = acos(-1.0);
 #define cntSetBitsl(x) __builtin_popcountl(x)
 #define cntSetBitsll(x) __builtin_popcountll(x)
 
-constexpr int MAXN(1000001);
-constexpr int MOD(987654321);
-
-bool sieve[MAXN]; // Check list
-vector<int> primes( 100000, 0 );
-int idx = 0;
-
-void atkin(){
-  if (MAXN > 2)
-    primes[idx ++] = 2;
-  if (MAXN > 3)
-    primes[idx ++] = 3;
-
-  for (int i = 0; i < MAXN; i++)
-    sieve[i] = false;
-
-  for (int x = 1; x * x < MAXN; x++) {
-    for (int y = 1; y * y < MAXN; y++) {
-      int n = (4 * x * x) + (y * y);
-      if (n <= MAXN && (n % 12 == 1 || n % 12 == 5))
-	sieve[n] ^= true;
-      n = (3 * x * x) + (y * y);
-      if (n <= MAXN && n % 12 == 7)
-	sieve[n] ^= true;
-      n = (3 * x * x) - (y * y);
-      if (x > y && n <= MAXN && n % 12 == 11)
-	sieve[n] ^= true;
-    }
-  }
-  for (int r = 5; r * r < MAXN; r++) {
-    if (sieve[r])
-      for (int i = r * r; i < MAXN; i += r * r)
-	sieve[i] = false;
-  }
-
-  for (int a = 5; a < MAXN; a++)
-    if (sieve[a])
-      primes[idx ++] = a;
-}
-
-unsigned long long divs( unsigned long long n ){
-  unsigned long long res = 1;
-  FOR( i, 0, idx ){
-    if( n < primes[i] ) break;
-    unsigned long long p = primes[i];
-    unsigned long long xp = 0;
-    while( p <= n ) xp += n / p, p *= primes[i];
-    res = (res * (xp + 1)) % MOD;
-    // res *= (xp + 1);
-    // res %= MOD;
-  }
-  return res % MOD;
-}
-
 int main(void){
-  int n;
+  ll n, m;
   fastio;
-  atkin();
-  cin >> n;
-  cout << divs( n ) << '\n';
+  cin >> n >> m;
+  vector<ll> t( 100002, 0 );
+  unordered_map<ll, ll> u { {0, 0}, {0, 1} };
+  FOR( i, 1, 100001 ){
+    t[i + 1] = t[i] + i;
+    u[t[i + 1]] = i + 1;
+  }
+  ll ansMin = ( m <= n / 2 ? n - 2 * m : 0 );
+  ll ksq = *lower_bound( all( t ), m );
+  ll k = u[ksq];
+  ll ansMax = ( n == k and m == ksq ? 0 :/* ( n == k ?  :*/ n - k );
+  cout << ansMin << " " << ansMax << '\n';
   return 0;
 }

@@ -51,7 +51,7 @@ bool isIn( T const &value, std::initializer_list<T> v ){
 
 // easy access/use
 #define fastio ios::sync_with_stdio(0); cin.tie(0); cout.tie(0)
-#define view(x) cout << #x << ": " << x << endl;
+#define view(x) cout << #x << ": " << x << '\n';
 #define sz(c) (int)((c).size())
 #define all(c) (c).begin(), (c).end()
 #define in( a, b, x ) ( (a) <= (x) and (x) <= (b) )
@@ -64,7 +64,7 @@ bool isIn( T const &value, std::initializer_list<T> v ){
 #define MP make_pair
 #define MT make_tuple
 #define UNIQUE(a) sort(all(a)), (a).erase(unique(all(a)), (a).end())
-#define FOR(i, start, end) for( int i(start); i < (int)(end); ++ i )
+#define FOR(i, start, end) for( int i(start); i < (end); ++ i )
 #define REP(i, end) FOR(i, 0, end)
 #define FORD(i, start, end) for( int i(start); i >= end; -- i )
 #define gcd(a, b) __gcd(a, b)
@@ -82,59 +82,107 @@ bool isIn( T const &value, std::initializer_list<T> v ){
 #define cntSetBitsl(x) __builtin_popcountl(x)
 #define cntSetBitsll(x) __builtin_popcountll(x)
 
-char arena[101][101];
-bool stickers[101][101];
-unordered_map<char, char> D{ {'N', 'E'}, {'E', 'S'}, {'S', 'W'}, {'W', 'N'} },
-			       E{ {'N', 'W'}, {'W', 'S'}, {'S', 'E'}, {'E', 'N'} };
+unordered_map<char, char> D { {'N', 'E'}, {'E', 'S'}, {'S', 'W'}, {'W', 'N'} },
+			  E { {'N', 'W'}, {'W', 'S'}, {'S', 'E'}, {'E', 'N'} },
+			  F { {'N', 'N'}, {'S', 'S'}, {'L', 'E'}, {'O', 'W'} };     
+constexpr char FORWARD = 'F', LEFT = 'E', RIGHT = 'D', BLOCK = '#', STICKER = '*', PATH = '.';
+ii pos;
+char face, arena[101][101];
+bool read;
 
 int main(void){
   int n, m, s;
   string line;
   fastio;
   while( getline( cin, line ) ){
+    read = false;
+    face = 'Z';
+    pos = { -1, -1 };
     istringstream iss( line );
-    // issue while reading matrix of values
     iss >> n >> m >> s;
-    if( not (n & m & s) ) break;
-    ii b;
-    char face;
-    bool pos = false;
-    int count = 0;
-    REP( i, n ){
-      getline( cin, line );
-      REP( j, m ){
-	arena[i][j] = line[j];
-	if( arena[i][j] == '*' ) stickers[i][j] = true;
-	if( not pos and isIn( arena[i][j], { 'N', 'W', 'E', 'S' } ) ){
-	  pos = true;
-	  b.fi = i;
-	  b.se = j;
-	  face = arena[i][j];
+    if( n | m | s ){
+      REP( i, n ){
+	getline( cin, line );
+	REP( j, m ){
+	  arena[i][j] = line[j];
+	  if( !read and isIn( line[j], { 'N', 'S', 'L', 'O' } ) ){
+	    read = true;
+	    face = F[line[j]];
+	    pos = { i, j };
+	  }
 	}
       }
+      getline( cin, line );
+      int count = 0;
+      REP( i, s ){
+	if( line[i] == LEFT ) face = E[face];
+	else if( line[i] == RIGHT ) face = D[face];
+	else if( line[i] == FORWARD ){
+	  if( face == 'N' ){
+	    if( pos.fi > 0 ){
+	      if( arena[pos.fi - 1][pos.se] == STICKER ){
+		arena[pos.fi][pos.se] = PATH;
+		++ count;
+		-- pos.fi;
+		arena[pos.fi][pos.se] = face;
+	      }
+	      else if( arena[pos.fi - 1][pos.se] == PATH ){
+		arena[pos.fi][pos.se] = PATH;
+		-- pos.fi;
+		arena[pos.fi][pos.se] = face;
+	      }
+	    }
+	  }
+	  else if( face == 'S' ){
+	    if( pos.fi < n - 1 ){
+	      if( arena[pos.fi + 1][pos.se] == STICKER ){
+		arena[pos.fi][pos.se] = PATH;
+		++ count;
+		++ pos.fi;
+		arena[pos.fi][pos.se] = face;
+	      }
+	      else if( arena[pos.fi + 1][pos.se] == PATH ){
+		arena[pos.fi][pos.se] = PATH;
+		++ pos.fi;
+		arena[pos.fi][pos.se] = face;
+	      }
+	    }
+	  }
+	  else if( face == 'E' ){
+	    if( pos.se < m - 1 ){
+	      if( arena[pos.fi][pos.se + 1] == STICKER ){
+		arena[pos.fi][pos.se] = PATH;
+		++ count;
+		++ pos.se;
+		arena[pos.fi][pos.se] = face;
+	      }
+	      else if( arena[pos.fi][pos.se + 1] == PATH ){
+		arena[pos.fi][pos.se] = PATH;
+		++ pos.se;
+		arena[pos.fi][pos.se] = face;
+	      }
+	    }
+	  }
+	  else if( face == 'W' ){
+	    if( pos.se > 0 ){
+	      if( arena[pos.fi][pos.se - 1] == STICKER ){
+		arena[pos.fi][pos.se] = PATH;
+		++ count;
+		-- pos.se;
+		arena[pos.fi][pos.se] = face;
+	      }
+	      else if( arena[pos.fi][pos.se - 1] == PATH ){
+		arena[pos.fi][pos.se] = PATH;
+		-- pos.se;
+		arena[pos.fi][pos.se] = face;
+	      }
+	    }
+	  }
+	}
+      }
+      cout << count << '\n';
     }
-    getline( cin, line ); //save instructions
-    REP( i, line.size() ){
-      if( arena[b.fi][b.se] == '*' and stickers[b.fi][b.se] ){
-	count ++;
-	stickers[b.fi][b.se] = false;
-      }
-      if( line[i] == 'D' ) face = D[face];
-      if( line[i] == 'E' ) face = E[face];
-      if( line[i] == 'F' ){
-	if( face == 'N' ) b.fi --;
-	else if( face == 'S' ) b.fi ++;
-	else if( face == 'E' ) b.se ++;
-	else if( face == 'W' ) b.se --;
-      }
-      if( !in( 0, n, b.fi ) or !in( 0, m, b.se ) ){
-	if( b.fi < 0 ) b.fi = 0;
-	if( b.se < 0 ) b.se = 0;
-	if( b.fi >= n ) b.fi = n - 1;
-	if( b.se >= m ) b.se = m - 1;
-      }
-    }
-    cout << count << '\n';
+    else break;
   }
   return 0;
 }
