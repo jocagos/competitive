@@ -85,7 +85,7 @@ bool isIn( T const &value, std::initializer_list<T> v ){
 constexpr int MAXN = 50000;
 constexpr int DUMMY = -1234;
 
-vector<int> el( MAXN, DUMMY ), sum( MAXN, 0 );
+vector<int> el( MAXN, DUMMY ), sum( MAXN, DUMMY );
 vector<bool> v( MAXN, false );
 
 ll dfs( int u ){
@@ -103,7 +103,7 @@ int main(void){
   FOR( _, 1, tc + 1 ){
     cin >> n;
     fill( justN( el, n ), DUMMY );
-    fill( justN( sum, n ), 0 );
+    fill( justN( sum, n ), DUMMY );
     fill( justN( v, n ), false );
     REP( i, n ){
       int u, v;
@@ -114,10 +114,6 @@ int main(void){
     REP( i, n ){
       if( sum[i] == DUMMY ) dfs( i );
       if( sum[i] > b ) b = sum[i], ans = i;
-    }
-    REP( i, n ){
-      view(sum[i]);
-      view(el[i]);
     }
     cout << "Case " << _ << ": " << ans + 1 << '\n';
   }

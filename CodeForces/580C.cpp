@@ -81,17 +81,25 @@ bool isIn( T const &value, std::initializer_list<T> v ){
 #define cntSetBits(x) __builtin_popcount(x)
 #define cntSetBitsl(x) __builtin_popcountl(x)
 #define cntSetBitsll(x) __builtin_popcountll(x)
+constexpr int MAXN = 100001;
+
+vector<bool> a( MAXN, false );
+vector<vector<int>> adjList( MAXN );
+
+int bfs( int u ){
+  
+}
 
 int main(void){
-  int L, n;
+  int n, m;
   fastio;
-  cin >> L >> n;
-  vector<quad> queries;
-  REP( i, n ){
-    quad tmp;
-    cin >> tmp.fi.fi >> tmp.fi.se >> tmp.se.fi >> tmp.se.se;
-    queries.PB( tmp );
+  cin >> n >> m;
+  FOR( _, 1, n + 1 ) cin >> a[_]; // yes you can cin a bool if it is 0 or 1
+  FOR( _, 1, n ){
+    int u, v;
+    cin >> u >> v;
+    adjList[u].EB( v );
   }
-  for( auto q : queries ) cout << "( (" << q.fi.fi << ", " << q.fi.se << "), (" << q.se.fi << ", " << q.se.se << ") )\n";
+  
   return 0;
 }
