@@ -86,20 +86,37 @@ constexpr int MAXN = 100001;
 vector<bool> a( MAXN, false );
 vector<vector<int>> adjList( MAXN );
 
-int bfs( int u ){
-  
+int c = 0, n, m;
+
+void dfs( int from, int to, int cats ){
+  if( a[from] ) cats ++;
+  else cats = 0;
+  if( cats > m ) return;
+  bool leaf = true;
+  for( auto v : adjList[from] ){
+    if( v != to ){
+      leaf = false;
+      dfs( v, from, cats );
+    }
+  }
+  if( leaf ) c ++;
 }
 
 int main(void){
-  int n, m;
   fastio;
   cin >> n >> m;
-  FOR( _, 1, n + 1 ) cin >> a[_]; // yes you can cin a bool if it is 0 or 1
+  FOR( _, 0, n ){
+    int b;
+    cin >> b;
+    if( b ) a[_] = true;
+  }
   FOR( _, 1, n ){
     int u, v;
     cin >> u >> v;
-    adjList[u].EB( v );
+    adjList[u - 1].EB( v - 1 );
+    adjList[v - 1].EB( u - 1 );
   }
-  
+  dfs( 0, -1, 0 );
+  cout << c << '\n';
   return 0;
 }

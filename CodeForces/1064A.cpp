@@ -98,9 +98,10 @@ struct myHash {
 #define cntSetBitsll(x) __builtin_popcountll(x)
 
 int main(void){
-  int n;
+  vector<ll> a( 3 );
   fastio;
-  cin >> n;
-
+  cin >> a[0] >> a[1] >> a[2];
+  sort( all( a ) );
+  cout << max( 0LL, a[2] - ( a[1] + a[0] - 1 ) ) << '\n';
   return 0;
 }

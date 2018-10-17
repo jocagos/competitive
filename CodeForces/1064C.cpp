@@ -99,8 +99,10 @@ struct myHash {
 
 int main(void){
   int n;
+  string s;
   fastio;
-  cin >> n;
-
+  cin >> n >> s;
+  sort( all( s ) );
+  cout << s << '\n';
   return 0;
 }

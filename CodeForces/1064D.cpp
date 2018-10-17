@@ -97,10 +97,54 @@ struct myHash {
 #define cntSetBitsl(x) __builtin_popcountl(x)
 #define cntSetBitsll(x) __builtin_popcountll(x)
 
-int main(void){
-  int n;
-  fastio;
-  cin >> n;
+constexpr bool V = true, NV = false;
+constexpr ii DUMMY = { 0, 0 };
 
+int n, m, r, c, _left, _right, _count = 0;
+vector<vector<char>> g( 2010, vector<char>( 2010, 0 ) );
+vector<vector<bool>> v( 2010, vector<bool>( 2010, NV ) );
+
+void bfs( ii u ){
+  deque<quad> Q;
+  quad _u = { {u.fi, u.se}, { _left, _right } };
+  Q.push_front( _u );
+  while( not Q.empty() ){
+    quad node = Q.front(); Q.pop_front();
+    if( g[node.fi.fi][node.fi.se] == '+' or v[node.fi.fi][node.fi.se] ) continue;
+    _count ++;
+    g[node.fi.fi][node.fi.se] = '+';
+    v[node.fi.fi][node.fi.se] = V; // visit already the source
+    if( node.fi.fi > 0 ){
+      if( g[node.fi.fi - 1][node.fi.se] == '.' ){
+	Q.push_front( { {node.fi.fi - 1, node.fi.se}, {node.se.fi, node.se.se} } );
+      }
+    }
+    if( node.fi.se > 0 ){
+      if( g[node.fi.fi][node.fi.se - 1] == '.' and node.se.fi > 0 ){
+	Q.push_back( {{node.fi.fi, node.fi.se - 1}, {node.se.fi - 1, node.se.se}} );
+      }
+    }
+    if( node.fi.fi + 1 < n ){
+      if( g[node.fi.fi + 1][node.fi.se] == '.' ){
+	Q.push_front( {{node.fi.fi + 1, node.fi.se}, {node.se.fi, node.se.se}} );
+      }
+    }
+    if( node.fi.se + 1 < m ){
+      if( g[node.fi.fi][node.fi.se + 1] == '.' and node.se.se > 0 ){
+	Q.push_back( {{node.fi.fi, node.fi.se + 1}, {node.se.fi, node.se.se - 1}} );
+      }
+    }
+  }
+}
+
+
+int main(void){
+  fastio;
+  cin >> n >> m >> r >> c >> _left >> _right;
+  REP( i, n ){
+    REP( j, m ) cin >> g[i][j];
+  }
+  bfs( {r - 1, c - 1} );
+  cout << _count << '\n';
   return 0;
 }

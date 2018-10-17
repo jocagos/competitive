@@ -98,9 +98,12 @@ struct myHash {
 #define cntSetBitsll(x) __builtin_popcountll(x)
 
 int main(void){
-  int n;
+  long a, tc;
   fastio;
-  cin >> n;
-
+  cin >> tc;
+  REP( i, tc ){
+    cin >> a;
+    cout << ( 1L << cntSetBitsl( a ) ) << '\n';
+  }
   return 0;
 }

@@ -49,21 +49,6 @@ bool isIn( T const &value, std::initializer_list<T> v ){
   return std::find( v.begin(), v.end(), value ) != v.end();
 }
 
-// Took it from CodeForces, great hash for anti-hacking maps and sets
-struct myHash {
-  static i64 splitmix64( i64 x ) {
-    x += 0x9e3779b97f4a7c15;
-    x = (x ^ (x >> 30)) * 0xbf58476d1ce4e5b9;
-    x = (x ^ (x >> 27)) * 0x94d049bb133111eb;
-    return x ^ (x >> 31);
-  }
-
-  size_t operator()( i64 x ) const {
-    static const i64 FIXED_RANDOM = chrono::steady_clock::now().time_since_epoch().count();
-    return splitmix64(x + FIXED_RANDOM);
-  }
-};
-
 // easy access/use
 #define fastio ios::sync_with_stdio(0); cin.tie(0); cout.tie(0)
 #define view(x) cout << #x << ": " << x << endl;
@@ -98,9 +83,28 @@ struct myHash {
 #define cntSetBitsll(x) __builtin_popcountll(x)
 
 int main(void){
-  int n;
+  int n, k, m;
+  // auto lex = []( string& left, string& right ){
+  // 	       int idx = 0, len = min( left.length(), right.length() );
+  // 	       while( idx < len and left[idx] == right[idx] ) idx ++;
+  // 	       if( idx == len ) return left.length() == len;
+  // 	       else return left[idx] < right[idx];
+  // 	     };
   fastio;
-  cin >> n;
-
+  cin >> n >> k >> m;
+  vector<string> fibos( n + 1 );
+  fibos[0] = "0";
+  fibos[1] = "1";
+  FOR( i, 2, n + 1 ){
+    fibos[i] = fibos[i - 2] + fibos[i - 1];
+  }
+  // nth_element( fibos.begin(), fibos.begin() + n, fibos.end() );
+  sort( all( fibos ) );
+  if( m > fibos[k - 1].length() ) cout << fibos[k - 1] << '\n';
+  else{
+    REP( i, m ) cout << fibos[k - 1][i];
+    cout << '\n';
+  }
+  for( auto x : fibos ) cout << x << '\n';
   return 0;
 }
