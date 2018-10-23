@@ -96,11 +96,39 @@ struct myHash {
 #define cntSetBits(x) __builtin_popcount(x)
 #define cntSetBitsl(x) __builtin_popcountl(x)
 #define cntSetBitsll(x) __builtin_popcountll(x)
+constexpr int MAXN = 2010;
+constexpr bool V = true, NV = false;
+
+int n;
+
+vector<vi> adjList( MAXN, vi() );
+vector<bool> v( MAXN, NV );
+vector<int> parents;
+
+int dfs( int u, int layer = 1 ){
+  if( v[u] ) return layer;
+  v[u] = V;
+  int m = layer, t;
+  for( auto x : adjList[u] ){
+    t = dfs( x, layer + 1 );
+    m = max( t, m );
+  }
+  return m;
+}
 
 int main(void){
-  int n;
   fastio;
   cin >> n;
-
+  int u;
+  FOR( i, 1, n + 1 ){
+    cin >> u;
+    if( u == -1 ) parents.EB( i );
+    else adjList[u].EB( i );
+  }
+  int c = 0;
+  REP( i, (int)parents.size() ){
+    c = max( dfs( parents[i], 1 ), c );
+  }
+  cout << c << '\n';
   return 0;
 }
