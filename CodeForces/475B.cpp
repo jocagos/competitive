@@ -96,37 +96,64 @@ struct myHash {
 #define cntSetBits(x) __builtin_popcount(x)
 #define cntSetBitsl(x) __builtin_popcountl(x)
 #define cntSetBitsll(x) __builtin_popcountll(x)
+constexpr int MAXN = 22;
+constexpr bool V = true, NV = false;
+int n, m;
 
-constexpr int MAXN(100010);
+inline int f( int i, int j ){
+  return i * m + j;
+}
 
-int n;
-vi dp( MAXN, -1 ), a( MAXN, 0 ), b( MAXN, 0 );
+vector<vi> g( MAXN * MAXN, vi( ) );
+bitset<MAXN * MAXN> v( 0 ), done( 0 );
 
-ll f( int x, int y, int z ){
-  if( x == y ) return x;
-  else if( x == 0 ) return 0;
-  else return 1 - z;
+void dfs( int u ){
+  if( v[u] ) return;
+  v[u] = 1;
+  for( auto d : g[u] ) dfs( d );
 }
 
 int main(void){
   fastio;
-  cin >> n;
-  FOR( i, 1, n ) cin >> a[i];
-  FOR( i, 1, n ) cin >> b[i];
-  REP( p, 4 ){
-    dp[1] = p;
-    FOR( i, 1, n ) dp[i + 1] = f( a[i] / 2, b[i] / 2, dp[i] / 2 ) * 2 + f( a[i] % 2, b[i] % 2, dp[i] % 2 );
-    bool _ans = true;
-    for( int i(1); _ans and i < n; ++ i ){
-      if( ( dp[i] bitor dp[i + 1] ) not_eq a[i] ) _ans = false;
-      if( ( dp[i] bitand dp[i + 1] ) not_eq b[i] ) _ans = false;
+  cin >> n >> m;
+  char c;
+  REP( i, n ){
+    cin >> c;
+    if( c == '>' ){
+      REP( j, m - 1 ){
+	g[f(i, j)].EB( f( i, j + 1 ) );
+      }	 
     }
-    if( _ans ){
-      cout << "YES\n";
-      FOR( i, 1, n + 1 ) cout << dp[i] << ( i not_eq n ? " " : "\n" );
-      exit(0);
+    else if( c == '<' ){
+      FOR( j, 1, m ){
+	g[f(i, j)].EB( f( i, j - 1 ) );
+      }
     }
   }
-  cout << "NO\n";
+  REP( i, m ){
+    cin >> c;
+    if( c == '^' ){
+      FOR( j, 1, n ){
+	g[f(j, i)].EB( f( j - 1, i ) );
+      }
+    }
+    else if( c == 'v' ){
+      REP( j, n - 1 ){
+	g[f(j, i)].EB( f( j + 1, i ) );
+      }
+    }
+  }
+  REP( i, m * n ){
+    dfs( i );
+    if( (int)v.count() == m * n ){
+      done[i] = 1;
+      v.reset();
+    }
+    else{
+      break;
+    }
+  }
+  if( (int)done.count() == m * n ) cout << "YES\n";
+  else cout << "NO\n";
   return 0;
 }

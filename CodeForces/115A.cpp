@@ -97,36 +97,10 @@ struct myHash {
 #define cntSetBitsl(x) __builtin_popcountl(x)
 #define cntSetBitsll(x) __builtin_popcountll(x)
 
-constexpr int MAXN(100010);
-
-int n;
-vi dp( MAXN, -1 ), a( MAXN, 0 ), b( MAXN, 0 );
-
-ll f( int x, int y, int z ){
-  if( x == y ) return x;
-  else if( x == 0 ) return 0;
-  else return 1 - z;
-}
-
 int main(void){
+  int n;
   fastio;
   cin >> n;
-  FOR( i, 1, n ) cin >> a[i];
-  FOR( i, 1, n ) cin >> b[i];
-  REP( p, 4 ){
-    dp[1] = p;
-    FOR( i, 1, n ) dp[i + 1] = f( a[i] / 2, b[i] / 2, dp[i] / 2 ) * 2 + f( a[i] % 2, b[i] % 2, dp[i] % 2 );
-    bool _ans = true;
-    for( int i(1); _ans and i < n; ++ i ){
-      if( ( dp[i] bitor dp[i + 1] ) not_eq a[i] ) _ans = false;
-      if( ( dp[i] bitand dp[i + 1] ) not_eq b[i] ) _ans = false;
-    }
-    if( _ans ){
-      cout << "YES\n";
-      FOR( i, 1, n + 1 ) cout << dp[i] << ( i not_eq n ? " " : "\n" );
-      exit(0);
-    }
-  }
-  cout << "NO\n";
+
   return 0;
 }

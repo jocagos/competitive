@@ -96,37 +96,31 @@ struct myHash {
 #define cntSetBits(x) __builtin_popcount(x)
 #define cntSetBitsl(x) __builtin_popcountl(x)
 #define cntSetBitsll(x) __builtin_popcountll(x)
+const i64 MAXN = ( ( 1LL + sqrt( 1 + 2000000000LL * 4 ) ) / 2 );
 
-constexpr int MAXN(100010);
-
-int n;
-vi dp( MAXN, -1 ), a( MAXN, 0 ), b( MAXN, 0 );
-
-ll f( int x, int y, int z ){
-  if( x == y ) return x;
-  else if( x == 0 ) return 0;
-  else return 1 - z;
-}
+vector<i64> a, b;
 
 int main(void){
+  ll n, m, s, k;
   fastio;
-  cin >> n;
-  FOR( i, 1, n ) cin >> a[i];
-  FOR( i, 1, n ) cin >> b[i];
-  REP( p, 4 ){
-    dp[1] = p;
-    FOR( i, 1, n ) dp[i + 1] = f( a[i] / 2, b[i] / 2, dp[i] / 2 ) * 2 + f( a[i] % 2, b[i] % 2, dp[i] % 2 );
-    bool _ans = true;
-    for( int i(1); _ans and i < n; ++ i ){
-      if( ( dp[i] bitor dp[i + 1] ) not_eq a[i] ) _ans = false;
-      if( ( dp[i] bitand dp[i + 1] ) not_eq b[i] ) _ans = false;
+  cin >> n >> m;
+  s = m + n;
+  k = ( 1. + sqrt( 1 + 8 * s ) ) / 2 - 1;
+  FORD( i, k, 1 ){
+    if( n >= i ){
+      a.EB( i );
+      n -= i;
+      // cout << i << " to a\n";
     }
-    if( _ans ){
-      cout << "YES\n";
-      FOR( i, 1, n + 1 ) cout << dp[i] << ( i not_eq n ? " " : "\n" );
-      exit(0);
+    else if( m >= i ){
+      b.EB( i );
+      m -= i;
+      // cout << i << " to b\n";
     }
   }
-  cout << "NO\n";
+  cout << a.size() << '\n';
+  REP( i, (ll)a.size() ) cout << a[i] << ( i + 1 != (ll)a.size() ? " " : "\n" );
+  cout << b.size() << '\n';
+  REP( i, (ll)b.size() ) cout << b[i] << ( i + 1 != (ll)b.size() ? " " : "\n" );
   return 0;
 }
