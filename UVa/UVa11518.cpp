@@ -97,11 +97,40 @@ struct myHash {
 #define cntSetBits(x) __builtin_popcount(x)
 #define cntSetBitsl(x) __builtin_popcountl(x)
 #define cntSetBitsll(x) __builtin_popcountll(x)
+constexpr bool V = true, NV = false;
+constexpr int MAXN = 10010;
+vector<vi> g( MAXN, vi() );
+bitset<MAXN> v( 0 );
+int n, m, l, ans;
+
+void dfs( int u ){
+  if( v[u] ) return;
+  ans ++;
+  v[u] = V;
+  for( auto p : g[u] ){
+    dfs( p );
+  }
+}
 
 int main(void){
-  int n;
+  int tc;
   fastio;
-  cin >> n;
-
+  cin >> tc;
+  for( int _ = 1; _ <= tc; ++ _ ){
+    cin >> n >> m >> l;
+    int x, y;
+    REP( i, m ){
+      cin >> x >> y;
+      g[x].EB( y );
+    }
+    ans = 0;
+    REP( i, l ){
+      cin >> y;
+      dfs( y );
+    }
+    cout << ans << '\n';
+    REP( i, n + 1 ) g[i].clear();
+    v.reset();
+  }
   return 0;
 }

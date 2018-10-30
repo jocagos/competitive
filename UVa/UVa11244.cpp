@@ -97,11 +97,40 @@ struct myHash {
 #define cntSetBits(x) __builtin_popcount(x)
 #define cntSetBitsl(x) __builtin_popcountl(x)
 #define cntSetBitsll(x) __builtin_popcountll(x)
+constexpr int MAXN = 105;
+constexpr bool V = true, NV = false;
+int n, m, stars = 0;
+char g[MAXN][MAXN];
+bool v[MAXN][MAXN];
 
-int main(void){
-  int n;
+int dfs( int x, int y, int _ = 1 ){
+  if( v[x][y] ) return _;
+  v[x][y] = V;
+  for( auto p : n8 ){
+    if( in( 0, n - 1, x + p.fi ) and in( 0, m - 1, y + p.se ) ){
+      if( g[x + p.fi][y + p.se] == '*' ) _ = max( _, dfs( x + p.fi, y + p.se, _ + 1 ) );
+    }
+  }
+  return _;
+}
+
+int main(void){;
   fastio;
-  cin >> n;
-
+  while( cin >> n >> m, n | m ){
+    REP( i, n ){
+      REP( j, m ) cin >> g[i][j];
+    }
+    stars = 0;
+    REP( i, n ){
+      REP( j, m ){
+	if( g[i][j] == '*' and not v[i][j] ){
+	  int q = dfs( i, j );
+	  if( q == 1 ) stars ++;
+	}
+      }
+    }
+    cout << stars << endl;
+    memset( v, 0, sizeof v );
+  }
   return 0;
 }

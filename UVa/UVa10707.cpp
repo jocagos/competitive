@@ -1,3 +1,4 @@
+// Place 45 in uHunt!
 #include <bits/stdc++.h>
 #include <ext/pb_ds/tree_policy.hpp>
 #include <ext/pb_ds/trie_policy.hpp>
@@ -65,6 +66,12 @@ struct myHash {
   }
 };
 
+struct PHash {
+  size_t operator()( const ii& x ) const {
+    return hash<ll>()( ( (ll) x.first ) ^ ( ( (ll) x.second ) << 32 ) );
+  }
+};
+
 // easy access/use
 #define fastio ios::sync_with_stdio(0); cin.tie(0); cout.tie(0)
 #define view(x) cout << #x << ": " << x << endl;
@@ -97,11 +104,102 @@ struct myHash {
 #define cntSetBits(x) __builtin_popcount(x)
 #define cntSetBitsl(x) __builtin_popcountl(x)
 #define cntSetBitsll(x) __builtin_popcountll(x)
+constexpr bool V = true, NV = false;
+constexpr int MAXN = 105;
+constexpr int MAXIC = MAXN * MAXN / 2;
+// left: same row / right: diff row
+// assign a value given the shape and number of neighbors
+const int iso[3][3] = { { 0, 1, 2 }, { 1, 5, 3 }, { 2, 3, 4 } }; // { { { 0, 0 }, 0 }, { { 1, 0 }, 1 }, { { 0, 1 }, 1 }, { { 1, 1 }, 5 }, { { 0, 2 }, 2 }, { { 2, 0 }, 2 }, { { 1, 2 }, 3 }, { { 2, 1 }, 3 }, { { 2, 2 }, 4 } };
+int n, m, p;
+
+bool f[MAXN][MAXN], v[MAXN][MAXN];
+int g1[MAXIC], g2[MAXIC];
+
+int bfs( int x, int y ){
+  int s = 0;
+  if( v[x][y] ) return s;
+  queue<ii> q;
+  q.emplace( x, y );
+  while( not q.empty() ){
+    ii u = q.front();
+    q.pop();
+    if( v[u.fi][u.se] ) continue;
+    v[u.fi][u.se] = V;
+    ii t = { 0, 0 };
+    if( u.fi > 0 ){
+      if( f[u.fi - 1][u.se] ){
+	t.fi ++;
+	if( not v[u.fi - 1][u.se] ) q.emplace( u.fi - 1, u.se );
+      }
+    }
+    if( u.fi + 1 < n ){
+      if( f[u.fi + 1][u.se] ){
+	t.fi ++;
+	if( not v[u.fi + 1][u.se] ) q.emplace( u.fi + 1, u.se );
+      }
+    }
+    if( u.se > 0 ){
+      if( f[u.fi][u.se - 1] ){
+	t.se ++;
+	if( not v[u.fi][u.se - 1] ) q.emplace( u.fi, u.se - 1 );
+      }
+    }
+    if( u.se + 1 < m ){
+      if( f[u.fi][u.se + 1] ){
+	t.se ++;
+	if( not v[u.fi][u.se + 1] ) q.emplace( u.fi, u.se + 1 );
+      }
+    }
+    s += iso[t.fi][t.se];
+  }
+  return s;
+}
 
 int main(void){
-  int n;
+  int tc;
   fastio;
-  cin >> n;
-
+  cin >> tc;
+  while( tc -- ){
+    cin >> n >> m >> p;
+    int x, y, idx = 0, maxIdx = 0;
+    REP( i, p ){
+      cin >> x >> y;
+      f[x][y] = V;
+    }
+    REP( i, n ){
+      REP( j, m ){
+	if( f[i][j] and not v[i][j] ){
+	  g1[idx++] = bfs( i, j );
+	}
+      }
+    }
+    memset( f, 0, sizeof f );
+    memset( v, 0, sizeof v );
+    maxIdx = idx;
+    idx = 0;
+    REP( i, p ){
+      cin >> x >> y;
+      f[x][y] = V;
+    }
+    REP( i, n ){
+      REP( j, m ){
+	if( f[i][j] and not v[i][j] ){
+	  g2[idx++] = bfs( i, j );
+	}
+      }
+    }
+    bool ans = true;
+    sort( g1, g1 + maxIdx );
+    sort( g2, g2 + maxIdx );
+    for( int i = 0; ans and i < maxIdx; ++ i ){
+      if( g1[i] != g2[i] ) ans = false;
+    }
+    if( ans ) cout << "YES\n";
+    else cout << "NO\n";
+    memset( f, 0, sizeof f );
+    memset( v, 0, sizeof v );
+    memset( g1, 0, sizeof g1 );
+    memset( g2, 0, sizeof g2 );
+  }
   return 0;
 }
