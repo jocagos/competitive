@@ -98,44 +98,18 @@ struct myHash {
 #define cntSetBitsl(x) __builtin_popcountl(x)
 #define cntSetBitsll(x) __builtin_popcountll(x)
 
-int mat[10][10];
-
-int row[8], tc, m = INT_MIN;
-// bitset<32> rw, ld, rd;
-
-bool place( int r, int c ){
-  for( int p = 0; p < c; ++ p )
-    if( row[p] == r or ( abs( row[p] - r ) == abs(p - c) ) ) return false;
-  return true;
-}
-
-void backtrack( int c ){
-  if( c == 8 ){
-    int s = 0;
-    // cerr << '\"';
-    REP( i, 8 ) s += mat[i][row[i]];// , cerr << row[i]
-    // cerr << "\"," << endl;
-    m = max( m, s );
-  }
-  REP( r, 8 ){
-    if( place( r, c ) ){
-      row[c] = r;
-      backtrack( c + 1 );
-    }
-  }
-}
-
-
-int main(){
+int main(void){
+  string line;
   fastio;
-  cin >> tc;
-  while( tc -- ){
-    m = INT_MIN;
-    // cerr << "{\n";
-    REP( i, 8 ) REP( j, 8 ) cin >> mat[i][j];
-    backtrack( 0 );
-    // cerr << "}\n";
-    cout << setw(5) << m << '\n';;
-  }  
+  while( getline( cin, line ) ){
+    istringstream iss( line );
+    string s;
+    while( iss >> s ){
+      if( !iss.eof() ) cout << " ";
+      if( isIn( s[0], {'a', 'A', 'e', 'E', 'i', 'I', 'o', 'O', 'u', 'U'} ) ) cout << s << "ay";
+      else cout << s.substr( 1 ) << s[0] << "ay";
+    }
+    cout << '\n';
+  }
   return 0;
 }

@@ -8,7 +8,6 @@ using namespace std;
 using namespace __gnu_pbds;
 
 typedef long long ll;
-typedef unsigned long long i64;
 typedef long double ld;
 typedef pair<int, int> ii;
 typedef pair<double, double> dd;
@@ -35,42 +34,11 @@ typedef trie<string, null_type, trie_string_access_traits<>, pat_trie_tag, trie_
 const int INF = (int) 1e9 + 7;
 const ll LLINF = (ll) 4e18 + 7;
 const double pi = acos(-1.0);
-constexpr ii n8[8] = { { -1, -1 }, { -1, 0 }, { -1, 1 }, { 0, -1 }, { 0, 1 }, { 1, -1 }, { 1, 0 }, { 1, 1 } }, n4[4] = { { -1, 0 }, { 0, -1 }, { 0, 1 }, { 1, 0 } };
-// /* slaps vector */ This bad boy can hold SO MANY
-// values to compare a value to!
-template<typename T>
-bool isIn( T const &value, std::vector<T>& v ){
-  return std::find( v.begin(), v.end(), value ) != v.end();
-}
-// /* slaps initializer_list */ And THIS bad boy can hold
-// ANY initializer_list with the same type as the value
-// to look forward!
-template<typename T>
-bool isIn( T const &value, std::initializer_list<T> v ){
-  return std::find( v.begin(), v.end(), value ) != v.end();
-}
-
-// Took it from CodeForces, great hash for anti-hacking maps and sets
-struct myHash {
-  static i64 splitmix64( i64 x ) {
-    x += 0x9e3779b97f4a7c15;
-    x = (x ^ (x >> 30)) * 0xbf58476d1ce4e5b9;
-    x = (x ^ (x >> 27)) * 0x94d049bb133111eb;
-    return x ^ (x >> 31);
-  }
-
-  size_t operator()( i64 x ) const {
-    static const i64 FIXED_RANDOM = chrono::steady_clock::now().time_since_epoch().count();
-    return splitmix64(x + FIXED_RANDOM);
-  }
-};
-
 // easy access/use
 #define fastio ios::sync_with_stdio(0); cin.tie(0); cout.tie(0)
 #define view(x) cout << #x << ": " << x << endl;
 #define sz(c) (int)((c).size())
 #define all(c) (c).begin(), (c).end()
-#define in( a, b, x ) ( (a) <= (x) and (x) <= (b) )
 #define justN(c, n) (c).begin(), (c).begin() + n
 #define sq(a) (a) * (a)
 #define fi first
@@ -98,44 +66,74 @@ struct myHash {
 #define cntSetBitsl(x) __builtin_popcountl(x)
 #define cntSetBitsll(x) __builtin_popcountll(x)
 
-int mat[10][10];
+constexpr int MAXN(1000001);
+constexpr int MOD(987654321);
 
-int row[8], tc, m = INT_MIN;
-// bitset<32> rw, ld, rd;
+bitset<MAXN> sieve; // Check list
+vector<int> primes( 100000 );
+int idx = 0;
 
-bool place( int r, int c ){
-  for( int p = 0; p < c; ++ p )
-    if( row[p] == r or ( abs( row[p] - r ) == abs(p - c) ) ) return false;
+bool isPrime( ll n ){
+  if( n < MAXN ) return sieve[n];
+  for( int i = 0; i < idx; ++ i ){
+    if( n % primes[i] == 0 ) return false;    
+  }
   return true;
 }
 
-void backtrack( int c ){
-  if( c == 8 ){
-    int s = 0;
-    // cerr << '\"';
-    REP( i, 8 ) s += mat[i][row[i]];// , cerr << row[i]
-    // cerr << "\"," << endl;
-    m = max( m, s );
-  }
-  REP( r, 8 ){
-    if( place( r, c ) ){
-      row[c] = r;
-      backtrack( c + 1 );
+void atkin(){
+  if (MAXN > 2)
+    primes[idx ++] = 2;
+  if (MAXN > 3)
+    primes[idx ++] = 3;
+
+  for (ll i = 0; i < MAXN; i++)
+    sieve[i] = 0;
+
+  for (ll x = 1; x * x < MAXN; x++) {
+    for (ll y = 1; y * y < MAXN; y++) {
+      ll n = (4 * x * x) + (y * y);
+      if (n <= MAXN && (n % 12 == 1 || n % 12 == 5))
+	sieve[n] = sieve[n] ^ 1;
+      n = (3 * x * x) + (y * y);
+      if (n <= MAXN && n % 12 == 7)
+	sieve[n] = sieve[n] ^ 1;
+      n = (3 * x * x) - (y * y);
+      if (x > y && n <= MAXN && n % 12 == 11)
+	sieve[n] = sieve[n] ^ 1;
     }
   }
+  for (ll r = 5; r * r < MAXN; r++) {
+    if (sieve[r])
+      for (ll i = r * r; i < MAXN; i += r * r)
+	sieve[i] = 0;
+  }
+
+  for (ll a = 5; a < MAXN; a++)
+    if (sieve[a])
+      primes[idx ++] = a;
+  sieve[2] = sieve[3] = 1;
 }
 
+ll divs( ll n ){
+  ll res = n;
+  ll s = 0;
+  ll i = 0;
+  if( isPrime( n ) ) return 1;
+  while( res ){
+    if( res % primes[i] == 0 ){
+      return res / primes[i];
+    }
+    else i ++;
+  }
+  return s;
+}
 
-int main(){
+int main(void){
+  ll n;
   fastio;
-  cin >> tc;
-  while( tc -- ){
-    m = INT_MIN;
-    // cerr << "{\n";
-    REP( i, 8 ) REP( j, 8 ) cin >> mat[i][j];
-    backtrack( 0 );
-    // cerr << "}\n";
-    cout << setw(5) << m << '\n';;
-  }  
+  atkin();
+  cin >> n;
+  cout << divs( n ) << '\n';
   return 0;
 }

@@ -36,6 +36,7 @@ const int INF = (int) 1e9 + 7;
 const ll LLINF = (ll) 4e18 + 7;
 const double pi = acos(-1.0);
 constexpr ii n8[8] = { { -1, -1 }, { -1, 0 }, { -1, 1 }, { 0, -1 }, { 0, 1 }, { 1, -1 }, { 1, 0 }, { 1, 1 } }, n4[4] = { { -1, 0 }, { 0, -1 }, { 0, 1 }, { 1, 0 } };
+constexpr bool V = true, NV = false;
 // /* slaps vector */ This bad boy can hold SO MANY
 // values to compare a value to!
 template<typename T>
@@ -97,45 +98,57 @@ struct myHash {
 #define cntSetBits(x) __builtin_popcount(x)
 #define cntSetBitsl(x) __builtin_popcountl(x)
 #define cntSetBitsll(x) __builtin_popcountll(x)
+constexpr int MAXN = 110;
+char g[MAXN][MAXN];
+bool v[MAXN][MAXN];
+int tc, m, n, a, b;
 
-int mat[10][10];
-
-int row[8], tc, m = INT_MIN;
-// bitset<32> rw, ld, rd;
-
-bool place( int r, int c ){
-  for( int p = 0; p < c; ++ p )
-    if( row[p] == r or ( abs( row[p] - r ) == abs(p - c) ) ) return false;
-  return true;
-}
-
-void backtrack( int c ){
-  if( c == 8 ){
-    int s = 0;
-    // cerr << '\"';
-    REP( i, 8 ) s += mat[i][row[i]];// , cerr << row[i]
-    // cerr << "\"," << endl;
-    m = max( m, s );
-  }
-  REP( r, 8 ){
-    if( place( r, c ) ){
-      row[c] = r;
-      backtrack( c + 1 );
+int dfs( int x, int y, int _ = 1 ){
+  if( v[x][y] ) return _;
+  v[x][y] = V;
+  g[x][y] = 'U';
+  for( auto p : n4 ){
+    if( in( 0, n - 1, x + p.fi ) and in( 0, m - 1, y + p.se ) ){
+      if( g[x + p.fi][y + p.se] == 'W' ) _ = max( _, dfs( x + p.fi, y + p.se, _ + 1 ) );
     }
   }
+  return _;
 }
 
-
-int main(){
+int main(void){
   fastio;
-  cin >> tc;
+  string line;
+  getline( cin, line );
+  tc = stoi( line );
+  getline( cin, line ); // whitespace
   while( tc -- ){
-    m = INT_MIN;
-    // cerr << "{\n";
-    REP( i, 8 ) REP( j, 8 ) cin >> mat[i][j];
-    backtrack( 0 );
-    // cerr << "}\n";
-    cout << setw(5) << m << '\n';;
-  }  
+    cin >> a >> b;
+    memset( v, false, sizeof v );
+    -- a; -- b;
+    n = 0;
+    getline( cin, line );
+    line = "-";
+    while( getline( cin, line ) and line != "" ){
+      m = line.length();
+      for( int i = 0; i < m; ++ i ) g[n][i] = ( line[i] == '1' ? 'L' : 'W' );
+      ++ n;
+    }
+    int _max = 0;
+    // REP( i, n ){
+    //   REP( j, m ){
+    // 	cout << g[i][j];
+    //   }
+    //   cout << endl;
+    // }
+    if( g[a][b] == 'W' ) cout << dfs( a, b ) << '\n';
+    else cout << "0\n";
+    // REP( i, n ){
+    //   REP( j, m ){
+    // 	cout << g[i][j];
+    //   }
+    //   cout << endl;
+    // }
+    if( tc ) cout << '\n';
+  }
   return 0;
 }

@@ -97,45 +97,35 @@ struct myHash {
 #define cntSetBits(x) __builtin_popcount(x)
 #define cntSetBitsl(x) __builtin_popcountl(x)
 #define cntSetBitsll(x) __builtin_popcountll(x)
+constexpr int MAXN = 25, MAXW = 110;
+ll dp[MAXN][MAXW];
+ll l[MAXN], n, k;
 
-int mat[10][10];
-
-int row[8], tc, m = INT_MIN;
-// bitset<32> rw, ld, rd;
-
-bool place( int r, int c ){
-  for( int p = 0; p < c; ++ p )
-    if( row[p] == r or ( abs( row[p] - r ) == abs(p - c) ) ) return false;
-  return true;
+ll ans( int i, int w ){
+  if( w <= 0 or i == k ) return 0;
+  if( dp[i][w] != -1 ) return dp[i][w];
+  if( l[i] > w ) return dp[i][w] = ans( i + 1, w );
+  return dp[i][w] = max( l[i] + ans( i + 1, w - l[i] ), ans( i + 1, w ) );
 }
 
-void backtrack( int c ){
-  if( c == 8 ){
-    int s = 0;
-    // cerr << '\"';
-    REP( i, 8 ) s += mat[i][row[i]];// , cerr << row[i]
-    // cerr << "\"," << endl;
-    m = max( m, s );
-  }
-  REP( r, 8 ){
-    if( place( r, c ) ){
-      row[c] = r;
-      backtrack( c + 1 );
-    }
-  }
-}
-
-
-int main(){
+int main(void){
   fastio;
-  cin >> tc;
-  while( tc -- ){
-    m = INT_MIN;
-    // cerr << "{\n";
-    REP( i, 8 ) REP( j, 8 ) cin >> mat[i][j];
-    backtrack( 0 );
-    // cerr << "}\n";
-    cout << setw(5) << m << '\n';;
-  }  
+  string line;
+  getline( cin, line );
+  n = stoll( line );
+  while( n -- ){
+    getline( cin, line );
+    istringstream iss( line );
+    k = 0;
+    memset( dp, -1, sizeof dp );
+    ll s = 0;
+    while( iss >> l[k] ){
+      s += l[k];
+      k ++;
+    }
+    if( s % 2 == 1 ) cout << "NO\n";
+    else if( ans( 0, s / 2 ) == s / 2 ) cout << "YES\n";
+    else cout << "NO\n";
+  }
   return 0;
 }

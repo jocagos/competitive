@@ -15,6 +15,7 @@ typedef pair<double, double> dd;
 typedef pair<ii, int> tern;
 typedef pair<ii, ii> quad;
 typedef vector<int> vi;
+typedef vector<string> vs;
 typedef vector<double> vd;
 typedef vector<ii> vii;
 typedef vector<dd> vdd;
@@ -36,6 +37,7 @@ const int INF = (int) 1e9 + 7;
 const ll LLINF = (ll) 4e18 + 7;
 const double pi = acos(-1.0);
 constexpr ii n8[8] = { { -1, -1 }, { -1, 0 }, { -1, 1 }, { 0, -1 }, { 0, 1 }, { 1, -1 }, { 1, 0 }, { 1, 1 } }, n4[4] = { { -1, 0 }, { 0, -1 }, { 0, 1 }, { 1, 0 } };
+constexpr bool V = true, NV = false;
 // /* slaps vector */ This bad boy can hold SO MANY
 // values to compare a value to!
 template<typename T>
@@ -67,6 +69,7 @@ struct myHash {
 
 // easy access/use
 #define fastio ios::sync_with_stdio(0); cin.tie(0); cout.tie(0)
+#define prepare( cont, n ) (cont).clear(); (cont).resize( n )
 #define view(x) cout << #x << ": " << x << endl;
 #define sz(c) (int)((c).size())
 #define all(c) (c).begin(), (c).end()
@@ -97,45 +100,66 @@ struct myHash {
 #define cntSetBits(x) __builtin_popcount(x)
 #define cntSetBitsl(x) __builtin_popcountl(x)
 #define cntSetBitsll(x) __builtin_popcountll(x)
+constexpr int MAXN = 110;
+int n, m;
+vs b;
+unordered_map<string, int> b2i;
+vector<vi> g;
+bool v[MAXN];
+vi ts;
+int d[MAXN];
 
-int mat[10][10];
-
-int row[8], tc, m = INT_MIN;
-// bitset<32> rw, ld, rd;
-
-bool place( int r, int c ){
-  for( int p = 0; p < c; ++ p )
-    if( row[p] == r or ( abs( row[p] - r ) == abs(p - c) ) ) return false;
-  return true;
-}
-
-void backtrack( int c ){
-  if( c == 8 ){
-    int s = 0;
-    // cerr << '\"';
-    REP( i, 8 ) s += mat[i][row[i]];// , cerr << row[i]
-    // cerr << "\"," << endl;
-    m = max( m, s );
-  }
-  REP( r, 8 ){
-    if( place( r, c ) ){
-      row[c] = r;
-      backtrack( c + 1 );
+void ktsort(){
+  // we need a min queue
+  std::priority_queue<int, vector<int>, greater<int>> pq;
+  // emplace all degree 0 vertices
+  for( int i = 0; i < n; ++ i ) if( d[i] == 0 ) pq.emplace( i );
+  while( not pq.empty() ){
+    int u = pq.top(); // remove min
+    pq.pop();
+    for( auto p : g[u] ){ // for all ongoing vertices
+      d[p] --; // decrease degree/remove edges
+      if( d[p] == 0 ) pq.emplace( p ); // if degree is zero, enqueue it
     }
+    // add it to the toposort
+    ts.EB( u );
   }
-}
+} // we end with the BFS unique topological sort
 
-
-int main(){
+int main(void){
   fastio;
-  cin >> tc;
-  while( tc -- ){
-    m = INT_MIN;
-    // cerr << "{\n";
-    REP( i, 8 ) REP( j, 8 ) cin >> mat[i][j];
-    backtrack( 0 );
-    // cerr << "}\n";
-    cout << setw(5) << m << '\n';;
-  }  
+  string line, s, t;
+  int tc = 1;
+  while( getline( cin, line ) ){
+    // clear memory
+    b2i.clear();
+    n = stoi( line );
+    prepare( b, n );
+    prepare( g, n );
+    memset( d, 0, sizeof d );
+    ts.clear();
+    memset( v, false, sizeof v );
+    // get beverages
+    REP( i, n ){
+      getline( cin, line );
+      b[i] = line; // save it
+      b2i[line] = i; // assign an index
+    }
+    getline( cin, line );
+    m = stoi( line );
+    // get edges
+    REP( i, m ){
+      getline( cin, line );
+      istringstream iss( line );
+      iss >> s >> t; // get from to
+      g[b2i[s]].EB(b2i[t]); // add it to the adjList
+      d[b2i[t]]++; // add to degree
+    }
+    cout << "Case #" << tc++ << ": Dilbert should drink beverages in this order:";
+    ktsort(); // khan's algorithm
+    for( auto u : ts ) cout << " " << b[u];
+    cout << ".\n\n";
+    getline( cin, line ); // whitespace
+  }
   return 0;
 }

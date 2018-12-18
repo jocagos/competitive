@@ -114,8 +114,8 @@ int main(void){
   fastio;
   cin >> tc;
   string line;
-  getline( cin, line ); // Get line after test cases
-  getline( cin, line ); // enter dummy line
+  getline( cin, line );
+  getline( cin, line );
   while( tc -- ){
     int n = 0, c = 0;
     getline( cin, line );

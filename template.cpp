@@ -15,6 +15,7 @@ typedef pair<double, double> dd;
 typedef pair<ii, int> tern;
 typedef pair<ii, ii> quad;
 typedef vector<int> vi;
+typedef vector<string> vs;
 typedef vector<double> vd;
 typedef vector<ii> vii;
 typedef vector<dd> vdd;
@@ -36,6 +37,7 @@ const int INF = (int) 1e9 + 7;
 const ll LLINF = (ll) 4e18 + 7;
 const double pi = acos(-1.0);
 constexpr ii n8[8] = { { -1, -1 }, { -1, 0 }, { -1, 1 }, { 0, -1 }, { 0, 1 }, { 1, -1 }, { 1, 0 }, { 1, 1 } }, n4[4] = { { -1, 0 }, { 0, -1 }, { 0, 1 }, { 1, 0 } };
+constexpr bool V = true, NV = false;
 // /* slaps vector */ This bad boy can hold SO MANY
 // values to compare a value to!
 template<typename T>
@@ -67,6 +69,7 @@ struct myHash {
 
 // easy access/use
 #define fastio ios::sync_with_stdio(0); cin.tie(0); cout.tie(0)
+#define prepare( cont, n ) (cont).clear(); (cont).resize( n )
 #define view(x) cout << #x << ": " << x << endl;
 #define sz(c) (int)((c).size())
 #define all(c) (c).begin(), (c).end()
@@ -97,6 +100,7 @@ struct myHash {
 #define cntSetBits(x) __builtin_popcount(x)
 #define cntSetBitsl(x) __builtin_popcountl(x)
 #define cntSetBitsll(x) __builtin_popcountll(x)
+constexpr int MAXN = 0; // modify
 
 int main(void){
   int n;

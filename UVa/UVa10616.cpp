@@ -98,44 +98,31 @@ struct myHash {
 #define cntSetBitsl(x) __builtin_popcountl(x)
 #define cntSetBitsll(x) __builtin_popcountll(x)
 
-int mat[10][10];
+constexpr int MAXN( 210 ), MAXM( 12 ), MAXD( 25 );
 
-int row[8], tc, m = INT_MIN;
-// bitset<32> rw, ld, rd;
+vi a( MAXN, 0 );
+int n, q, m, d;
+ll dp[MAXN][MAXN][MAXM];
 
-bool place( int r, int c ){
-  for( int p = 0; p < c; ++ p )
-    if( row[p] == r or ( abs( row[p] - r ) == abs(p - c) ) ) return false;
-  return true;
+ll ans( int idx, int sum, int rem ){
+  if( rem == m and sum == 0 ) return 1;
+  if( rem == m and sum != 0 ) return 0;
+  if( idx == n ) return 0;
+  if( dp[idx][sum][rem] != -1 ) return dp[idx][sum][rem];
+  return dp[idx][sum][rem] = ans( idx + 1, sum % d, rem ) + ans( idx + 1, (sum + a[idx]) % d, rem + 1 );
 }
 
-void backtrack( int c ){
-  if( c == 8 ){
-    int s = 0;
-    // cerr << '\"';
-    REP( i, 8 ) s += mat[i][row[i]];// , cerr << row[i]
-    // cerr << "\"," << endl;
-    m = max( m, s );
-  }
-  REP( r, 8 ){
-    if( place( r, c ) ){
-      row[c] = r;
-      backtrack( c + 1 );
+int main(void){
+  fastio;
+  int _ = 1;
+  while( cin >> n >> q, n | q ){
+    cout << "SET " << _ ++ << ":\n";
+    REP( i, n ) cin >> a[i];
+    REP( i, q ){
+      cin >> d >> m;
+      memset( dp, -1, sizeof dp );
+      cout << "QUERY " << i + 1 << ": " << ans( 0, 0, 0 ) << '\n';
     }
   }
-}
-
-
-int main(){
-  fastio;
-  cin >> tc;
-  while( tc -- ){
-    m = INT_MIN;
-    // cerr << "{\n";
-    REP( i, 8 ) REP( j, 8 ) cin >> mat[i][j];
-    backtrack( 0 );
-    // cerr << "}\n";
-    cout << setw(5) << m << '\n';;
-  }  
   return 0;
 }
