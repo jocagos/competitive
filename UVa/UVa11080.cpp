@@ -101,66 +101,62 @@ struct myHash {
 #define cntSetBitsl(x) __builtin_popcountl(x)
 #define cntSetBitsll(x) __builtin_popcountll(x)
 constexpr int MAXN = 210;
-constexpr int BLACK = 1, WHITE = 0, NC = -1;
-int n, m;
-vi color( MAXN, NC );
-bool ans = true, v[MAXN];
+constexpr int NC = -1, BLACK = 1, WHITE = 0, UNK = 2;
+int tc, n, m, b = 0;
+bitset<MAXN> v( 0 );
 vector<vi> g;
+vi color( MAXN, NC );
+bool ans = true;
 
-// bicoloring with dfs, basically you start at 0, color it if it lacks a colour
-// then you send 1 - c as color (which is WHITE or BLACK always) BUT
-// if we find a connected component has the same colour as u
-// we mark ans as false and return in the next iteration
-void dfs( int u = 0, int c = BLACK ){ // default parameters, start at 0 and colour BLACK the first point
-  v[u] = V; // mark as visited
-  if( color[u] == NC ) color[u] = c; // color the node
-  for( auto p : g[u] ){
-    if( not ans ) return; // break in case it is not bipartite
-    if( not v[p] and color[p] == NC ) dfs( p, 1 - color[u] ); // color recursively
-    else if( color[p] == color[u] ) ans = false; // to break early
-  }
-}
-
-// with BFS it would be:
-void bfs( int u = 0 ){
+int bfs( int u = 0 ){
   queue<int> q;
+  int _b = 0, t = 0;
   q.push( u );
-  color[u] = BLACK; // or WHITE, it doesn't matter
-  while( not q.empty() and ans ){ // to break early
-    int p = q.front(); q.pop();
-    for( auto r : g[p] ){
-      if( color[r] == NC ){ // if not colored
-	color[r] = 1 - color[p]; // color it
-	q.push( r ); // and enqueue it
+  color[u] = BLACK;
+  while( not q.empty() and ans ){
+    u = q.front(); q.pop();
+    ++ t;
+    v[u] = V;
+    if( color[u] == BLACK ) ++ _b;
+    for( auto p : g[u] ){
+      if( color[p] == NC and not v[p] ){
+	color[p] = 1 - color[u];
+	q.push( p );
       }
-      else if( color[r] == color[p] ) ans = false; // we don't need to break immediately
+      else if( color[u] == color[p] ) return -1;
     }
   }
+  if( t == 1 ) return 1;
+  return min( _b, t - _b );
 }
 
 int main(void){
   fastio;
-  while( cin >> n, n ){
-    memset( v, false, sizeof v );
+  cin >> tc;
+  while( tc -- ){
+    cin >> n >> m;
+    color.assign( n, NC );
+    g.assign( n, vi() );
+    v.reset();
+    b = 0;
     ans = true;
-    fill( all( color ), NC );
-    prepare( g, n );
-    cin >> m;
     REP( i, m ){
       int x, y;
       cin >> x >> y;
       g[x].EB( y );
       g[y].EB( x );
     }
-    dfs(); // we would switch to bfs() here
-    if( ans ) cout << "BICOLORABLE.\n";
-    else cout << "NOT BICOLORABLE.\n";
-    // to check graph by color, node, and connections
-    // REP( i, n ){
-    //   cout << "Node (" << i << ", " << (color[i] ? "B" : "W") << "): {";
-    //   REP( j, (int)g[i].size() ) cout << " (" << g[i][j] << ", " << (color[g[i][j]] ? "B" : "W") << ")";
-    //   cout << "}\n";
-    // }
+    int mi = 0;
+    REP( i, n ){
+      if( not ans ) break;
+      if( not v[i] ){
+	int a = bfs( i );
+	if( a == -1 ) ans = false;
+	else mi += a;
+      }
+    }
+    if( ans ) cout << mi << '\n';
+    else cout << "-1\n";
   }
   return 0;
 }
