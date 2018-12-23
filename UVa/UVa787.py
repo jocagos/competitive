@@ -1,39 +1,27 @@
-import sys
+# 0.010s in UVa Online Judge!
+# The only way to improve it is by implementing BigInteger in C++ and optimize it
+import sys, math
 
 
-def cntNegs(_list):
-    n = 0
-    for i in _list:
-        if i < 0:
-            n += 1
-    return n
+ans = [[int(y) for y in x.replace('\n', '').split()] for x in sys.stdin.read().split('-999999') if x]
+for l in ans:
+    if len(l) == 0:
+        continue
+    z, p, n = l[0], None, None # set min for kadane-like max 1d range product
+    for a in l:
+        if a == 0:
+            if z < a: z = a
+            p, n = None, None
+            continue
+        elif a < 0:
+            t = n
+            n = a if p is None else p * a
+            p = None if t is None else t * a
 
-def getLNeg(_list):
-    for i in range(len(_list)):
-        if _list[i] < 0:
-            return i
-    return -1
-
-def getRNeg(_list):
-    for i in range(1, len(_list)+1):
-        if _list[-i] < 0:
-            return len(_list) - i
-    return -1
-
-for line in sys.stdin:
-    vals = line.split()
-    vals = vals[:len(vals)-1]
-    vals = [int(n) for n in vals]
-    prod = 1
-    negs = cntNegs(vals)
-    leftNeg, rightNeg = -1, -1
-    if negs >= 1:
-        leftNeg = getLNeg(vals)
-        rightNeg = getRNeg(vals)
-        if leftNeg != rightNeg:
-            
-    for v in vals:
-        if v == vals[len(vals)-1]:
-            break
-        prod *= v
-    print(prod)
+        else:
+            n = None if n is None else n * a
+            p = a if p is None else p * a
+        z = n if n is not None and z < n else z
+        z = p if p is not None and z < p else z
+    print(z)
+        

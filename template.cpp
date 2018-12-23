@@ -70,7 +70,8 @@ struct myHash {
 // easy access/use
 #define fastio ios::sync_with_stdio(0); cin.tie(0); cout.tie(0)
 #define prepare( cont, n ) (cont).clear(); (cont).resize( n )
-#define view(x) cout << #x << ": " << x << endl;
+#define viewStr(s) cout << #s << ": >" << (s) << "<" << endl
+#define view(x) cout << #x << ": " << x << endl
 #define sz(c) (int)((c).size())
 #define all(c) (c).begin(), (c).end()
 #define in( a, b, x ) ( (a) <= (x) and (x) <= (b) )
