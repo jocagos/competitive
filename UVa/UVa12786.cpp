@@ -101,40 +101,47 @@ struct myHash {
 #define cntSetBits(x) __builtin_popcount(x)
 #define cntSetBitsl(x) __builtin_popcountl(x)
 #define cntSetBitsll(x) __builtin_popcountll(x)
-constexpr int MAXN = 0; // modify
-/* FAST I/O for integers
- * USE: just add the characters to `buf` and check if you are close to overflow
- * and if so just print `buf` then reset iterator to buf.
+constexpr int MAXN = 10010;
+vi a( MAXN, 0 ), dp( MAXN, -1 );
 char buf[10000000];
-constexpr int ZERO = 0, NEWLINE = 1, WHITESPACE = 2;
 
 // let's try it again lmao
+// 3rd place lololol
 int next_int( void ){
   char c;
-  do{ c = getchar_unlocked(); } while( c != '-' and !isdigit( c ) );
+  // well I had to modify it to read the EOF and quit
+  do{ c = getchar_unlocked(); } while( c != '-' and !isdigit( c ) and c != EOF );
+  if( c == EOF ) return EOF;
   bool neg = (c == '-');
   int r = neg ? 0 : c - '0';
   while( isdigit( c = getchar_unlocked() ) ) r = 10 * r + (c - '0');
   return neg ? -r : r;
 }
 
-int print_int( int N, int idx, int nd = ZERO ){
-  if( N < 10 ) buf[idx ++] = N + '0';
-  else{
-    buf[idx ++] = (N / 10) + '0';
-    buf[idx ++] = N % 10 + '0';
-  }
-  if( nd == WHITESPACE ) buf[idx ++] = ' ';
-  else if( nd == NEWLINE ) buf[idx ++] = '\n';
-  else buf[idx ++] = '\0';
-  return idx;
-}
- */
-
 int main(void){
-  int n;
-  fastio;
-  cin >> n;
-
+  int n, idx = 0;
+  // now trying one with a ridiculous amount of time wtf
+  // I see why the time, it has a ridiculous amount of input
+  while( (n = next_int()) != EOF ){
+    //while( scanf("%d", &n), n ){ // cin >> n, n
+    REP( i, n ) a[i] = next_int();//scanf("%d", &a[i]); // cin >> a[i]
+    sort( justN( a, n ), greater<int>() );
+    REP( i, n ) dp[i] = a[i] + (i > 0 ? dp[i - 1] : 0);
+    bool ans = ( dp[n - 1] % 2 ? false : true );
+    for( int k = 0; k < n and ans; ++ k ){
+      int sum = (k + 1) * k;
+      FOR( i, k + 1, n ) sum += min( a[i], k + 1 );
+      if( sum < dp[k] ) ans = false;
+    }
+    if( ans ) buf[idx ++] = '1';
+      // putchar_unlocked('1'); // cout << "Possible\n";
+      // putchar_unlocked('\n');
+    else buf[idx ++] = '0';
+      // putchar_unlocked('0'); // cout << "Possible\n";
+      // putchar_unlocked('\n');
+    buf[idx ++] = '\n';
+  }
+  buf[idx] = '\0';
+  fprintf( stdout, buf );// well this certainly was better than using putchar_unclocked()! Got place 3 with this neat trick
   return 0;
 }

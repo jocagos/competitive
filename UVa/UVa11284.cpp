@@ -101,40 +101,75 @@ struct myHash {
 #define cntSetBits(x) __builtin_popcount(x)
 #define cntSetBitsl(x) __builtin_popcountl(x)
 #define cntSetBitsll(x) __builtin_popcountll(x)
-constexpr int MAXN = 0; // modify
-/* FAST I/O for integers
- * USE: just add the characters to `buf` and check if you are close to overflow
- * and if so just print `buf` then reset iterator to buf.
-char buf[10000000];
-constexpr int ZERO = 0, NEWLINE = 1, WHITESPACE = 2;
+constexpr int MAXN = 55, MAXP = 13, MAXM = 110;
+ll dist[MAXN][MAXN], dp[MAXP][1<<MAXP];
+ll A[MAXP], B[MAXP], ans;
+int n, m, p;
 
-// let's try it again lmao
-int next_int( void ){
-  char c;
-  do{ c = getchar_unlocked(); } while( c != '-' and !isdigit( c ) );
-  bool neg = (c == '-');
-  int r = neg ? 0 : c - '0';
-  while( isdigit( c = getchar_unlocked() ) ) r = 10 * r + (c - '0');
-  return neg ? -r : r;
-}
-
-int print_int( int N, int idx, int nd = ZERO ){
-  if( N < 10 ) buf[idx ++] = N + '0';
-  else{
-    buf[idx ++] = (N / 10) + '0';
-    buf[idx ++] = N % 10 + '0';
+ll tsp( ll mask, ll pos ){
+  if( mask == 0 ) return 0LL;
+  if( dp[mask][pos] != -INF ) return dp[mask][pos];
+  ll m = -INF;
+  REP( i, p + 1 ){
+    if( (mask & (1 << i)) != 0 and pos != i ){
+      m = max( m, tsp( mask - (1 << pos), i ) - dist[A[i]][A[pos]] + B[pos] );
+    }
   }
-  if( nd == WHITESPACE ) buf[idx ++] = ' ';
-  else if( nd == NEWLINE ) buf[idx ++] = '\n';
-  else buf[idx ++] = '\0';
-  return idx;
+  if( mask == (1 << pos) ) m = -dist[A[pos]][0] + B[pos];
+  if( ans < m - dist[A[pos]][0] ) ans = m - dist[A[pos]][0];
+  return dp[mask][pos] = m;
 }
- */
 
 int main(void){
-  int n;
+  int tc;
   fastio;
-  cin >> n;
-
+  cin >> tc;
+  while( tc -- ){
+    cin >> n >> m;
+    REP( i, n + 1 ){
+      REP( j, n + 1 ){
+	dist[i][j] = INF;
+      }
+    }
+    REP( i, m ){
+      int a, b;
+      double c;
+      cin >> a >> b >> c;
+      dist[b][a] = dist[a][b] = min( dist[a][b], (ll)(c * 100) );
+    }
+    cin >> p;
+    int vals[MAXN] {};
+    int np = 0;
+    FOR( i, 1, p + 1 ){
+      double b;
+      cin >> A[i] >> b;
+      vals[A[i]] += b * 100;
+    }
+    FOR( i, 1, n + 1 ){
+      if( vals[i] ){
+	np ++;
+	A[np] = i;
+	B[np] = vals[i];
+      }
+    }
+    p = np;
+    // APSP - Floyd Warshall
+    REP( i, n + 1 ){
+      REP( j, n + 1 ){
+	REP( k, n + 1 ){
+	  if( dist[j][k] > dist[j][i] + dist[i][k] ) dist[j][k] = dist[j][i] + dist[i][k];
+	}
+      }
+    }
+    int f = (1 << (p + 1));
+    REP( i, f ){
+      REP( j, p + 1 ) dp[i][j] = -INF;
+    }
+    dist[0][0] = 0;
+    ans = 0;
+    tsp( f, 0 );
+    if( ans == 0 ) cout << "Don't leave the house\n";
+    else cout << "Daniel can save $" << fixed << setprecision( 2 ) << 1.0 * ans / 100 << '\n';
+  }
   return 0;
 }

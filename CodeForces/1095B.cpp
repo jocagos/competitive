@@ -101,40 +101,22 @@ struct myHash {
 #define cntSetBits(x) __builtin_popcount(x)
 #define cntSetBitsl(x) __builtin_popcountl(x)
 #define cntSetBitsll(x) __builtin_popcountll(x)
-constexpr int MAXN = 0; // modify
-/* FAST I/O for integers
- * USE: just add the characters to `buf` and check if you are close to overflow
- * and if so just print `buf` then reset iterator to buf.
-char buf[10000000];
-constexpr int ZERO = 0, NEWLINE = 1, WHITESPACE = 2;
-
-// let's try it again lmao
-int next_int( void ){
-  char c;
-  do{ c = getchar_unlocked(); } while( c != '-' and !isdigit( c ) );
-  bool neg = (c == '-');
-  int r = neg ? 0 : c - '0';
-  while( isdigit( c = getchar_unlocked() ) ) r = 10 * r + (c - '0');
-  return neg ? -r : r;
-}
-
-int print_int( int N, int idx, int nd = ZERO ){
-  if( N < 10 ) buf[idx ++] = N + '0';
-  else{
-    buf[idx ++] = (N / 10) + '0';
-    buf[idx ++] = N % 10 + '0';
-  }
-  if( nd == WHITESPACE ) buf[idx ++] = ' ';
-  else if( nd == NEWLINE ) buf[idx ++] = '\n';
-  else buf[idx ++] = '\0';
-  return idx;
-}
- */
+constexpr int MAXN = 100010;
+vi a( MAXN, 0 );
 
 int main(void){
   int n;
   fastio;
   cin >> n;
-
+  REP( i, n ) cin >> a[i];
+  sort( justN( a, n ) );
+  if( n > 2 ){
+    int w = a[0], x = a[1], y = a[n-1], z = a[n-2], ins = a[n-1] - a[0];
+    int X = y - x, Y = z - w;
+    cout << min( { X, Y, ins } ) << '\n';
+    // if( x - w > y - z and y - x < ins ) cout << y - x << '\n';
+    // else if( y - z >= x - w and z - w < ins ) cout << z - w << '\n';
+  }
+  else cout << "0\n";
   return 0;
 }

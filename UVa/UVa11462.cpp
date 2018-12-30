@@ -101,10 +101,8 @@ struct myHash {
 #define cntSetBits(x) __builtin_popcount(x)
 #define cntSetBitsl(x) __builtin_popcountl(x)
 #define cntSetBitsll(x) __builtin_popcountll(x)
-constexpr int MAXN = 0; // modify
-/* FAST I/O for integers
- * USE: just add the characters to `buf` and check if you are close to overflow
- * and if so just print `buf` then reset iterator to buf.
+constexpr int MAXN = 10010;
+int arr[110];
 char buf[10000000];
 constexpr int ZERO = 0, NEWLINE = 1, WHITESPACE = 2;
 
@@ -129,12 +127,39 @@ int print_int( int N, int idx, int nd = ZERO ){
   else buf[idx ++] = '\0';
   return idx;
 }
- */
 
-int main(void){
-  int n;
-  fastio;
-  cin >> n;
-
+int main(){
+  int n, i, t, last = 0, idx = 0;
+  while( (n = next_int()) ){
+    if( idx >= 9990000 ){
+      buf[idx ++] = '\0';
+      fprintf( stdout, buf );
+      // fwrite( buf, sizeof(char), (bf - buf) * sizeof(char), stdout );
+      idx = 0;
+    }
+    for( i = 0; i < n; ++ i ){
+      t = next_int();
+      arr[t] ++;
+      if( t > last ) last = t;
+    }
+    for( i = 0; i <= last; ++i ){
+      if( arr[i] ){
+  	for( t = 0; t < arr[i]; ++ t ){
+  	  if( n > 1 ){
+	    idx = print_int( i, idx, WHITESPACE );
+	    n --;
+	  }
+  	  else{
+	    idx = print_int( i, idx, NEWLINE );
+	    n --;
+	  }
+  	}
+  	arr[i] = 0;
+      }
+    }
+    last = 0;
+  }
+  buf[idx ++] = '\0';
+  fprintf( stdout, buf );
   return 0;
 }

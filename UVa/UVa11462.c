@@ -11,7 +11,7 @@ int main(){
       arr[t]++;
       if( t > last ) last = t;
     }
-    for( i = 0; i <= last; ++i )
+    for( i = 0; i < 100; ++i )
       if( arr[i] ) for( t = 0; t < arr[i]; ){
 	  printf("%d%c", i, (i == last && arr[i] == 1 ? '\n' : ' ' ));
 	  arr[i]--;

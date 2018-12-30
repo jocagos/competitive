@@ -101,40 +101,25 @@ struct myHash {
 #define cntSetBits(x) __builtin_popcount(x)
 #define cntSetBitsl(x) __builtin_popcountl(x)
 #define cntSetBitsll(x) __builtin_popcountll(x)
-constexpr int MAXN = 0; // modify
-/* FAST I/O for integers
- * USE: just add the characters to `buf` and check if you are close to overflow
- * and if so just print `buf` then reset iterator to buf.
-char buf[10000000];
-constexpr int ZERO = 0, NEWLINE = 1, WHITESPACE = 2;
+constexpr int MAXN = 110, MOD = 1000000;
+int n, k;
+int memo[MAXN][MAXN];
 
-// let's try it again lmao
-int next_int( void ){
-  char c;
-  do{ c = getchar_unlocked(); } while( c != '-' and !isdigit( c ) );
-  bool neg = (c == '-');
-  int r = neg ? 0 : c - '0';
-  while( isdigit( c = getchar_unlocked() ) ) r = 10 * r + (c - '0');
-  return neg ? -r : r;
-}
-
-int print_int( int N, int idx, int nd = ZERO ){
-  if( N < 10 ) buf[idx ++] = N + '0';
-  else{
-    buf[idx ++] = (N / 10) + '0';
-    buf[idx ++] = N % 10 + '0';
+int dp( int N, int K ){
+  if( K == 1 ) return 1;
+  else if( memo[N][K] != -1 ) return memo[N][K];
+  int s = 0;
+  REP( X, N + 1 ){
+    s = ( s + dp( N - X, K - 1 ) ) % MOD;
   }
-  if( nd == WHITESPACE ) buf[idx ++] = ' ';
-  else if( nd == NEWLINE ) buf[idx ++] = '\n';
-  else buf[idx ++] = '\0';
-  return idx;
+  return memo[N][K] = s;
 }
- */
 
 int main(void){
-  int n;
   fastio;
-  cin >> n;
-
+  memset( memo, -1, sizeof memo );
+  while( cin >> n >> k, n | k ){
+    cout << dp( n, k ) << '\n';
+  }
   return 0;
 }

@@ -101,40 +101,49 @@ struct myHash {
 #define cntSetBits(x) __builtin_popcount(x)
 #define cntSetBitsl(x) __builtin_popcountl(x)
 #define cntSetBitsll(x) __builtin_popcountll(x)
-constexpr int MAXN = 0; // modify
-/* FAST I/O for integers
- * USE: just add the characters to `buf` and check if you are close to overflow
- * and if so just print `buf` then reset iterator to buf.
-char buf[10000000];
-constexpr int ZERO = 0, NEWLINE = 1, WHITESPACE = 2;
+constexpr int MAXN = 10;
+int n;
+double dist[MAXN][MAXN];
+vii coords( MAXN );
 
-// let's try it again lmao
-int next_int( void ){
-  char c;
-  do{ c = getchar_unlocked(); } while( c != '-' and !isdigit( c ) );
-  bool neg = (c == '-');
-  int r = neg ? 0 : c - '0';
-  while( isdigit( c = getchar_unlocked() ) ) r = 10 * r + (c - '0');
-  return neg ? -r : r;
+// go through all the permutations, brute force since MAXN is 8
+// so we only have to do 8! per cycle
+double solve( vi& perm ){
+  vi ansPerm;
+  double ans = 0xFFFFFFFF;
+  do{
+    double s = 0;
+    FOR( i, 1, n ) s += dist[perm[i]][perm[i-1]];
+    if( s < ans ){
+      ans = s;
+      ansPerm = perm;
+    }
+  } while( next_permutation( perm.begin(), perm.end() ) );
+  perm = move(ansPerm);
+  return ans;
 }
-
-int print_int( int N, int idx, int nd = ZERO ){
-  if( N < 10 ) buf[idx ++] = N + '0';
-  else{
-    buf[idx ++] = (N / 10) + '0';
-    buf[idx ++] = N % 10 + '0';
-  }
-  if( nd == WHITESPACE ) buf[idx ++] = ' ';
-  else if( nd == NEWLINE ) buf[idx ++] = '\n';
-  else buf[idx ++] = '\0';
-  return idx;
-}
- */
 
 int main(void){
-  int n;
   fastio;
-  cin >> n;
-
+  int idx = 1;
+  while( cin >> n, n ){
+    REP( i, n ) cin >> coords[i].fi >> coords[i].se;
+    REP( i, n ){
+      REP( j, n ){
+	if( j == i ) continue;
+	dist[j][i] = dist[i][j] = hypot( abs( coords[i].fi - coords[j].fi ),
+			    abs( coords[i].se - coords[j].se ) ) + 16;
+      }
+    }
+    vi perm( n, 0 );
+    REP( i, n ) perm[i] += i;
+    double ans = solve( perm );
+    cout << "**********************************************************\n";
+    cout << "Network #" << idx ++ << '\n';
+    FOR( i, 1, n ){
+      cout << "Cable requirement to connect (" << coords[perm[i-1]].fi << "," << coords[perm[i-1]].se << ") to (" << coords[perm[i]].fi << "," << coords[perm[i]].se << ") is " << fixed << setprecision( 2 ) << dist[perm[i-1]][perm[i]] << " feet.\n";
+    }
+    cout << "Number of feet of cable required is " << fixed << setprecision( 2 ) << ans << ".\n";
+  }
   return 0;
 }

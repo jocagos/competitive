@@ -101,40 +101,38 @@ struct myHash {
 #define cntSetBits(x) __builtin_popcount(x)
 #define cntSetBitsl(x) __builtin_popcountl(x)
 #define cntSetBitsll(x) __builtin_popcountll(x)
-constexpr int MAXN = 0; // modify
-/* FAST I/O for integers
- * USE: just add the characters to `buf` and check if you are close to overflow
- * and if so just print `buf` then reset iterator to buf.
-char buf[10000000];
-constexpr int ZERO = 0, NEWLINE = 1, WHITESPACE = 2;
-
-// let's try it again lmao
-int next_int( void ){
-  char c;
-  do{ c = getchar_unlocked(); } while( c != '-' and !isdigit( c ) );
-  bool neg = (c == '-');
-  int r = neg ? 0 : c - '0';
-  while( isdigit( c = getchar_unlocked() ) ) r = 10 * r + (c - '0');
-  return neg ? -r : r;
-}
-
-int print_int( int N, int idx, int nd = ZERO ){
-  if( N < 10 ) buf[idx ++] = N + '0';
-  else{
-    buf[idx ++] = (N / 10) + '0';
-    buf[idx ++] = N % 10 + '0';
-  }
-  if( nd == WHITESPACE ) buf[idx ++] = ' ';
-  else if( nd == NEWLINE ) buf[idx ++] = '\n';
-  else buf[idx ++] = '\0';
-  return idx;
-}
- */
 
 int main(void){
-  int n;
+  int k;
+  long long n;
   fastio;
-  cin >> n;
-
+  cin >> n >> k;
+  int maxBytes = n, minBytes = cntSetBitsll( n );
+  if( not in( minBytes, maxBytes, k ) ) cout << "NO\n";
+  else{
+    cout << "YES\n";
+    // get k powers of two
+    std::priority_queue<int> heap;
+    int b = 0;
+    REP( i, 31 ){
+      if( b == minBytes ) break;
+      if( n & ( 1 << i ) ){
+	heap.emplace( 1 << i );
+	b ++;
+      }
+    }
+    while( (int)heap.size() < k ){
+      int a = heap.top();
+      heap.pop();
+      heap.emplace( a >> 1 );
+      heap.emplace( a >> 1 );
+    }
+    while( not heap.empty() ){
+      cout << heap.top();
+      heap.pop();
+      if( not heap.empty() ) cout << " ";
+      else cout << '\n';
+    }
+  }
   return 0;
 }

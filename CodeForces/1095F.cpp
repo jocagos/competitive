@@ -15,6 +15,7 @@ typedef pair<double, double> dd;
 typedef pair<ii, int> tern;
 typedef pair<ii, ii> quad;
 typedef vector<int> vi;
+typedef vector<ll> vll;
 typedef vector<string> vs;
 typedef vector<double> vd;
 typedef vector<ii> vii;
@@ -101,40 +102,68 @@ struct myHash {
 #define cntSetBits(x) __builtin_popcount(x)
 #define cntSetBitsl(x) __builtin_popcountl(x)
 #define cntSetBitsll(x) __builtin_popcountll(x)
-constexpr int MAXN = 0; // modify
-/* FAST I/O for integers
- * USE: just add the characters to `buf` and check if you are close to overflow
- * and if so just print `buf` then reset iterator to buf.
-char buf[10000000];
-constexpr int ZERO = 0, NEWLINE = 1, WHITESPACE = 2;
+constexpr int MAXN = 200020;
+vector<map<int, ll>> offers( MAXN );
+vector<pair<ll, ll>> a( MAXN );
 
-// let's try it again lmao
-int next_int( void ){
-  char c;
-  do{ c = getchar_unlocked(); } while( c != '-' and !isdigit( c ) );
-  bool neg = (c == '-');
-  int r = neg ? 0 : c - '0';
-  while( isdigit( c = getchar_unlocked() ) ) r = 10 * r + (c - '0');
-  return neg ? -r : r;
+vll p, rank, sizes;
+int ns;
+
+void init( int n ){
+  p.assign( n, 0 );
+  REP( i, n ) p[i] = i;
+  rank.assign( n, 0 );
+  sizes.assign( n, 1 );
+  ns = n;
 }
 
-int print_int( int N, int idx, int nd = ZERO ){
-  if( N < 10 ) buf[idx ++] = N + '0';
-  else{
-    buf[idx ++] = (N / 10) + '0';
-    buf[idx ++] = N % 10 + '0';
+int findSet( int i ){ return (p[i] == i ? i : (p[i] = findSet(p[i])) ); }
+
+bool isSame( int i, int j ){ return findSet( i ) == findSet( j ); }
+
+void unionSet( int i, int j ){
+  if( !isSame( i, j ) ){
+    -- ns;
+    int x = findSet( i ), y = findSet( j );
+    if( rank[x] > rank[y] ){
+      p[y] = x;
+      sizes[x] += sizes[y];
+    }
+    else{
+      p[x] = y;
+      sizes[y] += sizes[x];
+      if( rank[x] == rank[y] ) rank[y] ++;
+    }
   }
-  if( nd == WHITESPACE ) buf[idx ++] = ' ';
-  else if( nd == NEWLINE ) buf[idx ++] = '\n';
-  else buf[idx ++] = '\0';
-  return idx;
 }
- */
+
+int sizeOf( int i ){ return sizes[findSet(i)]; }
 
 int main(void){
-  int n;
+  int n, m;
   fastio;
-  cin >> n;
-
+  cin >> n >> m;
+  REP( i, n ){
+    cin >> a[i].fi;
+    a[i].se = i + 1;
+  }
+  sort( justN( a, n ) );
+  REP( i, m ){
+    int a, b, c;
+    cin >> a >> b >> c;
+    offers[a][b] = c;
+    offers[b][a] = c;
+  }
+  init( n );
+  ll mst = 0;
+  while( ns != 1 ){
+    
+  }
+  if( not m ){
+    // only kruskal
+  }
+  else{
+    // kruskal taking into account the offers too
+  }
   return 0;
 }
