@@ -12,8 +12,8 @@ typedef unsigned long long i64;
 typedef long double ld;
 typedef pair<int, int> ii;
 typedef pair<double, double> dd;
-typedef tuple<int, int, int> tern;
-typedef tuple<int, int, int, int> quad;
+typedef pair<ii, int> tern;
+typedef pair<ii, ii> quad;
 typedef vector<int> vi;
 typedef vector<string> vs;
 typedef vector<double> vd;
@@ -130,36 +130,28 @@ int print_int( int N, int idx, int nd = ZERO ){
 #define cntSetBits(x) __builtin_popcount(x)
 #define cntSetBitsl(x) __builtin_popcountl(x)
 #define cntSetBitsll(x) __builtin_popcountll(x)
-constexpr int MAXN = 1000001;
-bitset<MAXN> v( 0 );
+constexpr int MAXN = 60;
+ll memo[MAXN][MAXN];
+ll n, l;
+ll points[MAXN];
 
-int main(){
-  int m, n, tc = 1;
+ll dp( int left, int right ){
+  if( left + 1 == right ) return 0; // base case
+  if( memo[left][right] != -1 ) return memo[left][right];
+  ll ans = LLINF;
+  for( int i = left + 1; i < right; ++ i ) ans = min( ans, dp( left, i ) + dp( i, right ) + points[right] - points[left] );
+  return memo[left][right] = ans;
+}
+
+int main(void){
   fastio;
-  while( cin >> n >> m, n | m ){
-    // cout << "TEST CASE: " << tc ++  << " yields n = " << n << ", m = " << m << endl;
-    v.reset();
-    bool ans = true;
-    int l, r, t;
-    for( int i = 0; i < n; ++ i ){
-      cin >> l >> r;
-      for( int j = l; j < r and ans; ++ j ){
-	if( not v[j] ) v[j] = V;
-	else ans = false;
-      }
-    }
-    for( int i = 0; i < m; ++ i ){
-      cin >> l >> r >> t;
-      int d = r - l; 
-      while( ans and l < MAXN ){
-	for( int j = 0; j < d and l + j < MAXN and ans; ++ j ){
-	  if( not v[l + j] ) v[l + j] = V;
-	  else ans = false;
-	}
-	l += t;
-      }
-    }
-    cout << ( ans ? "NO CONFLICT\n" : "CONFLICT\n" );
+  while( cin >> l, l ){
+    points[0] = 0;
+    cin >> n;
+    FOR( i, 1, n + 1 ) cin >> points[i];
+    points[n + 1] = l;
+    memset( memo, -1, sizeof memo );
+    cout << "The minimum cutting is " << dp( 0, n + 1 ) << ".\n";
   }
   return 0;
 }

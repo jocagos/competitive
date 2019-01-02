@@ -12,8 +12,8 @@ typedef unsigned long long i64;
 typedef long double ld;
 typedef pair<int, int> ii;
 typedef pair<double, double> dd;
-typedef tuple<int, int, int> tern;
-typedef tuple<int, int, int, int> quad;
+typedef pair<ii, int> tern;
+typedef pair<ii, ii> quad;
 typedef vector<int> vi;
 typedef vector<string> vs;
 typedef vector<double> vd;
@@ -130,36 +130,143 @@ int print_int( int N, int idx, int nd = ZERO ){
 #define cntSetBits(x) __builtin_popcount(x)
 #define cntSetBitsl(x) __builtin_popcountl(x)
 #define cntSetBitsll(x) __builtin_popcountll(x)
-constexpr int MAXN = 1000001;
-bitset<MAXN> v( 0 );
+constexpr int MAXN = 1010, MAXM = 18280, sec = 26 * 26;
+int m, n;
+vector<vector<int>> g;
+// vector<bool> vis;
+vi ts, degree, d;
 
-int main(){
-  int m, n, tc = 1;
+// void toposort( int u ){
+//   vis[u] = V;
+//   for( auto v : g[u] ){
+//     if( not vis[v] ) toposort( v );
+//   }
+//   ts.EB( u );
+// }
+
+inline int coord( int row, int col ){
+  return row * m + col;
+}
+
+inline int convert( string s ){
+  int ans = 0;
+  if( s.length() == 3 ){
+    ans += (s[0] - 'A' + 1) * sec;
+    ans += (s[1] - 'A' + 1) * 26;
+    ans += (s[2] - 'A' + 1);
+  }
+  else if( s.length() == 2 ){
+    ans += (s[0] - 'A' + 1) * 26;
+    ans += (s[1] - 'A' + 1);
+  }
+  else ans += (s[0] - 'A' + 1);
+  return ans - 1;
+}
+
+int main(void){
+  int tc;
+  string line;
   fastio;
-  while( cin >> n >> m, n | m ){
-    // cout << "TEST CASE: " << tc ++  << " yields n = " << n << ", m = " << m << endl;
-    v.reset();
-    bool ans = true;
-    int l, r, t;
-    for( int i = 0; i < n; ++ i ){
-      cin >> l >> r;
-      for( int j = l; j < r and ans; ++ j ){
-	if( not v[j] ) v[j] = V;
-	else ans = false;
-      }
-    }
-    for( int i = 0; i < m; ++ i ){
-      cin >> l >> r >> t;
-      int d = r - l; 
-      while( ans and l < MAXN ){
-	for( int j = 0; j < d and l + j < MAXN and ans; ++ j ){
-	  if( not v[l + j] ) v[l + j] = V;
-	  else ans = false;
+  // getline( cin, line );
+  cin >> line;
+  tc = stoi( line );
+  while( tc -- ){
+    string s, t;
+    // parse m, n
+    // getline( cin, line );
+    // while( line == "" ) getline( cin, line );
+    // istringstream _ss( line );
+    cin >> s >> t;
+    m = stoi( s ), n = stoi( t );// _ss >> m >> n;
+    // assign memory
+    // memo.assign( n, vi( m, 0 ) );
+    d.assign( m * n, 0 );
+    g.assign( m * n, vi() );
+    // vis.assign( m * n, false );
+    ts.assign( m * n, -1 );
+    degree.assign( m * n, 0 );
+    // parse values
+    REP( i, n ){
+      // read line-by-line fashion
+      // getline( cin, line );
+      // while( line == "" ) getline( cin, line );
+      // istringstream iss( line );
+      // for every value in the line
+      REP( j, m ){
+	cin >> s;
+	int _ = coord( i, j );
+	// cout << "(" << i << ", " << j << ") = d[" << _ << "] = ";
+	// iss >> s; // get it
+	// cout << s << endl;
+	if( s[0] == '=' ){ // formula
+	  // then parse it
+	  t = s.substr( 1 ); // remove the '='
+	  // cout << "Removed '=' and t = " << t << endl;
+	  while( t != "" ){ // now for every part of the formula
+	    size_t idx = t.find( '+' ); // find the next '+'
+	    string token = t.substr( 0, idx ); // tokenize
+	    t = ( idx == string::npos ? "" : t.substr( idx + 1 ) ); // if there ae no '+' just make it null
+	    // parse col code and row then connect
+	    int numIdx = 0; // let's read the value
+	    // find where the first number is
+	    while( not isdigit( token[numIdx] ) ) numIdx ++;
+	    // then get the row, col values from the code
+	    string col = token.substr( 0, numIdx ), row = token.substr( numIdx );
+	    // then get them to int
+	    int r = stoi( row ), c = convert( col );
+	    // now set the requirements in the graph
+	    g[coord( r - 1, c )].EB( _ );
+	    // and set the value as 0
+	    d[_] = 0;
+	    // add to their degree
+	    degree[ _ ] ++;
+	  }
 	}
-	l += t;
+	// value, just read it
+	else d[ _ ] = stoi( s );
+      } // end REP-j
+    } // end REP-i
+    // now let's just do a topological sort, since it's a DAG
+    int tsIdx = 0;
+    std::priority_queue<int, vector<int>, greater<int>> pq;
+    REP( i, m * n ) if( not degree[i] ) pq.emplace( i );
+    while( not pq.empty() ){
+      int u = pq.top(); pq.pop();
+      for( auto v : g[u] ){
+	degree[v] --;
+	if( not degree[v] ) pq.emplace( v );
+	d[v] += d[u];
+      }
+      ts[tsIdx ++] = u;
+    }
+    // Now it's just a matter of printing
+    REP( i, n ){
+      REP( j, m ){
+	int _ = coord( i, j );
+	cout << d[_] << (j + 1 < m ? " " : "\n");
       }
     }
-    cout << ( ans ? "NO CONFLICT\n" : "CONFLICT\n" );
+    // REP( i, m * n ){
+    //   if( not v[u] ){
+    // 	stack<int> st;
+    // 	st.push( i );
+    // 	while( not st.empty() ){
+    // 	  int u = st.top();
+    // 	  st.pop();
+    // 	  vis[u] = V;
+    // 	  for( auto v : g[u] ){
+	    
+    // 	  }
+    // 	}
+    //   }
+    // }
+    // void toposort( int u ){
+    //   vis[u] = V;
+    //   for( auto v : g[u] ){
+    // 	if( not vis[v] ) toposort( v );
+    //   }
+    //   ts.EB( u );
+    // }
   }
   return 0;
 }

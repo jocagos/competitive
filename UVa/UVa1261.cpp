@@ -12,8 +12,8 @@ typedef unsigned long long i64;
 typedef long double ld;
 typedef pair<int, int> ii;
 typedef pair<double, double> dd;
-typedef tuple<int, int, int> tern;
-typedef tuple<int, int, int, int> quad;
+typedef pair<ii, int> tern;
+typedef pair<ii, ii> quad;
 typedef vector<int> vi;
 typedef vector<string> vs;
 typedef vector<double> vd;
@@ -130,36 +130,33 @@ int print_int( int N, int idx, int nd = ZERO ){
 #define cntSetBits(x) __builtin_popcount(x)
 #define cntSetBitsl(x) __builtin_popcountl(x)
 #define cntSetBitsll(x) __builtin_popcountll(x)
-constexpr int MAXN = 1000001;
-bitset<MAXN> v( 0 );
 
-int main(){
-  int m, n, tc = 1;
+map<string, int> memo;
+
+int backtrack( string s ){
+  if( s.empty() ) return 1; // base case
+  auto it = memo.find( s );
+  if( it != memo.end() ) return it->se;
+  int& ref = memo[s]; // declare it in case it doesn't exist!
+  int i, j;
+  for( i = 0; i < s.length(); ++ i ){
+    j = i;
+    while( j < s.length() and s[i] == s[j] ) ++ j;
+    if( j - i > 1 ) ref |= backtrack( s.substr( 0, i ) + s.substr( j ) );
+    if( ref ) return ref;
+    i = j - 1;
+  }
+  return ref;
+}
+
+int main(void){
+  int tc;
+  string s;
   fastio;
-  while( cin >> n >> m, n | m ){
-    // cout << "TEST CASE: " << tc ++  << " yields n = " << n << ", m = " << m << endl;
-    v.reset();
-    bool ans = true;
-    int l, r, t;
-    for( int i = 0; i < n; ++ i ){
-      cin >> l >> r;
-      for( int j = l; j < r and ans; ++ j ){
-	if( not v[j] ) v[j] = V;
-	else ans = false;
-      }
-    }
-    for( int i = 0; i < m; ++ i ){
-      cin >> l >> r >> t;
-      int d = r - l; 
-      while( ans and l < MAXN ){
-	for( int j = 0; j < d and l + j < MAXN and ans; ++ j ){
-	  if( not v[l + j] ) v[l + j] = V;
-	  else ans = false;
-	}
-	l += t;
-      }
-    }
-    cout << ( ans ? "NO CONFLICT\n" : "CONFLICT\n" );
+  cin >> tc;
+  while( tc -- ){
+    cin >> s;
+    cout << backtrack( s ) << '\n';
   }
   return 0;
 }

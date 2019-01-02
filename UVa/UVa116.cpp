@@ -103,12 +103,29 @@ struct myHash {
 #define cntSetBitsll(x) __builtin_popcountll(x)
 constexpr int MAXN = 10010, MAXM = 11;
 int d[MAXM][MAXN], path[MAXM][MAXN], memo[MAXM][MAXN];
+vi p( MAXN );
 int n, m;
 
 int main(void){
   fastio;
   while( cin >> m >> n ){
-    
+    REP( i, m ) REP( j, n ) cin >> d[i][j];
+    REP( i, m ) memo[i][n - 1] = d[i][n - 1];
+    FORD( j, n - 2, 0 ){
+      REP( i, m ){
+	int prevU = i - 1, prevM = i, prevD = i + 1;
+	if( i == 0 ) prevU += m;
+	if( i == m - 1 ) prevD -= m;
+	ii ans = min( { ii( memo[prevU][j + 1], prevU ), ii( memo[prevM][j + 1], prevM ), ii( memo[prevD][j + 1], prevD ) } );
+	memo[i][j] = ans.fi + d[i][j];
+	path[i][j] = ans.se;
+      }
+    }
+    p[0] = 0;
+    FOR( i, 1, m ) if( memo[i][0] < memo[p[0]][0] ) p[0] = i;
+    FOR( i, 1, n ) p[i] = path[p[i - 1]][i - 1];
+    REP( i, n ) cout << p[i] + 1 << ( i + 1 != n ? " " : "\n" );
+    cout << memo[p[0]][0] << '\n';
   }
   return 0;
 }

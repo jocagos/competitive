@@ -12,8 +12,8 @@ typedef unsigned long long i64;
 typedef long double ld;
 typedef pair<int, int> ii;
 typedef pair<double, double> dd;
-typedef tuple<int, int, int> tern;
-typedef tuple<int, int, int, int> quad;
+typedef pair<ii, int> tern;
+typedef pair<ii, ii> quad;
 typedef vector<int> vi;
 typedef vector<string> vs;
 typedef vector<double> vd;
@@ -130,36 +130,36 @@ int print_int( int N, int idx, int nd = ZERO ){
 #define cntSetBits(x) __builtin_popcount(x)
 #define cntSetBitsl(x) __builtin_popcountl(x)
 #define cntSetBitsll(x) __builtin_popcountll(x)
-constexpr int MAXN = 1000001;
-bitset<MAXN> v( 0 );
+constexpr int MAXN = 1010, MAXM = 11;
+int d[MAXM][MAXN],  memo[MAXM][MAXN];
+int n, m;
 
-int main(){
-  int m, n, tc = 1;
+int dp( int height = 0, int x = 0 ){
+  if( not in( 0, 9, height ) or x > n ) return INF;
+  if( x == n ) return ( height == 0 ? 0 : INF );
+  if( memo[height][x] != -1 ) return memo[height][x];
+  return memo[height][x] = min(
+         { 60 + d[height][x] + dp( height + 1, x + 1 ),
+	   30 + d[height][x] + dp( height, x + 1 ),
+	   20 + d[height][x] + dp( height - 1, x + 1 ) } );
+}
+
+int main(void){
+  int tc;
+  m = 10;
   fastio;
-  while( cin >> n >> m, n | m ){
-    // cout << "TEST CASE: " << tc ++  << " yields n = " << n << ", m = " << m << endl;
-    v.reset();
-    bool ans = true;
-    int l, r, t;
-    for( int i = 0; i < n; ++ i ){
-      cin >> l >> r;
-      for( int j = l; j < r and ans; ++ j ){
-	if( not v[j] ) v[j] = V;
-	else ans = false;
-      }
+  cin >> tc;
+  while( tc -- ){
+    cin >> n;
+    n /= 100;
+    FORD( i, 9, 0 ) REP( j, n ){
+      cin >> d[i][j];
+      d[i][j] = -d[i][j];
     }
-    for( int i = 0; i < m; ++ i ){
-      cin >> l >> r >> t;
-      int d = r - l; 
-      while( ans and l < MAXN ){
-	for( int j = 0; j < d and l + j < MAXN and ans; ++ j ){
-	  if( not v[l + j] ) v[l + j] = V;
-	  else ans = false;
-	}
-	l += t;
-      }
-    }
-    cout << ( ans ? "NO CONFLICT\n" : "CONFLICT\n" );
+    // FORD( i, 9, 0 ) REP( j, n ) cout << setw(3) << d[i][j] << " \n"[j+1==n];
+    memset( memo, -1, sizeof memo );
+    int ans = dp();
+    cout << ans << "\n\n";
   }
   return 0;
 }

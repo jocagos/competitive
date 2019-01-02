@@ -12,8 +12,8 @@ typedef unsigned long long i64;
 typedef long double ld;
 typedef pair<int, int> ii;
 typedef pair<double, double> dd;
-typedef tuple<int, int, int> tern;
-typedef tuple<int, int, int, int> quad;
+typedef pair<ii, int> tern;
+typedef pair<ii, ii> quad;
 typedef vector<int> vi;
 typedef vector<string> vs;
 typedef vector<double> vd;
@@ -130,36 +130,35 @@ int print_int( int N, int idx, int nd = ZERO ){
 #define cntSetBits(x) __builtin_popcount(x)
 #define cntSetBitsl(x) __builtin_popcountl(x)
 #define cntSetBitsll(x) __builtin_popcountll(x)
-constexpr int MAXN = 1000001;
-bitset<MAXN> v( 0 );
+constexpr int MAXN = 10010, MAXK = 110;
+int n, k;
+bool memo[MAXN][MAXK];
+ll a[MAXN];
 
-int main(){
-  int m, n, tc = 1;
+int main(void){
+  int tc;
   fastio;
-  while( cin >> n >> m, n | m ){
-    // cout << "TEST CASE: " << tc ++  << " yields n = " << n << ", m = " << m << endl;
-    v.reset();
-    bool ans = true;
-    int l, r, t;
-    for( int i = 0; i < n; ++ i ){
-      cin >> l >> r;
-      for( int j = l; j < r and ans; ++ j ){
-	if( not v[j] ) v[j] = V;
-	else ans = false;
-      }
+  cin >> tc;
+  while( tc -- ){
+    cin >> n >> k;
+    REP( i, n ){
+      cin >> a[i];
+      a[i] = a[i] % k;
+      if( a[i] < 0 ) a[i] += k;
     }
-    for( int i = 0; i < m; ++ i ){
-      cin >> l >> r >> t;
-      int d = r - l; 
-      while( ans and l < MAXN ){
-	for( int j = 0; j < d and l + j < MAXN and ans; ++ j ){
-	  if( not v[l + j] ) v[l + j] = V;
-	  else ans = false;
+    memset( memo, false, sizeof memo );
+    memo[0][0] = true;
+    REP( i, n ){
+      REP( j, k ){
+	if( memo[i][j] ){
+	  int l = (j + a[i]) % k;
+	  memo[i + 1][l] = true;
+	  l = (j - a[i] + k) % k;
+	  memo[i + 1][l] = true;
 	}
-	l += t;
       }
     }
-    cout << ( ans ? "NO CONFLICT\n" : "CONFLICT\n" );
+    cout << (memo[n][0] ? "Divisible\n" : "Not divisible\n");
   }
   return 0;
 }
