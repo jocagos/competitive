@@ -2,8 +2,8 @@
 Solutions of some problems from Online Judges such as CodeForces, UVa Online Judge, Sphere Online Judge, and even more.
 
 **Solved**:
-* ![CodeForces: 58][CF]
-* ![UVa: 236][UVa]
+* ![CodeForces: 64][CF]
+* ![UVa: 266][UVa]
 * ![Project Euler: 5][PE]
 * ![OmegaUp: 45][OU]
 * ![Kattis: 3][KT]
