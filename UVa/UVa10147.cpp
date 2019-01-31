@@ -150,12 +150,98 @@ int print_int( int N, int idx, int nd = ZERO ){
 #define cntSetBits(x) __builtin_popcount(x)
 #define cntSetBitsl(x) __builtin_popcountl(x)
 #define cntSetBitsll(x) __builtin_popcountll(x)
-constexpr int MAXN = 0; // modify
+constexpr int MAXN = 1000, MAXM = 1200;
+int tc, n, m, edx, to, u, v, w, a0, a1, b0, b1, cnt, numSets;
+double mst = 0;
+vtwin<int> points( MAXN ), existing( MAXM );
+vtriad<int> edges( MAXN * MAXN );
+vi p( MAXN ), r( MAXN ), set_size( MAXN );
+
+void init( int n ){
+  // set_size.assign( n + 1, 1 );
+  numSets = n;
+  // r.assign( n + 1, 1 );
+  p.assign( n + 1, 0 );
+  REP( i, n ){
+    p[i] = i;
+    r[i] = 1;
+    set_size[i] = 1;
+  }
+}
+
+int find_set( int i ){
+  return (p[i] == i) ? i : (p[i] = find_set( p[i] ) );
+}
+
+bool is_same_set( int i, int j ){ return find_set( i ) == find_set( j ); }
+bool union_set( int i, int j ){
+  if( not is_same_set( i, j ) ){
+    numSets --;
+    int x = find_set( i ), y = find_set( j );
+    if( r[x] > r[y] ){
+      p[y] = x;
+      set_size[x] += set_size[y];
+    }
+    else{
+      p[x] = y;
+      set_size[y] += set_size[x];
+      if( r[x] == r[y] ) r[y] ++;
+    }
+    return true;
+  }
+  return false;
+}
+
+int find_size( int i ){ return set_size[find_set( i )]; }
+
 
 int main(void){
-  int n;
   fastio;
-  cin >> n;
-
+  int t;
+  cin >> tc;
+  t = tc;
+  while( tc -- ){
+    edx = mst = cnt = 0;
+    cin >> n;
+    FOR( i, 1, n + 1 ){
+      cin >> u >> v;
+      points[i] = { u , v };
+    }
+    init( n );
+    cin >> m;
+    REP( i, m ){
+      cin >> u >> v;
+      existing[i] = { u, v };
+      cnt += union_set( u, v );
+    }
+    if( cnt == n - 1 ) cout << "No new highways need\n";
+    else{
+      FOR( i, 1, n + 1 ){
+	tie( a0, b0 ) = points[i];
+	// cout << "(" << a0 << ", " << b0 << ") => { ";
+	FOR( j, i + 1, n + 1 ){
+	  tie( a1, b1 ) = points[j];
+	  // cout << "(" << a1 << ", " << b1 << ")" << (j + 1 == n ? "}" : ", ");
+	  // cout.flush();
+	  // view(a1);
+	  // view(a0);
+	  // view(b1);
+	  // view(b0);
+	  edges[edx ++] = { (a0 - a1)*(a0 - a1) + (b0 - b1)*(b0 - b1), i, j };
+	}
+      }
+      sort( justN( edges, edx ), []( triad<int>& left, triad<int>& right ){
+				   return get<0>( left ) < get<0>( right );});
+      REP( i, edx ){
+	tie( w, u, v ) = edges[i];
+	// cout << "(" << w << ", " << u << ", " << v << ")\n";
+	if( union_set( u, v ) ){
+	  // if( u == 105 ) cout << "CASE WAS " << t-tc << endl;
+	  cout << u << " " << v << '\n';
+	}
+      }
+    }
+    if( tc ) cout << '\n';
+  }
   return 0;
 }

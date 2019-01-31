@@ -9,8 +9,6 @@ using namespace __gnu_pbds;
 using ll = long long;
 using i64 = unsigned long long;
 using ld = long double;
-// using ii = tuple<int, int>; // or pair<int, int>
-// using dd = tuple<double, double>; // or pair< double, double >
 template <class T> using twin = tuple<T, T>;
 template <class T> using triad = tuple<T, T, T>;
 template <class T> using quad = tuple<T, T, T, T>;
@@ -150,12 +148,122 @@ int print_int( int N, int idx, int nd = ZERO ){
 #define cntSetBits(x) __builtin_popcount(x)
 #define cntSetBitsl(x) __builtin_popcountl(x)
 #define cntSetBitsll(x) __builtin_popcountll(x)
-constexpr int MAXN = 0; // modify
+
+class UFDS {
+private:
+  vector<int> p, rank, set_size;
+  long long num_sets, offset;
+public:
+  UFDS( int N ){
+    set_size.assign(N, 1);
+    num_sets = N;
+    rank.assign(N, 0);
+    p.assign(N, 0);
+    offset = 0;
+    for (int i = 0; i < N; i++) p[i] = i;
+  }
+
+  UFDS( int N, int max_size ){ // to reuse it
+    set_size.assign( max_size, 1 );
+    num_sets = N;
+    rank.assign( max_size, 0 );
+    p.assign( max_size, 0 );
+    offset = 0;
+    for(int i = 0; i < N; i++) p[i] = i;
+  }
+  
+  UFDS( int N, int max_size, int idx ){ // when you need offsets, or 1-based idx
+    set_size.assign( max_size, 1 );
+    num_sets = N, offset = idx;
+    rank.assign( max_size, 0 );
+    p.assign( max_size, 0 );
+    for( int i = idx; i < N + idx; ++ i ) p[i] = i;
+  }
+
+  void init( int N, int idx = 0 ){
+    offset = idx;
+    num_sets = N;
+    for( int i = offset; i < N + offset; ++ i ){
+      rank[i] = set_size[i] = 1;
+      p[i] = i;
+    }
+  }
+  
+  int find_set(int i) { return (p[i] == i) ? i : (p[i] = find_set(p[i])); }
+  bool is_same_set(int i, int j) { return find_set(i) == find_set(j); }
+  bool union_set(int i, int j) { 
+    if (!is_same_set(i, j)) {
+      num_sets--; 
+      int x = find_set(i), y = find_set(j);
+      if (rank[x] > rank[y]) {
+	p[y] = x;
+	set_size[x] += set_size[y];
+      }
+      else{
+	p[x] = y;
+	set_size[y] += set_size[x];
+	if (rank[x] == rank[y]) rank[y]++;
+      }
+      return true;
+    }
+    return false;
+  }
+  int how_many() { return num_sets; }
+  int size_of_set(int i) { return set_size[find_set(i)]; }
+};
+
+constexpr int MAXSIZE = 100100, MAXN = 110, MAXM = 110 * 110, MAXE = 220;
+ll n, m, edx, mst_cost, mst_idx, u, v, w, tc, second_best;
+vtriad<ll> mst( MAXM );
+vtriad<ll> edges( MAXM );
+vector<ll> mst_it( MAXM );
+UFDS ufds( 1, MAXSIZE, 1 );
 
 int main(void){
-  int n;
   fastio;
-  cin >> n;
-
+  cin >> tc;
+  FOR( _, 1, tc + 1 ){
+    string ans;
+    edx = mst_cost = mst_idx = second_best = 0;
+    cin >> n >> m;
+    ufds.init( n, 1 );
+    REP( i, m ){
+      cin >> u >> v >> w;
+      edges[edx ++] = { w, u, v };
+    }
+    sort( justN( edges, edx ) );
+    REP( i, edx ){
+      if( ufds.how_many() == 1 ) break;
+      tie( w, u, v ) = edges[i];
+      if( ufds.union_set( u, v ) ){
+	mst_cost += w;
+	mst[mst_idx] = edges[i];
+	mst_it[mst_idx ++] = i;
+      }
+    }
+    if( ufds.how_many() > 1 ) ans = "No way";
+    else{
+      second_best = INF;
+      REP( i, mst_idx ){
+	int flagged_edge = mst_it[i];
+	int tmp_cost = 0;
+	UFDS ufds_tmp( n, n + 100, 1 );
+	REP( j, edx ){
+	  if( ufds_tmp.how_many() == 1 ) break;
+	  tie( w, u, v ) = edges[j];
+	  if( flagged_edge == j ){
+	    continue;
+	  }
+	  if( ufds_tmp.union_set( u, v ) ){
+	    tmp_cost += w;
+	  }
+	}
+	if( ufds_tmp.how_many() == 1 ) second_best = min( second_best, (tmp_cost != 0 ? tmp_cost : LLINF ) );
+      }
+      if( second_best == INF ) ans = "No second way";
+      else ans = to_string( second_best );
+    }
+    cout << "Case #" << _ << " : " << ans << '\n';
+  }
   return 0;
 }

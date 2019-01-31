@@ -150,12 +150,78 @@ int print_int( int N, int idx, int nd = ZERO ){
 #define cntSetBits(x) __builtin_popcount(x)
 #define cntSetBitsl(x) __builtin_popcountl(x)
 #define cntSetBitsll(x) __builtin_popcountll(x)
-constexpr int MAXN = 0; // modify
+class UFDS {
+private:
+  vi p, rank, setSize;
+  int numSets;
+public:
+  UFDS(int N) {
+    setSize.assign(N, 1); numSets = N; rank.assign(N, 0);
+    p.assign(N, 0); for (int i = 0; i < N; i++) p[i] = i; }
+  int findSet(int i) { return (p[i] == i) ? i : (p[i] = findSet(p[i])); }
+  bool isSameSet(int i, int j) { return findSet(i) == findSet(j); }
+  bool unionSet(int i, int j) { 
+    if (!isSameSet(i, j)) {
+      numSets--; 
+      int x = findSet(i), y = findSet(j);
+      if (rank[x] > rank[y]) {
+	p[y] = x;
+	setSize[x] += setSize[y];
+      }
+      else{
+	p[x] = y;
+	setSize[y] += setSize[x];
+	if (rank[x] == rank[y]) rank[y]++;
+      }
+      return true;
+    }
+    return false;
+  }
+  int numDisjointSets() { return numSets; }
+  int sizeOfSet(int i) { return setSize[findSet(i)]; }
+};
+
+constexpr int MAXN = 10010, MAXM = 100100;
+
+int tc, m, n, a, edx = 0;
+vtriad<int> edges( MAXM );
+// bitset<MAXN> vis( 0 );
 
 int main(void){
-  int n;
   fastio;
-  cin >> n;
-
+  cin >> tc;
+  FOR( _, 1, tc + 1 ){
+    edx = 0;
+    // vis.reset();
+    cin >> n >> m >> a;
+    int x, y, z;
+    REP( i, m ){
+      cin >> x >> y >> z;
+      if( z < a ) edges[edx ++] = { z, x - 1, y - 1 };
+    }
+    ll mst = 0, airports = 0;
+    sort( justN( edges, edx ) );
+    UFDS ufds( n );
+    REP( i, edx ){
+      if( ufds.numDisjointSets() == 1 ) break;
+      int p, q, c;
+      tie( c, p, q ) = edges[i];
+      if( not ufds.isSameSet( p, q ) ){
+	// if( c < a ){
+	  ufds.unionSet( p, q );
+	  mst += c;
+	// }
+	// else{
+	//   airports ++;
+	//   ufds.unionSet( p, q );
+	// }
+	// vis[p] = vis[q] = V;
+      }
+    }
+    airports = ufds.numDisjointSets();
+    // REP( i, n ) if( not vis[i] ) airports ++;
+    mst += a * airports;
+    cout << "Case #" << _ << ": " << mst << " " << airports << '\n';
+  }
   return 0;
 }

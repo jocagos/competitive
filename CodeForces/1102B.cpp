@@ -150,12 +150,26 @@ int print_int( int N, int idx, int nd = ZERO ){
 #define cntSetBits(x) __builtin_popcount(x)
 #define cntSetBitsl(x) __builtin_popcountl(x)
 #define cntSetBitsll(x) __builtin_popcountll(x)
-constexpr int MAXN = 0; // modify
+constexpr int MAXN = 5050;
+vi a( MAXN ), c( MAXN, 0 ), color( MAXN, 1 ), cur( MAXN, 1 );
+int n, k;
 
 int main(void){
-  int n;
   fastio;
-  cin >> n;
-
+  cin >> n >> k;
+  bool possible = true;
+  REP( i, n ){
+    cin >> a[i];
+    c[a[i]] ++;
+    if( c[a[i]] > k ) possible = false;
+  }
+  if( possible ) cout << "YES\n";
+  else cout << "NO\n";
+  if( possible ){
+    REP( i, n ){
+      color[i] = cur[a[i]] ++;
+    }
+  }
+  if( possible ) REP( i, n ) cout << color[i] << (i + 1 < n ? " " : "\n");
   return 0;
 }

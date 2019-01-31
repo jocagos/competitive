@@ -150,12 +150,141 @@ int print_int( int N, int idx, int nd = ZERO ){
 #define cntSetBits(x) __builtin_popcount(x)
 #define cntSetBitsl(x) __builtin_popcountl(x)
 #define cntSetBitsll(x) __builtin_popcountll(x)
-constexpr int MAXN = 0; // modify
+class UFDS {
+private:
+  vector<int> p, rank, set_size;
+  long long num_sets, offset;
+public:
+  UFDS( int N ){
+    set_size.assign(N, 1);
+    num_sets = N;
+    rank.assign(N, 0);
+    p.assign(N, 0);
+    offset = 0;
+    for (int i = 0; i < N; i++) p[i] = i;
+  }
+
+  UFDS( int N, int max_size ){ // to reuse it
+    set_size.assign( max_size, 1 );
+    num_sets = N;
+    rank.assign( max_size, 0 );
+    p.assign( max_size, 0 );
+    offset = 0;
+    for(int i = 0; i < N; i++) p[i] = i;
+  }
+  
+  UFDS( int N, int max_size, int idx ){ // when you need offsets, or 1-based idx
+    set_size.assign( max_size, 1 );
+    num_sets = N, offset = idx;
+    rank.assign( max_size, 0 );
+    p.assign( max_size, 0 );
+    for( int i = idx; i < N + idx; ++ i ) p[i] = i;
+  }
+
+  void init( int N, int idx = 0 ){
+    offset = idx;
+    for( int i = offset; i < N + offset; ++ i ){
+      rank[i] = set_size[i] = 1;
+      p[i] = i;
+    }
+  }
+  
+  int find_set(int i) { return (p[i] == i) ? i : (p[i] = find_set(p[i])); }
+  bool is_same_set(int i, int j) { return find_set(i) == find_set(j); }
+  bool union_set(int i, int j) { 
+    if (!is_same_set(i, j)) {
+      num_sets--; 
+      int x = find_set(i), y = find_set(j);
+      if (rank[x] > rank[y]) {
+	p[y] = x;
+	set_size[x] += set_size[y];
+      }
+      else{
+	p[x] = y;
+	set_size[y] += set_size[x];
+	if (rank[x] == rank[y]) rank[y]++;
+      }
+      return true;
+    }
+    return false;
+  }
+  int how_many() { return num_sets; }
+  int size_of_set(int i) { return set_size[find_set(i)]; }
+};
+constexpr int MAXN = 1100, MAXM = 110 * 110;
+int tc, m, n, u, v, w, mst_idx, mst_it, edx;
+vtriad<int> edges( MAXM );
+vi mst( MAXN );
+UFDS ufds( MAXN, MAXN, 1 );
 
 int main(void){
-  int n;
   fastio;
-  cin >> n;
-
+  cin >> tc;
+  int ca = 1;
+  // cerr << "Begun correctly!" << endl;
+  while( tc -- ){
+    cin >> n >> m;
+    ufds.init( n, 1 );
+    // cerr << "UFDS initialized correctly, in case " << ca ++ << endl;
+    REP( i, m ){
+      cin >> u >> v >> w;
+      edges[i] = { w, u, v };
+    }
+    sort( justN( edges, m ) );
+    int mst_cost = mst_idx = mst_it = 0, second_cost = 0;
+    REP( i, m ){
+      if( ufds.how_many() == 1 ) break;
+      tie( w, u, v ) = edges[i];
+      // cerr << "Testing edge (" << w << ", " << u << ", " << v << ")" << endl;
+      if( ufds.union_set( u, v ) ){
+	mst_cost += w;
+	mst[mst_idx ++] = i;
+	// cerr << "Added edge " << i << " which is (" << w << ", " << u << ", " << v << ")" << endl;
+      }
+    }
+    // REP( i, m ){
+    //   tie( w, u, v ) = edges[i];
+    //   cerr << "(" << w << ", " << u << ", " << v << ")" << endl;
+    // }
+    int tmp_cost = 0;
+    second_cost = INF;
+    // cerr << endl << "Testing MSTs for case: " << ca ++ << endl;
+    REP( i, mst_idx ){
+      UFDS ufds_tmp( n, MAXN, 1 );
+      tmp_cost = 0;
+      int flagged_edge = mst[i];
+      int taken = 0;
+      // vi mst_taken;
+      // cerr << "Iteration " << i << ", added: ";
+      REP( j, mst_idx ){
+	if( i == j ) continue;
+	tie( w, u, v ) = edges[mst[j]];
+	ufds_tmp.union_set( u, v );
+	tmp_cost += w;
+	taken ++;
+      }
+      REP( j, m ){
+	if( ufds_tmp.how_many() == 1 ) break;
+	if( j == flagged_edge ) continue;
+	tie( w, u, v ) = edges[j];
+	if( ufds_tmp.union_set( u, v ) ){
+	  tmp_cost += w;
+	  taken ++;
+	  // cerr << "(" << w << ", " << u << ", " << v << ") resulting in cost of " << tmp_cost << endl;
+	  // mst_taken.EB( j );
+	}
+      }
+      // cerr << "Checking:" << endl << "\ttmp_cost: " << tmp_cost << endl << "\ttaken: " << taken << endl << "\thow_many(): " << ufds_tmp.how_many() << endl;
+      // cerr << "\t(tmp_cost != 0 ? tmp_cost : INF): " << ( tmp_cost != 0 ? tmp_cost : INF ) << endl;
+      // cerr << "\tsecond_cost: " << second_cost << endl;
+      // cerr << "Taken: " << taken << endl;
+      // REP( j, taken ){
+      // 	tie( w, u, v ) = edges[mst_taken[j]];
+      // 	cerr << "(" << u << ", " << v << ", " << w << ")" << endl;
+      // }
+      if( ufds_tmp.how_many() == 1 and taken == n - 1 ) second_cost = min( second_cost, ( tmp_cost != 0 ? tmp_cost : INF ) );
+    }
+    cout << mst_cost << " " << ( second_cost != INF ? second_cost : mst_cost ) << '\n';
+  }
   return 0;
 }

@@ -150,12 +150,53 @@ int print_int( int N, int idx, int nd = ZERO ){
 #define cntSetBits(x) __builtin_popcount(x)
 #define cntSetBitsl(x) __builtin_popcountl(x)
 #define cntSetBitsll(x) __builtin_popcountll(x)
-constexpr int MAXN = 0; // modify
+constexpr int MAXN = 40;
+bitset<1000000> vis( 0 );
+bitset<1000000> used( 0 );
+unordered_map<ll, vector<twin<ll>>> g;
+ll n, a, b;
+
+ll bfs( ll source, ll ttl ){
+  if( ttl == 0 ) return 0;
+  queue<twin<ll>> q;
+  q.push( MT( source, 0 ) );
+  ll nodes = 0;
+  while( not q.empty() ){
+    // cerr << "From " << source << " visited " << get<0>( q.front() ) << " and has d = " << get<1>( q.front() ) << endl;
+    ll u, d;
+    tie( u, d ) = q.front(); q.pop();
+    if( vis[u] ) continue;
+    if( ttl >= d and d > 0 ) nodes ++;
+    vis[u] = true;
+    for( auto neighbor : g[u] ) q.push( MT( get<0>(neighbor), d + 1 ) );
+  }
+  return nodes;
+}
 
 int main(void){
-  int n;
   fastio;
-  cin >> n;
-
+  int ca = 1;
+  while( cin >> n, n ){
+    g.clear();
+    vis.reset();
+    used.reset();
+    REP( i, n ){
+      cin >> a >> b;
+      g[a].EB( forward_as_tuple( b, 0 ) );
+      g[b].EB( forward_as_tuple( a, 0 ) );
+      vis[a] = vis[b] = false;
+      used[a] = used[b] = true;
+    }
+    ll nodes = used.count() - 1;
+    bool not_in = false;
+    while( cin >> a >> b, a | b ){
+      if( g.find( a ) == g.end() ) not_in = true;
+      else not_in = false;
+      // if( g.find( a ) == g.end() ) g[a], nodes ++;
+      int ans = bfs( a, b );
+      cout << "Case " << ca ++ << ": " << (nodes - (ans - not_in) ) << " nodes not reachable from node " << a << " with TTL = " << b << ".\n";
+      vis.reset();
+    }
+  }
   return 0;
 }

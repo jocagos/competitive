@@ -150,12 +150,64 @@ int print_int( int N, int idx, int nd = ZERO ){
 #define cntSetBits(x) __builtin_popcount(x)
 #define cntSetBitsl(x) __builtin_popcountl(x)
 #define cntSetBitsll(x) __builtin_popcountll(x)
-constexpr int MAXN = 0; // modify
+class UFDS {
+private:
+  vi p, rank, setSize;
+  int numSets;
+public:
+  UFDS(int N) {
+    setSize.assign(N, 1); numSets = N; rank.assign(N, 0);
+    p.assign(N, 0); for (int i = 0; i < N; i++) p[i] = i; }
+  int findSet(int i) { return (p[i] == i) ? i : (p[i] = findSet(p[i])); }
+  bool isSameSet(int i, int j) { return findSet(i) == findSet(j); }
+  bool unionSet(int i, int j) { 
+    if (!isSameSet(i, j)) { numSets--; 
+      int x = findSet(i), y = findSet(j);
+      if (rank[x] > rank[y]) { p[y] = x; setSize[x] += setSize[y]; }
+      else                   { p[x] = y; setSize[y] += setSize[x];
+	if (rank[x] == rank[y]) rank[y]++;
+      }
+      return true;
+    }
+    return false;
+  }
+  int numDisjointSets() { return numSets; }
+  int sizeOfSet(int i) { return setSize[findSet(i)]; }
+};
+
+constexpr int MAXN = 1010, MAXM = 25025;
+
+ll m, n;
+vtriad<ll> edges( MAXM );
+bitset<MAXM> vis( 0 );
 
 int main(void){
-  int n;
   fastio;
-  cin >> n;
-
+  while( cin >> n >> m, n | m ){
+    int edx = 0, u, v, w;
+    vis.reset();
+    REP( i, m ){
+      cin >> u >> v >> w;
+      edges[edx ++] = { w, u, v };
+    }
+    sort( justN( edges, edx ) );
+    UFDS ufds( n );
+    REP( i, edx ){
+      if( ufds.numDisjointSets() == 1 ) break;
+      tie( w, u, v ) = edges[i];
+      if( ufds.unionSet( u, v ) ) vis[i] = V;
+    }
+    bool first = true;
+    int k = 0;
+    REP( i, edx ){
+      if( not vis[i] ){
+	cout << (not first ? " " : "") << get<0>( edges[i] );
+	if( first ) first = false;
+      }
+      else k ++;
+    }
+    if( k == edx ) cout << "forest\n";
+    else cout << '\n';
+  }
   return 0;
 }

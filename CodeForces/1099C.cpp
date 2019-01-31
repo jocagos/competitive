@@ -124,7 +124,7 @@ int print_int( int N, int idx, int nd = ZERO ){
  */
 // easy access/use
 #define in( a, b, x ) ( (a) <= (x) and (x) <= (b) )
-#define justN(c, n) (c).begin(), (c).begin() + n
+#define justN(c, n) ( (c).begin(), (c).begin() + n )
 #define sq(a) (a) * (a)
 #define fi first
 #define se second
@@ -150,12 +150,139 @@ int print_int( int N, int idx, int nd = ZERO ){
 #define cntSetBits(x) __builtin_popcount(x)
 #define cntSetBitsl(x) __builtin_popcountl(x)
 #define cntSetBitsll(x) __builtin_popcountll(x)
-constexpr int MAXN = 0; // modify
 
 int main(void){
-  int n;
+  string s, ans;
+  int k;
+  bool possible = true;
   fastio;
-  cin >> n;
-
+  cin >> s >> k;
+  int candies = 0, snowflakes = 0, real_length = 0;
+  REP( i, (int)s.length() ){
+    if( s[i] == '?' ) candies ++;
+    else if( s[i] == '*' ) snowflakes ++;
+    else real_length ++;
+  }
+  if( real_length == k ){
+    REP( i, (int)s.length() ) if( s[i] != '?' and s[i] != '*' ) cout << s[i];
+    return 0;
+  }
+  else if( real_length < k and not snowflakes ){
+    cout << "Impossible";
+    return 0;
+  }
+  else if( real_length > k and real_length - snowflakes - candies > k ){
+    cout << "Impossible";
+    return 0;
+  }
+  else if( real_length != k and not snowflakes and not candies ){
+    cout << "Impossible";
+    return 0;
+  }
+  else{
+    if( real_length < k ){
+      int d = k - real_length;
+      REP( i, (int)s.length() ){
+	if( s[i] == '*' ){
+	  while( d ){
+	    cout << s[i - 1];
+	    d --;
+	  }
+	}
+	else if( s[i] != '?' ) cout << s[i];
+      }
+    }
+    else if( real_length > k ){
+      int d = real_length - k;
+      REP( i, (int)s.length() ){
+	if( (s[i + 1] == '?' or s[i + 1] == '*' ) and d ) d --;
+	else if( s[i] != '?' and s[i] != '*' ) cout << s[i];
+      }
+    }
+  }
+  // if( real_length < k ){
+  //   // cout << "<" << endl;
+  //   if( snowflakes == 0 ) possible = false;
+  //   else{
+  //     string t( k, 'a' );
+  //     int t_idx = 0;
+  //     for( int i = 0; i < (int)s.length(); ++ i ){
+  // 	if( i + 1 < (int)s.length() and s[i + 1] == '*' ){
+  // 	  while( k - real_length + 1 ){
+  // 	    t[t_idx ++] = s[i];
+  // 	    real_length ++;
+  // 	  }
+  // 	}
+  // 	else if( s[i] != '*' and s[i] != '?' ) t[t_idx ++] = s[i];
+  //     }
+  //     ans = t;
+  //   }
+  // }
+  // else if( real_length == k ){
+  //   // cout << "=" << endl;
+  //   string t( begin( s ), remove_if( begin( s ), end( s ), []( char c ){ return c == '?' or c == '*'; } ) );
+  //   ans = t;
+  // }
+  // else{
+  //   // cout << ">" << endl;
+  //   if( real_length - k > candies + snowflakes ) possible = false;
+  //   else{
+  //     string t( k, 'a' );
+  //     int t_idx = 0;
+  //     for( int i = 0; i < (int)s.length(); ++ i ){
+  // 	// cout << "t_idx = " << t_idx << endl;
+  // 	if( real_length > k ){
+  // 	  if( s[i] == '?' or s[i] == '*' ) continue;
+  // 	  if( i + 1 < (int)s.length() and s[i + 1] != '?' and s[i + 1] != '*' ){
+  // 	    // real_length --;
+  // 	    t[t_idx ++] = s[i];
+  // 	  }
+  // 	  else{
+  // 	    real_length --;
+  // 	  }
+  // 	}
+  // 	else if( s[i] != '*' and s[i] != '?' ) t[t_idx ++] = s[i];
+  //     }
+  //     ans = t;
+  //   }
+  // }
+  // if( real_length - candies - snowflakes > k ) possible = false;
+  // else if( real_length < k and snowflakes == 0 ) possible = false;
+  // else{
+  //   ans = s;
+  //   if( real_length < k ){
+  //     // cout << "<" << endl;
+  //     int pos = ans.find( '*' );
+  //     char c = ans[pos - 1];
+  //     string f( k - real_length, c );
+  //     f = ans.substr( 0, pos ) + f + ans.substr( pos );
+  //     string tmp( begin( f ), remove_if( begin( f ), end( f ), []( char c ){ return c == '?' or c == '*'; } ) );
+  //     ans = tmp;
+  //   }
+  //   else if( real_length == k ){
+  //     // cout << "=" << endl;
+  //     // remove( begin( ans ), end( ans ), '?' );
+  //     // remove( begin( ans ), end( ans ), '*' );
+  //     string t( ans.begin(), remove_if( begin( ans ), end( ans ), []( char c ){ return c == '?' or c == '*'; } ) );
+  //     ans = t;
+  //   }
+  //   else{
+  //     // cout << ">" << endl;
+  //     int pos = 0;
+  //     string tmp;
+  //     while( real_length > k ){
+  // 	int q = ans.find_first_of( "?*" );
+  // 	tmp += ans.substr( pos, q - pos - 1 );
+  // 	pos = q;
+  // 	real_length --;
+  //     }
+  //     tmp += ans.substr( pos + 1 );
+  //     remove_if( begin( tmp ), end( tmp ), []( char c ){ return c == '?' or c == '*'; } );
+  //     string t( tmp.begin(), tmp.begin() + k );
+  //     ans = t;
+  //   }
+  // }
+  // if( not possible ) ans = "Impossible";
+  // cout << ans << '\n';
   return 0;
 }

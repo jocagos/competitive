@@ -150,12 +150,68 @@ int print_int( int N, int idx, int nd = ZERO ){
 #define cntSetBits(x) __builtin_popcount(x)
 #define cntSetBitsl(x) __builtin_popcountl(x)
 #define cntSetBitsll(x) __builtin_popcountll(x)
-constexpr int MAXN = 0; // modify
+class UFDS {
+private:
+  vi p, rank, setSize;
+  int numSets;
+public:
+  UFDS(int N) {
+    setSize.assign(N, 1);
+    numSets = N;
+    rank.assign(N, 0);
+    p.assign(N, 0);
+    for (int i = 0; i < N; i++) p[i] = i;
+  }
+  int findSet(int i) { return (p[i] == i) ? i : (p[i] = findSet(p[i])); }
+  bool isSameSet(int i, int j) { return findSet(i) == findSet(j); }
+  bool unionSet(int i, int j) { 
+    if (!isSameSet(i, j)) {
+      numSets--; 
+      int x = findSet(i), y = findSet(j);
+      if (rank[x] > rank[y]) {
+	p[y] = x;
+	setSize[x] += setSize[y];
+      }
+      else{
+	p[x] = y;
+	setSize[y] += setSize[x];
+	if (rank[x] == rank[y]) rank[y]++;
+      }
+      return true;
+    }
+    return false;
+  }
+  int numDisjointSets() { return numSets; }
+  int sizeOfSet(int i) { return setSize[findSet(i)]; }
+};
+
+constexpr int MAXN = 110, MAXR = 110 * 110;
+int n, m, tc = 0, u, v, w, origin, dest, tourists;
+vtriad<int> edges( MAXR );
 
 int main(void){
-  int n;
   fastio;
-  cin >> n;
-
+  while( cin >> n >> m, n | m ){
+    REP( i, m ){
+      cin >> u >> v >> w;
+      edges[i] = { w, u - 1, v - 1 };
+    }
+    cin >> origin >> dest >> tourists;
+    sort( justN( edges, m ), greater<triad<int>>() );
+    UFDS ufds( n );
+    int ans = 0;
+    REP( i, m ){
+      if( ufds.numDisjointSets() == 1 ) break;
+      tie( w, u, v ) = edges[i];
+      if( ufds.unionSet( u, v ) ){
+	if( ufds.isSameSet( origin - 1, dest - 1 ) ){
+	  ans = w;
+	  break;
+	}
+      }
+    }
+    int trips = ceil( (1. * tourists / (ans - 1)) );
+    cout << "Scenario #" << ++ tc << "\nMinimum Number of Trips = " << trips << "\n\n";
+  }
   return 0;
 }

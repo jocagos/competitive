@@ -150,12 +150,124 @@ int print_int( int N, int idx, int nd = ZERO ){
 #define cntSetBits(x) __builtin_popcount(x)
 #define cntSetBitsl(x) __builtin_popcountl(x)
 #define cntSetBitsll(x) __builtin_popcountll(x)
-constexpr int MAXN = 0; // modify
+// class UFDS {
+// private:
+//   vi p, rank, setSize;
+//   int numSets;
+// public:
+//   UFDS(int N) {
+//     setSize.assign(N, 1);
+//     numSets = N;
+//     rank.assign(N, 0);
+//     p.assign(N, 0);
+//     for (int i = 0; i < N; i++) p[i] = i;
+//   }
+//   int findSet(int i) { return (p[i] == i) ? i : (p[i] = findSet(p[i])); }
+//   bool isSameSet(int i, int j) { return findSet(i) == findSet(j); }
+//   bool unionSet(int i, int j) { 
+//     if (!isSameSet(i, j)) {
+//       numSets--; 
+//       int x = findSet(i), y = findSet(j);
+//       if (rank[x] > rank[y]) {
+// 	p[y] = x;
+// 	setSize[x] += setSize[y];
+//       }
+//       else{
+// 	p[x] = y;
+// 	setSize[y] += setSize[x];
+// 	if (rank[x] == rank[y]) rank[y]++;
+//       }
+//       return true;
+//     }
+//     return false;
+//   }
+//   int numDisjointSets() { return numSets; }
+//   int sizeOfSet(int i) { return setSize[findSet(i)]; }
+// };
+constexpr int MAXN = 1100, MAXM = 1100, MAXQ = 10010;
+int n, m, q, mst, tc = 0, u, v, w, numSets;
+vi p( MAXN ), r( MAXN ), set_size( MAXN );
+vtwin<int> queries( MAXQ );
+vtriad<int> edges( MAXM );
+vs answers( MAXQ, "no path" );
+bitset<MAXQ> answered( 0 );
+
+void init( int n ){
+  set_size.assign( n, 1 );
+  numSets = n;
+  r.assign( n, 0 );
+  p.assign( n, 0 );
+  REP( i, n ) p[i] = i;
+}
+
+int find_set( int i ){
+  return (p[i] == i) ? i : (p[i] = find_set( p[i] ) );
+}
+
+bool is_same_set( int i, int j ){ return find_set( i ) == find_set( j ); }
+bool union_set( int i, int j ){
+  if( not is_same_set( i, j ) ){
+    numSets --;
+    int x = find_set( i ), y = find_set( j );
+    if( r[x] > r[y] ){
+      p[y] = x;
+      set_size[x] += set_size[y];
+    }
+    else{
+      p[x] = y;
+      set_size[y] += set_size[x];
+      if( r[x] == r[y] ) r[y] ++;
+    }
+    return true;
+  }
+  return false;
+}
+
+int find_size( int i ){ return set_size[find_set( i )]; }
 
 int main(void){
-  int n;
   fastio;
-  cin >> n;
-
+  bool first = true;
+  int maxn = 0, maxm = 0, maxq = 0;
+  while( cin >> n >> m >> q, n | m | q ){
+    // maxn = max( n, maxn );
+    // maxq = max( q, maxq );
+    // maxm = max( m, maxm );
+    if( first ) first = false;
+    else cout << '\n';
+    answered.reset();
+    fill( justN( answers, q ), "no path" );
+    REP( i, m ){
+      cin >> u >> v >> w;
+      edges[i] = { w, u - 1, v - 1 };
+    }
+    REP( i, q ){
+      cin >> u >> v;
+      queries[i] = { u - 1, v - 1 };
+      // cout << "Query registered: (" << u - 1 << ", " << v - 1 << ")\n";
+    }
+    sort( justN( edges, m ) );
+    // sort( justN( queries, q ) );
+    init( n );// UFDS ufds( n );
+    REP( i, m ){
+      if( numSets == 1 ) break;
+      tie( w, u, v ) = edges[i];
+      if( union_set( u, v ) ){
+    	REP( j, q ){
+    	  if( answered[j] ) continue;
+    	  int x, y;
+    	  tie( x, y ) = queries[j];
+    	  // if( x == 0 and y == 6 ) cout << "We got here, boss\nResult is " << (ufds.isSameSet( x, y ) ? "true\n" : "false\n");
+    	  if( is_same_set( x, y ) and not answered[j] ){
+    	    answers[j] = to_string( w );
+    	    answered[j] = 1;
+    	  }
+    	}
+      }
+    }
+    cout << "Case #" << ++ tc << '\n';
+    REP( i, q ) cout << answers[i] << '\n';
+  }
+  // cout << "MAXN: " << maxn << "\nMAXM: " << maxm << "\nMAXQ: " << maxq << '\n';
   return 0;
 }

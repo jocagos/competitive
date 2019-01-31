@@ -150,12 +150,27 @@ int print_int( int N, int idx, int nd = ZERO ){
 #define cntSetBits(x) __builtin_popcount(x)
 #define cntSetBitsl(x) __builtin_popcountl(x)
 #define cntSetBitsll(x) __builtin_popcountll(x)
-constexpr int MAXN = 0; // modify
+constexpr int MAXN = 100100;
+ll myleft[MAXN], myright[MAXN];
 
 int main(void){
-  int n;
+  ll l = 0, r = 0, b = 0, c = 0, maxb = 0, n;
   fastio;
   cin >> n;
-
+  REP( i, n ){
+    cin >> myleft[i] >> myright[i];
+    l += myleft[i];
+    r += myright[i];
+  }
+  b = abs( l - r );
+  maxb = b;
+  REP( i, n ){
+    ll tb = b, tl = l, tr = r;
+    tl += -myleft[i] + myright[i];
+    tr += -myright[i] + myleft[i];
+    tb = abs( tl - tr );
+    if( tb > maxb ) c = i + 1, maxb = tb;
+  }
+  cout << c << endl;
   return 0;
 }

@@ -150,12 +150,83 @@ int print_int( int N, int idx, int nd = ZERO ){
 #define cntSetBits(x) __builtin_popcount(x)
 #define cntSetBitsl(x) __builtin_popcountl(x)
 #define cntSetBitsll(x) __builtin_popcountll(x)
-constexpr int MAXN = 0; // modify
+class UFDS {
+private:
+  vi p, rank, setSize;
+  int numSets;
+public:
+  UFDS(int N) {
+    setSize.assign(N, 1);
+    numSets = N;
+    rank.assign(N, 0);
+    p.assign(N, 0);
+    for (int i = 0; i < N; i++) p[i] = i;
+  }
+  int findSet(int i) { return (p[i] == i) ? i : (p[i] = findSet(p[i])); }
+  bool isSameSet(int i, int j) { return findSet(i) == findSet(j); }
+  bool unionSet(int i, int j) { 
+    if (!isSameSet(i, j)) {
+      numSets--; 
+      int x = findSet(i), y = findSet(j);
+      if (rank[x] > rank[y]) {
+	p[y] = x;
+	setSize[x] += setSize[y];
+      }
+      else{
+	p[x] = y;
+	setSize[y] += setSize[x];
+	if (rank[x] == rank[y]) rank[y]++;
+      }
+      return true;
+    }
+    return false;
+  }
+  int numDisjointSets() { return numSets; }
+  int sizeOfSet(int i) { return setSize[findSet(i)]; }
+};
+
+constexpr int MAXN = 1000100;
+ll n, m, edx, taken, maxn;
+// vtriad<ll> edges( MAXN );
 
 int main(void){
-  int n;
   fastio;
-  cin >> n;
-
+  // int tc = 1, pairs = 0;
+  while( cin >> n ){
+    UFDS ufds( MAXN );
+    taken = 0;
+    while( cin >> m ){
+      if( ufds.isSameSet( n, m ) ) taken ++;
+      else ufds.unionSet( n, m );
+      cin >> n;
+      if( n == -1 ) break;
+    }
+    cout << taken << '\n';
+  }
+  // while( scanf("%lld", &n) != EOF ){
+  //   if( n == -1 ){ // reset data, print solution
+  //     // sort( justN( edges, edx ) );
+  //     taken = 0;
+  //     UFDS ufds( MAXN );
+  //     ll u, v, w;
+  //     REP( i, edx ){
+  // 	if( ufds.numDisjointSets() == 1 ) break;
+  // 	tie( w, u, v ) = edges[i];
+  // 	if( not ufds.isSameSet( u, v ) ) taken += ufds.unionSet( u, v );
+  // 	// if( ufds.unionSet( u, v ) ) taken ++;
+  //     }
+  //     // cerr << "Case " << tc ++ << ": " << pairs << " pairs." << endl;
+  //     cout << edx - taken << '\n';
+  //     edx = maxn = pairs = 0;
+  //   }
+  //   else{
+  //     scanf("%lld", &m);
+  //     // pairs ++;
+  //     maxn = max( { maxn, n, m } );
+  //     // if( edx < edges.size() ) 
+  //     edges[edx ++] = { 1, n - 1, m - 1 };
+  //     // else edges.EB( 1, n - 1, m - 1 ), edx ++;
+  //   }
+  // }
   return 0;
 }

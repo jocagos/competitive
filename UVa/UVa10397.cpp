@@ -150,12 +150,75 @@ int print_int( int N, int idx, int nd = ZERO ){
 #define cntSetBits(x) __builtin_popcount(x)
 #define cntSetBitsl(x) __builtin_popcountl(x)
 #define cntSetBitsll(x) __builtin_popcountll(x)
-constexpr int MAXN = 0; // modify
+constexpr int MAXSIZE = 1000001;
+constexpr int MAXN = 770, MAXM = 770 * 770, MAXE = 1100;
+int pa[MAXSIZE], ra[MAXSIZE], set_size[MAXSIZE];
+int num_sets = MAXSIZE;
+int n, m, edx, u, v;
+double w, mst;
+vtwin<int> points( MAXN ), existing( MAXE );
+vtriad<double, int, int> edges( MAXM );
+
+void init( int n, int idx = 0 ){
+  num_sets = n + idx;
+  for( int i = 0; i < num_sets; ++ i ){
+    pa[i] = i;
+    ra[i] = set_size[i] = 1;
+  }
+}
+
+int find_set( int i ){ return pa[i] == i ? i : pa[i] = find_set( pa[i] ); }
+bool is_same_set( int i, int j ){ return find_set( i ) == find_set( j ); }
+bool union_set( int i, int j ){
+  if( not is_same_set( i, j ) ){
+    num_sets --;
+    int x = find_set( i ), y = find_set( j );
+    if( ra[x] > ra[y] ){
+      pa[y] = x;
+      set_size[x] += set_size[y];
+    }
+    else{
+      pa[x] = y;
+      set_size[y] += set_size[x];
+      if( ra[x] == ra[y] ) ra[y] ++;
+    }
+    return true;
+  }
+  return false;
+}
+
+int size_of_set( int i ){ return set_size[find_set( i )]; }
 
 int main(void){
-  int n;
   fastio;
-  cin >> n;
-
+  while( cin >> n ){
+    edx = mst = 0;
+    REP( i, n ){
+      cin >> u >> v;
+      points[i + 1] = { u, v };
+    }
+    cin >> m;
+    init( n, 1 );
+    REP( i, m ){
+      cin >> u >> v;
+      existing[i] = { u, v };
+      union_set( u, v );
+    }
+    int x1, x2, y1, y2;
+    FOR( i, 1, n + 1 ){
+      tie( x1, y1 ) = points[i];
+      FOR( j, i + 1, n + 1 ){
+	tie( x2, y2 ) = points[j];
+	edges[edx ++] = { hypot( x1 - x2, y1 - y2 ), i, j };
+      }
+    }
+    sort( justN( edges, edx ) );
+    REP( i, edx ){
+      if( num_sets == 1 ) break;
+      tie( w, u, v ) = edges[i];
+      if( union_set( u, v ) ) mst += w;
+    }
+    cout << setprecision(2) << fixed << mst << '\n';
+  }
   return 0;
 }

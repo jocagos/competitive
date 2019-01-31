@@ -150,12 +150,69 @@ int print_int( int N, int idx, int nd = ZERO ){
 #define cntSetBits(x) __builtin_popcount(x)
 #define cntSetBitsl(x) __builtin_popcountl(x)
 #define cntSetBitsll(x) __builtin_popcountll(x)
-constexpr int MAXN = 0; // modify
+class UFDS {
+private:
+  vi p, rank, setSize;
+  int numSets;
+public:
+  UFDS(int N) {
+    setSize.assign(N, 1); numSets = N; rank.assign(N, 0);
+    p.assign(N, 0); for (int i = 0; i < N; i++) p[i] = i; }
+  int findSet(int i) { return (p[i] == i) ? i : (p[i] = findSet(p[i])); }
+  bool isSameSet(int i, int j) { return findSet(i) == findSet(j); }
+  bool unionSet(int i, int j) { 
+    if (!isSameSet(i, j)) {
+      numSets--; 
+      int x = findSet(i), y = findSet(j);
+      if (rank[x] > rank[y]) {
+	p[y] = x;
+	setSize[x] += setSize[y];
+      }
+      else{
+	p[x] = y;
+	setSize[y] += setSize[x];
+	if (rank[x] == rank[y]) rank[y]++;
+      }
+      return true;
+    }
+    return false;
+  }
+  int numDisjointSets() { return numSets; }
+  int sizeOfSet(int i) { return setSize[findSet(i)]; }
+};
+
+constexpr int MAXN = 440, MAXC = 80000;
+unordered_map<string, int> cities;
+vs idx( MAXN );
+vtriad<int> edges( MAXC );
+int n, c;
 
 int main(void){
-  int n;
   fastio;
-  cin >> n;
-
+  while( cin >> n >> c, n | c ){
+    cities.clear();
+    REP( i, n ){
+      cin >> idx[i];
+      cities[idx[i]] = i;
+    }
+    string s, t;
+    int z, edx = 0, mst = 0;
+    REP( i, c ){
+      cin >> s >> t >> z;
+      edges[edx ++] = { z, cities[s], cities[t] };
+    }
+    cin >> s;
+    if( c >= n - 1 ){
+      sort( justN( edges, edx ) );
+      UFDS ufds( n );
+      REP( i, edx ){
+	if( ufds.numDisjointSets() == 1 ) break;
+	if( ufds.unionSet( get<1>( edges[i] ), get<2>( edges[i] ) ) ) mst += get<0>( edges[i] );
+      }
+      if( ufds.numDisjointSets() == 1 ) cout << mst << '\n';
+      else cout << "Impossible\n";
+    }
+    else cout << "Impossible\n";
+  }
   return 0;
 }

@@ -6,33 +6,21 @@
 
 using namespace std;
 using namespace __gnu_pbds;
-using ll = long long;
-using i64 = unsigned long long;
-using ld = long double;
-// using ii = tuple<int, int>; // or pair<int, int>
-// using dd = tuple<double, double>; // or pair< double, double >
-template <class T> using twin = tuple<T, T>;
-template <class T> using triad = tuple<T, T, T>;
-template <class T> using quad = tuple<T, T, T, T>;
-using vi = vector<int>;
-using vs = vector<string>;
-using vd = vector<double>;
-using vld = vector<ld>;
-template <class T, class U = T>
-using vtwin = vector<tuple<T, U>>;
-template <class T, class U = T, class V = T>
-using vtriad = vector<tuple<T, U, V>>;
-template <class T, class U = T, class V = T, class W = T>
-using vquad = vector<tuple<T, U, V, W>>;
 
+typedef long long ll;
+typedef unsigned long long i64;
+typedef long double ld;
+typedef pair<int, int> ii;
+typedef pair<double, double> dd;
+typedef pair<ii, int> tern;
+typedef pair<ii, ii> quad;
+typedef vector<int> vi;
+typedef vector<double> vd;
+typedef vector<ii> vii;
+typedef vector<dd> vdd;
+typedef vector<tern> vtern;
+typedef vector<quad> vquad;
 // minHeap, BinomialHeap and FibonacciHeap for later use, policy based data structures
-/* NOTES:
-`pairing_heap_tag` is good for non-primitive data types like `string`
-`binary_heap_tag` is good for primitive data types
-`binomial_heap_tag` is good for responsiveness
-`rc_binomial_heap_tag` has more responsiveness at the cost of worse constants
-`thin_heap_tag` is good for graph algorithms (FibonacciHeap)
- */
 template <class T> using minHeap = __gnu_pbds::priority_queue<T, greater<T>, pairing_heap_tag>;
 template <class T> using minBinHeap = __gnu_pbds::priority_queue<T, greater<T>, rc_binomial_heap_tag>;
 template <class T> using minFHeap = __gnu_pbds::priority_queue<T, greater<T>, thin_heap_tag>;
@@ -47,8 +35,7 @@ typedef trie<string, null_type, trie_string_access_traits<>, pat_trie_tag, trie_
 const int INF = (int) 1e9 + 7;
 const ll LLINF = (ll) 4e18 + 7;
 const double pi = acos(-1.0);
-constexpr twin<int> n8[8] = { { -1, -1 }, { -1, 0 }, { -1, 1 }, { 0, -1 }, { 0, 1 }, { 1, -1 }, { 1, 0 }, { 1, 1 } }, n4[4] = { { -1, 0 }, { 0, -1 }, { 0, 1 }, { 1, 0 } };
-constexpr bool V = true, NV = false;
+constexpr ii n8[8] = { { -1, -1 }, { -1, 0 }, { -1, 1 }, { 0, -1 }, { 0, 1 }, { 1, -1 }, { 1, 0 }, { 1, 1 } }, n4[4] = { { -1, 0 }, { 0, -1 }, { 0, 1 }, { 1, 0 } };
 // /* slaps vector */ This bad boy can hold SO MANY
 // values to compare a value to!
 template<typename T>
@@ -78,51 +65,11 @@ struct myHash {
   }
 };
 
-/* FAST I/O for integers
- * USE: just add the characters to `buf` and check if you are close to overflow
- * and if so just print `buf` then reset iterator to buf.
-char buf[10000000];
-constexpr int ZERO = 0, NEWLINE = 1, WHITESPACE = 2;
-
-// let's try it again lmao
-int next_int( void ){
-  char c;
-  do{ c = getchar_unlocked(); } while( c != '-' and !isdigit( c ) );
-  bool neg = (c == '-');
-  int r = neg ? 0 : c - '0';
-  while( isdigit( c = getchar_unlocked() ) ) r = 10 * r + (c - '0');
-  return neg ? -r : r;
-}
-
-int print_int( int N, int idx, int nd = ZERO ){
-  if( N < 10 ) buf[idx ++] = N + '0';
-  else{
-    buf[idx ++] = (N / 10) + '0';
-    buf[idx ++] = N % 10 + '0';
-  }
-  if( nd == WHITESPACE ) buf[idx ++] = ' ';
-  else if( nd == NEWLINE ) buf[idx ++] = '\n';
-  else buf[idx ++] = '\0';
-  return idx;
-}
- */
-
-// can't remove these macros
+// easy access/use
 #define fastio ios::sync_with_stdio(0); cin.tie(0); cout.tie(0)
-#define viewStr(s) cout << #s << ": >" << (s) << "<" << endl
-#define view(x) cout << #x << ": " << x << endl
+#define view(x) cout << #x << ": " << x << endl;
 #define sz(c) (int)((c).size())
 #define all(c) (c).begin(), (c).end()
-// pretty useful though hard to make a template out of it that works
-// with almost any type without casts and so
-// it might work:
-/*
-  template <typename T, typename U, typename V>
-  inline bool in( T a, U b, V x ){
-    return a <= x and x <= b;
-  }
- */
-// easy access/use
 #define in( a, b, x ) ( (a) <= (x) and (x) <= (b) )
 #define justN(c, n) (c).begin(), (c).begin() + n
 #define sq(a) (a) * (a)
@@ -150,12 +97,11 @@ int print_int( int N, int idx, int nd = ZERO ){
 #define cntSetBits(x) __builtin_popcount(x)
 #define cntSetBitsl(x) __builtin_popcountl(x)
 #define cntSetBitsll(x) __builtin_popcountll(x)
-constexpr int MAXN = 0; // modify
 
 int main(void){
-  int n;
+  double n;
   fastio;
   cin >> n;
-
+  
   return 0;
 }

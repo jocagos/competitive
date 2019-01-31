@@ -150,12 +150,84 @@ int print_int( int N, int idx, int nd = ZERO ){
 #define cntSetBits(x) __builtin_popcount(x)
 #define cntSetBitsl(x) __builtin_popcountl(x)
 #define cntSetBitsll(x) __builtin_popcountll(x)
-constexpr int MAXN = 0; // modify
+class UFDS {
+private:
+  vi p, rank, setSize;
+  int numSets;
+public:
+  UFDS(int N) {
+    setSize.assign(N, 1);
+    numSets = N;
+    rank.assign(N, 0);
+    p.assign(N, 0);
+    for (int i = 0; i < N; i++) p[i] = i;
+  }
+  int findSet(int i) { return (p[i] == i) ? i : (p[i] = findSet(p[i])); }
+  bool isSameSet(int i, int j) { return findSet(i) == findSet(j); }
+  bool unionSet(int i, int j) { 
+    if (!isSameSet(i, j)) {
+      numSets--; 
+      int x = findSet(i), y = findSet(j);
+      if (rank[x] > rank[y]) {
+	p[y] = x;
+	setSize[x] += setSize[y];
+      }
+      else{
+	p[x] = y;
+	setSize[y] += setSize[x];
+	if (rank[x] == rank[y]) rank[y]++;
+      }
+      return true;
+    }
+    return false;
+  }
+  int numDisjointSets() { return numSets; }
+  int sizeOfSet(int i) { return setSize[findSet(i)]; }
+};
+
+constexpr int MAXN = 220, MAXR = 20000;
+vtriad<int> edges( MAXR );
+map<string, int> cities;
+vs cdx( MAXN );
+int n, r, city, edx, origin, dest;
 
 int main(void){
-  int n;
+  int scenario = 0;
   fastio;
-  cin >> n;
-
+  while( cin >> n >> r, n | r ){
+    edx = city = 0;
+    cities.clear();
+    string s, t;
+    int u, v, w;
+    REP( i, r ){
+      cin >> s >> t >> w;
+      if( cities.find( s ) == cities.end() ){
+	cities[s] = city;
+	cdx[city] = s;
+	city ++;
+      }
+      if( cities.find( t ) == cities.end() ){
+	cities[t] = city;
+	cdx[city] = t;
+	city ++;
+      }
+      u = cities[s], v = cities[t];
+      edges[edx ++] = { w, u, v };
+    }
+    cin >> s >> t;
+    origin = cities[s], dest = cities[t];
+    sort( justN( edges, edx ), greater<triad<int>>() );
+    UFDS ufds( n );
+    REP( i, edx ){
+      if( ufds.numDisjointSets() == 1 ) break;
+      tie( w, u, v ) = edges[i];
+      if( ufds.unionSet( u, v ) ){
+	if( ufds.isSameSet( origin, dest ) ){
+	  cout << "Scenario #" << ++scenario << "\n" << w << " tons\n\n";
+	  break;
+	}
+      }
+    }
+  }
   return 0;
 }

@@ -150,12 +150,72 @@ int print_int( int N, int idx, int nd = ZERO ){
 #define cntSetBits(x) __builtin_popcount(x)
 #define cntSetBitsl(x) __builtin_popcountl(x)
 #define cntSetBitsll(x) __builtin_popcountll(x)
-constexpr int MAXN = 0; // modify
+constexpr int MAXSIZE = 1000001;
+constexpr int MAXS = 110, MAXP = 550, MAXM = 550 * 550;
+int pa[MAXSIZE], ra[MAXSIZE], set_size[MAXSIZE];
+int num_sets = MAXSIZE;
+int tc, s, p, edx, u, v;
+double w, mst;
+vtwin<int> points( MAXP );
+vtriad<double, int, int> edges( MAXM );
+
+void init( int n, int idx = 0 ){
+  num_sets = n + idx;
+  for( int i = 0; i < num_sets; ++ i ){
+    pa[i] = i;
+    ra[i] = set_size[i] = 1;
+  }
+}
+
+int find_set( int i ){ return pa[i] == i ? i : pa[i] = find_set( pa[i] ); }
+bool is_same_set( int i, int j ){ return find_set( i ) == find_set( j ); }
+bool union_set( int i, int j ){
+  if( not is_same_set( i, j ) ){
+    num_sets --;
+    int x = find_set( i ), y = find_set( j );
+    if( ra[x] > ra[y] ){
+      pa[y] = x;
+      set_size[x] += set_size[y];
+    }
+    else{
+      pa[x] = y;
+      set_size[y] += set_size[x];
+      if( ra[x] == ra[y] ) ra[y] ++;
+    }
+    return true;
+  }
+  return false;
+}
+
+int size_of_set( int i ){ return set_size[find_set( i )]; }
 
 int main(void){
-  int n;
   fastio;
-  cin >> n;
-
+  cin >> tc;
+  while( tc -- ){
+    double ans = w = mst = edx = 0;
+    cin >> s >> p;
+    REP( i, p ){
+      cin >> u >> v;
+      points[i] = { u, v };
+    }
+    REP( i, p ){
+      int x1, y1;
+      tie( x1, y1 ) = points[i];
+      FOR( j, i + 1, p ){
+	int x2, y2;
+	tie( x2, y2 ) = points[j];
+	edges[edx ++] = { hypot( x1 - x2, y1 - y2 ), i, j };
+      }
+    }
+    sort( justN( edges, edx ) );
+    init( p );
+    REP( i, edx ){
+      if( num_sets == s ) break;
+      tie( w, u, v ) = edges[i];
+      if( union_set( u, v ) ) ans = w;
+    }
+    cout << setprecision( 2 ) << fixed << ans << '\n';
+  }
   return 0;
 }

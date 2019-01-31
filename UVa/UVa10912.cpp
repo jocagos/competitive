@@ -151,6 +151,7 @@ int print_int( int N, int idx, int nd = ZERO ){
 #define cntSetBitsl(x) __builtin_popcountl(x)
 #define cntSetBitsll(x) __builtin_popcountll(x)
 constexpr int MAXN = 10010;
+int memo[MAXN][
 
 int main(void){
   int n;

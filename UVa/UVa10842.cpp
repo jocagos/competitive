@@ -150,12 +150,95 @@ int print_int( int N, int idx, int nd = ZERO ){
 #define cntSetBits(x) __builtin_popcount(x)
 #define cntSetBitsl(x) __builtin_popcountl(x)
 #define cntSetBitsll(x) __builtin_popcountll(x)
-constexpr int MAXN = 0; // modify
+constexpr int MAXN = 110, MAXM =  10100;
+class UFDS {
+private:
+  vector<int> p, rank, set_size;
+  long long num_sets, offset;
+public:
+  UFDS( int N ){
+    set_size.assign(N, 1);
+    num_sets = N;
+    rank.assign(N, 0);
+    p.assign(N, 0);
+    offset = 0;
+    for (int i = 0; i < N; i++) p[i] = i;
+  }
+
+  UFDS( int N, int max_size ){ // to reuse it
+    set_size.assign( max_size, 1 );
+    num_sets = N;
+    rank.assign( max_size, 0 );
+    p.assign( max_size, 0 );
+    offset = 0;
+    for(int i = 0; i < N; i++) p[i] = i;
+  }
+  
+  UFDS( int N, int max_size, int idx ){ // when you need offsets, or 1-based idx
+    set_size.assign( max_size, 1 );
+    num_sets = N, offset = idx;
+    rank.assign( max_size, 0 );
+    p.assign( max_size, 0 );
+    for( int i = idx; i < N + idx; ++ i ) p[i] = i;
+  }
+
+  void init( int N, int idx = 0 ){
+    offset = idx;
+    for( int i = offset; i < N + offset; ++ i ){
+      rank[i] = set_size[i] = 1;
+      p[i] = i;
+    }
+  }
+  
+  int find_set(int i) { return (p[i] == i) ? i : (p[i] = find_set(p[i])); }
+  bool is_same_set(int i, int j) { return find_set(i) == find_set(j); }
+  bool union_set(int i, int j) { 
+    if (!is_same_set(i, j)) {
+      num_sets--; 
+      int x = find_set(i), y = find_set(j);
+      if (rank[x] > rank[y]) {
+	p[y] = x;
+	set_size[x] += set_size[y];
+      }
+      else{
+	p[x] = y;
+	set_size[y] += set_size[x];
+	if (rank[x] == rank[y]) rank[y]++;
+      }
+      return true;
+    }
+    return false;
+  }
+  int how_many() { return num_sets; }
+  int size_of_set(int i) { return set_size[find_set(i)]; }
+};
+
+int tc, m, n, edx, u, v, w;
+vtriad<int> edges( MAXM );
+UFDS ufds( MAXN, MAXN );
 
 int main(void){
-  int n;
   fastio;
-  cin >> n;
-
+  cin >> tc;
+  FOR( _, 1, tc + 1 ){
+    cin >> n >> m;
+    ufds.init( n );
+    REP( i, m ){
+      cin >> u >> v >> w;
+      edges[i] = { w, u, v };
+    }
+    sort( justN( edges, m ), greater<triad<int>>() );
+    // REP( i, m ){
+    //   tie( w, u ,v ) = edges[i];
+    //   cout << "(" << w << ", " << u << ", " << v << ")\n";
+    // }
+    int it = 0;
+    REP( i, m ){
+      if( ufds.how_many() == 1 ) break;
+      tie( w, u, v ) = edges[i];
+      if( ufds.union_set( u, v ) ) it = i;
+    }
+    cout << "Case #" << _ << ": " << get<0>( edges[it] ) << '\n';
+  }
   return 0;
 }

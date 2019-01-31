@@ -124,7 +124,7 @@ int print_int( int N, int idx, int nd = ZERO ){
  */
 // easy access/use
 #define in( a, b, x ) ( (a) <= (x) and (x) <= (b) )
-#define justN(c, n) (c).begin(), (c).begin() + n
+#define justN(c, n) begin((c)), begin((c)) + n
 #define sq(a) (a) * (a)
 #define fi first
 #define se second
@@ -150,12 +150,61 @@ int print_int( int N, int idx, int nd = ZERO ){
 #define cntSetBits(x) __builtin_popcount(x)
 #define cntSetBitsl(x) __builtin_popcountl(x)
 #define cntSetBitsll(x) __builtin_popcountll(x)
-constexpr int MAXN = 0; // modify
+class UFDS {
+private:
+  vi p, rank, setSize;
+  int numSets;
+public:
+  UFDS(int N) {
+    setSize.assign(N, 1); numSets = N; rank.assign(N, 0);
+    p.assign(N, 0); for (int i = 0; i < N; i++) p[i] = i; }
+  int findSet(int i) { return (p[i] == i) ? i : (p[i] = findSet(p[i])); }
+  bool isSameSet(int i, int j) { return findSet(i) == findSet(j); }
+  void unionSet(int i, int j) { 
+    if (!isSameSet(i, j)) { numSets--; 
+    int x = findSet(i), y = findSet(j);
+    if (rank[x] > rank[y]) { p[y] = x; setSize[x] += setSize[y]; }
+    else                   { p[x] = y; setSize[y] += setSize[x];
+                             if (rank[x] == rank[y]) rank[y]++; } } }
+  int numDisjointSets() { return numSets; }
+  int sizeOfSet(int i) { return setSize[findSet(i)]; }
+};
+
+constexpr int MAXN = 1010, MAXR = 40040;
+int n, r, tc, x, y, nstates, edx;
+double roads, rails;
+vtwin<int> points( MAXN );
+vtriad<int,int,int> edges( MAXN * MAXN );
+// vector<set<twin<int>>> states;
 
 int main(void){
-  int n;
   fastio;
-  cin >> n;
-
+  cin >> tc;
+  FOR( _, 1, tc + 1 ){
+    cin >> n >> r;
+    edx = 0;
+    REP( i, n ){
+      cin >> x >> y;
+      points[i] = { x, y };
+    }
+    sort( justN( points, n ) );
+    nstates = 1, roads = 0, rails = 0;
+    // states.assign( 1, set<twin<int>>() );
+    // states[0].insert( points[0] );
+    REP( i, n ) FOR( j, i + 1, n ) edges[edx ++] = { (get<0>( points[i] ) - get<0>( points[j] )) * (get<0>( points[i] ) - get<0>( points[j] ) ) + (get<1>( points[i] ) - get<1>( points[j] ))*( get<1>( points[i] ) - get<1>( points[j] ) ), i, j };
+    sort( justN( edges, edx ) );
+    // cout << "edges[0] = {" << get<0>( edges[0] ) << ", " << get<1>( edges[0] ) 
+    UFDS ufds( n );
+    int q = sq( r );
+    REP( i, edx ){
+      if( ufds.numDisjointSets() == 1 ) break;
+      if( not ufds.isSameSet( get<1>( edges[i] ), get<2>( edges[i] ) ) ){
+	ufds.unionSet( get<1>( edges[i] ), get<2>( edges[i] ) );
+	if( get<0>( edges[i] ) > q ) rails += sqrt( get<0>( edges[i] ) ), nstates ++;
+	else roads += sqrt( get<0>( edges[i] ) );
+      }
+    }
+    cout << "Case #" << _ << ": " << nstates << " " << setprecision( 0 ) << fixed << roads << " " << rails << '\n';
+  }
   return 0;
 }

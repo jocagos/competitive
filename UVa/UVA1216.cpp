@@ -150,12 +150,84 @@ int print_int( int N, int idx, int nd = ZERO ){
 #define cntSetBits(x) __builtin_popcount(x)
 #define cntSetBitsl(x) __builtin_popcountl(x)
 #define cntSetBitsll(x) __builtin_popcountll(x)
-constexpr int MAXN = 0; // modify
+class UFDS {
+private:
+  vi p, rank, setSize;
+  int numSets;
+public:
+  UFDS(int N) {
+    setSize.assign(N, 1);
+    numSets = N;
+    rank.assign(N, 0);
+    p.assign(N, 0);
+    for (int i = 0; i < N; i++) p[i] = i;
+  }
+  int findSet(int i) { return (p[i] == i) ? i : (p[i] = findSet(p[i])); }
+  bool isSameSet(int i, int j) { return findSet(i) == findSet(j); }
+  bool unionSet(int i, int j) { 
+    if (!isSameSet(i, j)) {
+      numSets--; 
+      int x = findSet(i), y = findSet(j);
+      if (rank[x] > rank[y]) {
+	p[y] = x;
+	setSize[x] += setSize[y];
+      }
+      else{
+	p[x] = y;
+	setSize[y] += setSize[x];
+	if (rank[x] == rank[y]) rank[y]++;
+      }
+      return true;
+    }
+    return false;
+  }
+  int numDisjointSets() { return numSets; }
+  int sizeOfSet(int i) { return setSize[findSet(i)]; }
+};
+
+constexpr int MAXN = 1000100;
+int tc, n, target, edx, mst_idx, u, v, w, p, ufds_idx;
+vtriad<int> edges( MAXN );
+vtwin<int> points( MAXN );
+map<twin<int>, int> to_idx;
 
 int main(void){
-  int n;
   fastio;
-  cin >> n;
-
+  cin >> tc;
+  while( tc -- ){
+    to_idx.clear();
+    cin >> target;
+    edx = mst_idx = n = p = ufds_idx = 0;
+    while( cin >> u, u > 0 ){
+      cin >> v;
+      points[p] = { u - 1, v - 1 };
+      to_idx[points[p]] = p;
+      p ++;
+    }
+    REP( i, p ){
+      FOR( j, i + 1, p ){
+	int x1, x2, y1, y2;
+	tie( x1, y1 ) = points[i];
+	tie( x2, y2 ) = points[j];
+	edges[edx ++] = { ceil( hypot( x1 - x2, y1 - y2 ) ), to_idx[points[i]], to_idx[points[j]] };
+      }
+    }
+    sort( justN( edges, edx ) );
+    // REP( i, edx ) cout << "( " << get<0>( edges[i] ) << ", " << get<1>( edges[i] ) << ", " << get<2>( edges[i] ) << " )\n";
+    UFDS ufds( p );
+    int mst = 0;
+    REP( i, edx ){
+      // cout << "Checking (" << get<0>( edges[i] ) << ", " << get<1>( edges[i] ) << ", " << get<2>( edges[i] ) << ")\n";
+      // cout << "UFDS has " << ufds.numDisjointSets() << " DS\n";
+      // cout << "mst is " << mst << '\n';
+      if( ufds.numDisjointSets() == target ) break;
+      tie( w, u, v ) = edges[i];
+      // cout << "u is " << u << " and corresponds to (" << get<0>( points[u] ) << ", " << get<1>( points[u] ) << ")\n";
+      // cout << "v is " << v << " and corresponds to (" << get<0>( points[v] ) << ", " << get<1>( points[v] ) << ")\n";
+      // view( w );
+      if( ufds.unionSet( u, v ) ) mst += w;
+    }
+    cout << w << '\n';
+  }
   return 0;
 }

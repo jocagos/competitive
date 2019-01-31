@@ -150,12 +150,11 @@ int print_int( int N, int idx, int nd = ZERO ){
 #define cntSetBits(x) __builtin_popcount(x)
 #define cntSetBitsl(x) __builtin_popcountl(x)
 #define cntSetBitsll(x) __builtin_popcountll(x)
-constexpr int MAXN = 0; // modify
 
 int main(void){
-  int n;
+  ll n;
   fastio;
   cin >> n;
-
+  cout << (n > 1 ? (n * (n + 1))/2 % 2 : ( n == 1 ? 1: 0)) << endl;
   return 0;
 }

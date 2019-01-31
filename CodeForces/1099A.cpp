@@ -124,7 +124,7 @@ int print_int( int N, int idx, int nd = ZERO ){
  */
 // easy access/use
 #define in( a, b, x ) ( (a) <= (x) and (x) <= (b) )
-#define justN(c, n) (c).begin(), (c).begin() + n
+#define justN(c, n) ( (c).begin(), (c).begin() + n )
 #define sq(a) (a) * (a)
 #define fi first
 #define se second
@@ -150,12 +150,18 @@ int print_int( int N, int idx, int nd = ZERO ){
 #define cntSetBits(x) __builtin_popcount(x)
 #define cntSetBitsl(x) __builtin_popcountl(x)
 #define cntSetBitsll(x) __builtin_popcountll(x)
-constexpr int MAXN = 0; // modify
+
 
 int main(void){
-  int n;
+  int w, h, w1, d1, w2, d2;
   fastio;
-  cin >> n;
-
+  cin >> w >> h >> w1 >> d1 >> w2 >> d2;
+  FORD( i, h, 0 ){
+    w += i;
+    if( i == d1 ) w -= w1;
+    if( i == d2 ) w -= w2;
+    if( w < 0 ) w = 0;
+  }
+  cout << w << '\n';
   return 0;
 }

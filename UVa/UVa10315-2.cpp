@@ -150,12 +150,59 @@ int print_int( int N, int idx, int nd = ZERO ){
 #define cntSetBits(x) __builtin_popcount(x)
 #define cntSetBitsl(x) __builtin_popcountl(x)
 #define cntSetBitsll(x) __builtin_popcountll(x)
-constexpr int MAXN = 0; // modify
+/*
+ * Ranking of cards:
+ * [2-10], J, Q, K, A
+ * Ranking of hands:
+ * High Card, Pair, Two Pairs, Three of a Kind,
+ * Straight, Flush, Full House, Four of a Kind,
+ * Straight Flush
+ * INPUT: 5 cards, black hand; 5 cards, white hand
+ * OUTPUT: "[color] wins." or "Tie."
+ */
+
+class Hand{
+private:
+  enum Rank { HighCard, Pair, TwoPairs, Three, Straight, Flush, FullHouse, Four, StraightFlush };
+  Rank rank;
+  vector<string> cards(5);
+  string values;
+  string high_cards;
+public:
+  Hand( vector<string>& _cards ) : cards( _cards ) {
+    for( auto s : cards ) values += s;
+    string tmp = values;
+    REP( i, (int) values.size() ) if( in( '2', '9', values[i] ) or isIn( values[i], { 'A', 'T', 'J', 'Q', 'K' } ) ) high_cards += values[i];
+    sort( all( high_cards ), greater<char>() );
+    UNIQUE( tmp );
+    if( tmp.size() == 10 ) rank = HighCard;
+    viewStr( tmp );
+  }
+
+  Rank getRank( void ){
+    return this->rank;
+  }
+
+  string getHighCards( void ){
+    return this->high_cards;
+  }
+  
+  bool operator<( Hand& rhs ){
+    return ( this->rank != rhs.getRank() ? this->rank < rhs.getRank() : lexicographical_compare( all( this->high_cards ), all( rhs.getHighCards() ) ) );
+  }
+
+};
 
 int main(void){
-  int n;
   fastio;
-  cin >> n;
-
+  string line;
+  while( getline( cin, line ) ){
+    istringstream iss( line );
+    string black[5], white[5];
+    Rank black_rank, white_rank;
+    REP( i, 5 ) iss >> black[i];
+    REP( i, 5 ) iss >> white[i];
+    
+  }
   return 0;
 }
