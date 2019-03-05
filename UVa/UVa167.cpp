@@ -125,7 +125,6 @@ void backtrack( int c ){
   }
 }
 
-
 int main(){
   fastio;
   cin >> tc;

@@ -150,87 +150,62 @@ int print_int( int N, int idx, int nd = ZERO ){
 #define cntSetBits(x) __builtin_popcount(x)
 #define cntSetBitsl(x) __builtin_popcountl(x)
 #define cntSetBitsll(x) __builtin_popcountll(x)
-/*
- * Ranking of cards:
- * [2-10], J, Q, K, A
- * Ranking of hands:
- * High Card, Pair, Two Pairs, Three of a Kind,
- * Straight, Flush, Full House, Four of a Kind,
- * Straight Flush
- * INPUT: 5 cards, black hand; 5 cards, white hand
- * OUTPUT: "[color] wins." or "Tie."
- */
-
-enum Rank { HighCard, Pair, TwoPairs, Three, Straight, Flush, FullHouse, Four, StraightFlush };
-
-int rank_card( const char& c ){
-  switch(c){
-  case 'A': return 14;
-  case 'T': return 10;
-  case 'J': return 11;
-  case 'Q': return 12;
-  case 'K': return 13;
-  default: return c - '0';
-  }
-}
-
-auto lambda = []( const char& lhs, const char& rhs ){ return rank_card( lhs ) < rank_card( rhs ); };
-
-bool cmp_high_cards( string lhs, string rhs ){
-  auto lit = begin(lhs), rit = begin(rhs);
-  while( lit != end(lhs) and rit != end(rhs) ){
-    if( *lit == *rit ) lit ++, rit ++;
-    else return lambda( *lit, *rit );
-  }
-}
-
-class Hand{
-private:
-  Rank rank;
-  vs cards = vs(5);
-  string values;
-  string high_cards;
-  
-public:
-  Hand( vector<string>& _cards ) : cards( _cards ) {
-    for( auto s : cards ) values += s;
-    string tmp = values;
-    REP( i, (int) values.size() ) if( in( '2', '9', values[i] ) or isIn( values[i], { 'A', 'T', 'J', 'Q', 'K' } ) ) high_cards += values[i];
-    sort( all( high_cards ), lambda );
-    UNIQUE( tmp );
-    if( tmp.size() == 10 ) rank = HighCard;
-    else if()
-  }
-
-  Rank get_rank( void ){
-    return this->rank;
-  }
-
-  string get_high_cards( void ){
-    return this->high_cards;
-  }
-  
-  bool operator<( Hand& rhs ){
-    if( this->rank != rhs.get_rank() ) return this->rank < rhs.get_rank();
-    else return cmp_high_cards( this->high_cards, rhs.get_high_cards() );
-  }
-
-  bool operator>( Hand& rhs ){ return rhs < *this; }
-};
+constexpr int MAXM = 40, MAXN = 40 * 40, MAXP = 12;
+int tc, m, n, p, q;
+vs names( MAXM );
+unordered_map<string, int> n2i;
+vector<vi> g( MAXM );
+bool v[MAXM][MAXM];
 
 int main(void){
   fastio;
-  string line;
-  while( getline( cin, line ) ){
-    istringstream iss( line );
-    vs black( 5 ), white( 5 );
-    REP( i, 5 ) iss >> black[i];
-    REP( i, 5 ) iss >> white[i];
-    Hand b( black ), w( white );
-    cout << "Black rank is " << b.get_rank() << " and White rank is " << w.get_rank() << endl;
-    if( b < w ) cout << "White wins.\n";
-    else if( b > w ) cout << "Black wins.\n";
-    else cout << "Tie.\n";
+  cin >> tc;
+  cout << "SHIPPING ROUTES OUTPUT\n\n";
+  REP( _, tc ){
+    cout << "DATA SET  " << _ + 1 << "\n\n";
+    n2i.clear();
+    g.assign( MAXM, vi() );
+    names.assign( MAXM, "" );
+    cin >> m >> n >> p;
+    // cerr << "I got m = " << m << "\tn = " << n << "\tp = " << p << '\n';
+    REP( i, m ){
+      cin >> names[i];
+      n2i[names[i]] = i;
+    }
+    string s, t;
+    REP( i, n ){
+      cin >> s >> t;
+      g[n2i[s]].EB(n2i[t]);
+      g[n2i[t]].EB(n2i[s]);
+    }
+    // REP( i, n ){
+    //   auto val = g[i];
+    //   cerr << "[" << i + 1 << "] => {";
+    //   for( auto ele : val ) cerr << ele << " ";
+    //   cerr << "}\n";
+    // }
+    vi dist( MAXM, INF );
+    REP( i, p ){
+      cin >> q >> s >> t;
+      memset( v, false, sizeof v );
+      dist.assign( MAXM, INF );
+      dist[n2i[s]] = 0;
+      queue<int> _q; _q.push( n2i[s] );
+      // vi p;
+      while( not _q.empty() ){
+	int u = _q.front(); _q.pop();
+	for( auto p : g[u] ){
+	  if( dist[p] == INF ){
+	    dist[p] = dist[u] + 1;
+	    _q.push( p );
+	  }
+	}
+      }
+      if( dist[n2i[t]] == INF ) cout << "NO SHIPMENT POSSIBLE\n";
+      else cout << "$" << dist[n2i[t]] * 100 * q << '\n';
+    }
+    cout << '\n';
   }
+  cout << "END OF OUTPUT\n";
   return 0;
 }
