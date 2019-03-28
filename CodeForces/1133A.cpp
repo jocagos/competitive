@@ -78,16 +78,6 @@ struct myHash {
   }
 };
 
-template<typename Cont>
-void view_cont( const Cont& container, const string& delimiter = "," ){
-  cerr << "{";
-  for( auto it = container.begin(); it != container.end(); ++ it )
-    cerr << " "
-	 << *it
-	 << (it + 1 == container.end() ? " " : " " + delimiter );
-  cerr << "}" << endl;
-}
-
 /* FAST I/O for integers
  * USE: just add the characters to `buf` and check if you are close to overflow
  * and if so just print `buf` then reset iterator to buf.
@@ -160,62 +150,16 @@ int print_int( int N, int idx, int nd = ZERO ){
 #define cntSetBits(x) __builtin_popcount(x)
 #define cntSetBitsl(x) __builtin_popcountl(x)
 #define cntSetBitsll(x) __builtin_popcountll(x)
-constexpr int MAXN = 2600;
-int n, source;
-vector<vi> g( MAXN, vi() );
-vi layers( MAXN, 0 );
-bitset<MAXN> vis( 0 );
-
-twin<int> bfs( int source ){
-  queue<twin<int>> q;
-  int layer = 0;
-  q.emplace( source, layer );
-  while( not q.empty() ){
-    int u, v;
-    tie( u, v ) = q.front();
-    q.pop();
-    if( vis[u] ) continue;
-    vis[u] = V;
-    if( u != source ) layers[v] ++;
-    for( auto p : g[u] )
-      q.emplace( p, v + 1 );
-  }
-  twin<int> ans{ -INF, INF };
-  int & a = get<0>( ans ), & b = get<1>( ans );
-  REP( i, n ){
-    if( layers[i] and layers[i] > a ){
-      a = layers[i];
-      b = i;
-    }
-  }
-  return ans;
-}
 
 int main(void){
-  fastio;
-  cin >> n;
-  layers.assign( n, 0 );
-  REP( i, n ){
-    int k;
-    cin >> k;
-    REP( j, k ){
-      int l;
-      cin >> l;
-      g[i].EB( l );
-    }
-  }
-  int tc;
-  cin >> tc;
-  while( tc -- ){
-    fill( all( layers ), 0 );
-    vis.reset();
-    cin >> source;
-    auto ans = bfs( source );
-    // view_cont( layers, "|" );
-    int a, b;
-    tie( a, b ) = ans;
-    if( a == -INF and b == INF ) cout << "0\n";
-    else cout << a << " " << b << '\n';
-  }
+  int a, b, c, d;
+  int begin = 0, end = 0;
+  // fastio;
+  scanf("%d:%d\n%d:%d", &a, &b, &c, &d );
+  begin = a * 60 + b;
+  end = c * 60 + d;
+  int ans = (end - begin) / 2 + begin;
+  // printf("%d:%d\n", ans / 60, ans % 60 );
+  cout << setfill( '0' ) << setw( 2 ) << right << (ans / 60) << ":" << setfill( '0' ) << setw( 2 ) << right << (ans % 60) << '\n';
   return 0;
 }

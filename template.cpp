@@ -14,6 +14,12 @@ using ld = long double;
 template <class T> using twin = tuple<T, T>;
 template <class T> using triad = tuple<T, T, T>;
 template <class T> using quad = tuple<T, T, T, T>;
+template <class T, class U = T, class V = T>
+using mtriad = tuple<T, U, V>;
+
+template <class T, class U = T, class V = T, class W = T>
+using mquad = tuple<T, U, V, W>;
+
 using vi = vector<int>;
 using vs = vector<string>;
 using vd = vector<double>;
@@ -47,7 +53,27 @@ typedef trie<string, null_type, trie_string_access_traits<>, pat_trie_tag, trie_
 const int INF = (int) 1e9 + 7;
 const ll LLINF = (ll) 4e18 + 7;
 const double pi = acos(-1.0);
-constexpr twin<int> n8[8] = { { -1, -1 }, { -1, 0 }, { -1, 1 }, { 0, -1 }, { 0, 1 }, { 1, -1 }, { 1, 0 }, { 1, 1 } }, n4[4] = { { -1, 0 }, { 0, -1 }, { 0, 1 }, { 1, 0 } };
+constexpr twin<int> n8[8] = { { -1, -1 }, // upper left
+			      { -1, 0 }, // upper middle
+			      { -1, 1 }, // upper right
+			      { 0, -1 }, // center left
+			      { 0, 1 }, // center right
+			      { 1, -1 }, // lower left
+			      { 1, 0 }, // lower middle
+			      { 1, 1 } // lower right
+                     },
+                     n4[4] = { { -1, 0 }, // down
+			       { 0, -1 }, // left
+			       { 0, 1 }, // right
+			       { 1, 0 } // up
+		     };
+constexpr triad<int> n3d[] = { { 0, -1, 0 }, // up
+		     { 0, 1, 0 }, // down
+		     { -1, 0, 0 }, // left
+		     { 1, 0, 0 }, // right
+		     { 0, 0, -1 }, // backward
+		     { 0, 0, 1 } // forward
+};
 constexpr bool V = true, NV = false;
 // /* slaps vector */ This bad boy can hold SO MANY
 // values to compare a value to!
@@ -61,6 +87,30 @@ bool isIn( T const &value, std::vector<T>& v ){
 template<typename T>
 bool isIn( T const &value, std::initializer_list<T> v ){
   return std::find( v.begin(), v.end(), value ) != v.end();
+}
+
+/*
+ * Only valid if T, U, V are trivially compared with operator< or operator<=
+ */
+
+template <typename T, typename U, typename V>
+inline bool in( T a, U b, V x ){
+  return (a <= x) and (x <= b);
+}
+
+template <typename T, typename U, typename V>
+inline bool inx( T a, U b, V x ){
+  return (a <= x) and (x < b);
+}
+
+template <typename T, typename U, typename V>
+inline bool xin( T a, U b, V x ){
+  return (a < x) and (x <= b);
+}
+
+template <typename T, typename U, typename V>
+inline bool xinx( T a, U b, V x ){
+  return (a < x) and (x < b);
 }
 
 // Took it from CodeForces, great hash for anti-hacking maps and sets
@@ -123,11 +173,20 @@ int print_int( int N, int idx, int nd = ZERO ){
   }
  */
 // easy access/use
-#define in( a, b, x ) ( (a) <= (x) and (x) <= (b) )
+// #define in( a, b, x ) ( (a) <= (x) and (x) <= (b) )
 #define justN(c, n) (c).begin(), (c).begin() + n
 #define sq(a) (a) * (a)
 #define fi first
 #define se second
+#define g0 get<0>
+#define g1 get<1>
+#define g2 get<2>
+#define g3 get<3>
+#define g4 get<4>
+#define g5 get<5>
+#define g6 get<6>
+#define g7 get<7>
+#define g8 get<8>
 #define PB push_back
 #define EB emplace_back
 #define MP make_pair
