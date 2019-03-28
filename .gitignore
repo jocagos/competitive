@@ -41,7 +41,7 @@ bin/
 
 # Ignore all non-UVa files in UVa
 UVa/*
-!UVa/UVa[0-9]{1-5}.py
-!UVa/UVa[0-9]{1-5}.cpp
-!UVa/UVa[0-9]{1-5}.java
-!UVa/UVa[0-9]{1-5}.c
+!UVa/UVa[0-9].py
+!UVa/UVa[0-9].cpp
+!UVa/UVa[0-9].java
+!UVa/UVa[0-9].c
