@@ -1,15 +1,16 @@
 #include <bits/stdc++.h>
-#define MAXN 1000000
+constexpr int MAXN = 1000000;
 using namespace std;
 
 bool sieve[MAXN]; // Check list
 vector<int> primes;
+int pidx {};
 
 void atkin(){
   if (MAXN > 2)
-    primes.push_back(2);
+    primes[pidx ++] = 2;
   if (MAXN > 3)
-    primes.push_back(3);
+    primes[pidx ++] = 3;
 
   for (int i = 0; i < MAXN; i++)
     sieve[i] = false;
@@ -35,7 +36,7 @@ void atkin(){
 
   for (int a = 5; a < MAXN; a++)
     if (sieve[a])
-      primes.push_back(a);
+      primes[pidx ++] = a;
 }
 
 int main()
