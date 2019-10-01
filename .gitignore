@@ -32,6 +32,7 @@
 bin/
 # or
 */bin/*
+/node_modules/
 
 # Unignore all `.jar` in `bin` dir
 !*/bin/*.jar
