@@ -1,5 +1,4 @@
-#include <iostream>
-#include <algorithm>
+#include <bits/stdc++.h>
 using namespace std;
 
 long long f( long long n ){
@@ -16,8 +15,11 @@ int main(){
   long long i, j;
   while( scanf("%lld %lld", &i, &j) != EOF ){
     long long m = f(min(i,j));
-    for( int k = min(i, j)+1; k <= max(i, j); ++k ) if( f(k) > m ) m = f(k);
-    cout << i << " " << j << " " << m << endl;
+    for( int k = min(i, j)+1; k <= max(i, j); ++k ){
+      long long tmp = f(k);
+      if( tmp > m ) m = tmp;
+    }
+    printf("%lld %lld %lld\n", i, j, m);
   }
   return 0;
 }

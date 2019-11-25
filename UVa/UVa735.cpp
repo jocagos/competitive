@@ -1,47 +1,24 @@
-#include <iostream>
-#include <vector>
-#include <set>
-#include <algorithm>
-#include <string>
-#include <utility>
+#include <bits/stdc++.h>
 
 using namespace std;
-
-typedef pair<pair<int, int>, int> iii;
+vector<int> C { -1, 1, 2, 3, 4, 5, 7, 8, 10, 12, 14, 16, 19, 21, 24, 27, 30, 33, 37, 40, 44, 48, 52, 55, 60, 62, 67, 70, 75, 77, 83, 84, 90, 92, 98, 99, 106, 106, 113, 114, 121, 121, 129, 128, 135, 135, 141, 140, 148, 146, 153, 152, 159, 157, 166, 163, 170, 168, 174, 171, 180, 176, 182, 178, 184, 179, 187, 182, 187, 183, 187, 181, 188, 181, 184, 179, 182, 174, 181, 172, 175, 170, 171, 161, 168, 157, 160, 154, 156, 144, 153, 140, 144, 138, 139, 126, 135, 121, 125, 120, 120, 107, 118, 102, 106, 102, 100, 88, 99, 84, 87, 85, 81, 70, 82, 66, 69, 69, 63, 54, 65, 50, 52, 53, 46, 39, 51, 35, 38, 41, 32, 27, 38, 23, 26, 31, 21, 18, 29, 14, 18, 23, 13, 11, 21, 8, 11, 17, 8, 7, 16, 4, 7, 12, 4, 4, 10, 2, 4, 8, 2, 2, 7, -1, 2, 5, -1, 1, 4, -1, 1, 3, -1, -1, 2, -1, -1, 1, -1, -1, 1 },
+  P { -1, 3, 6, 10, 15, 21, 28, 36, 45, 55, 66, 78, 91, 105, 120, 136, 153, 171, 190, 210, 231, 253, 276, 297, 319, 339, 360, 382, 405, 426, 448, 468, 489, 511, 534, 555, 577, 597, 618, 640, 663, 684, 706, 726, 744, 763, 783, 798, 820, 834, 852, 868, 888, 900, 925, 936, 951, 961, 978, 984, 1009, 1014, 1026, 1027, 1038, 1035, 1054, 1053, 1056, 1056, 1059, 1047, 1063, 1047, 1044, 1035, 1032, 1008, 1024, 996, 990, 976, 969, 930, 949, 906, 906, 885, 885, 834, 862, 810, 813, 792, 786, 729, 760, 699, 705, 685, 678, 618, 655, 588, 591, 579, 558, 507, 547, 480, 483, 477, 450, 399, 445, 375, 375, 379, 342, 306, 349, 279, 279, 288, 246, 219, 268, 195, 198, 219, 165, 153, 198, 126, 132, 160, 105, 102, 147, 78, 87, 117, 63, 66, 103, 45, 54, 84, 36, 42, 73, 21, 33, 55, 15, 24, 45, 9, 18, 36, 6, 12, 28, -1, 9, 21, -1, 6, 15, -1, 3, 10, -1, -1, 6, -1, -1, 3, -1, -1, 1 };
 
 int main(){
   int n;
-  set<int> scores { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 };
-  for( int i = 0; i <= 20; ++ i ) scores.insert( i * 2 ), scores.insert( i * 3 );
-  scores.insert(50);
-  while( scanf("%d", &n), n > 0 ){
-    set<iii> combinations;
-    set<iii> permutations;
-    int comb = 0, perm = 0;
-    int sum = 0;
-    for( auto i = scores.begin(); i != scores.end(); i ++ ){
-      for( auto j = scores.begin(); j != scores.end(); j ++ ){
-	for( auto k = scores.begin(); k != scores.end(); k ++ ){
-	  sum = *i + *j + *k;
-	  if( sum == n ){
-	    iii s = make_pair( make_pair(*i, *j), *k );
-	    vector<int> vals { *i, *j, *k };
-	    sort(vals.begin(), vals.end());
-	    iii p = make_pair( make_pair(vals[0], vals[1]), vals[2]);
-	    permutations.insert(s);
-	    combinations.insert(p);
-	  }
-	}
-      }
+  ios_base::sync_with_stdio(0);
+  cin.tie(0);
+  cout.tie(0);
+  while( cin >> n, n > 0 ){
+    
+    if( n <= 180 and C[n] > 0 ){
+      cout << "NUMBER OF COMBINATIONS THAT SCORES " << n << " IS " << C[n] << "." << endl;
+      cout << "NUMBER OF PERMUTATIONS THAT SCORES " << n << " IS " << P[n] << "." << endl;
     }
-    if( permutations.size() > 0 ){
-      cout << "NUMBER OF COMBINATIONS THAT SCORES " << n << " IS " << combinations.size() << "." << endl;
-      cout << "NUMBER OF PERMUTATIONS THAT SCORES " << n << " IS " << permutations.size() << "." << endl;
-    }
-    else cout << "THE SCORE OF " << n << " CANNOT BE MADE WITH THREE DARTS." << endl;
-    for( int i = 0; i < 70; ++i ) printf("*");
-    printf("\n");
+    else
+      cout << "THE SCORE OF " << n << " CANNOT BE MADE WITH THREE DARTS." << endl;
+    cout << "**********************************************************************\n";
   }
-  printf("END OF OUTPUT\n");
+  cout << "END OF OUTPUT\n";
   return 0;
 }

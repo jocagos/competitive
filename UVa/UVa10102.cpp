@@ -1,13 +1,9 @@
-#include <iostream>
-#include <algorithm>
-#include <vector>
-#include <utility>
-#define abs( x ) ( (x) > 0 ? (x) : (-(x)) )
+#include <bits/stdc++.h>
 
 using namespace std;
 
-typedef pair<int, int> ii;
-typedef vector<ii> vii;
+using ii = pair<int, int>;
+using vii = vector<ii>;
 
 int main(){
   int n;
@@ -22,7 +18,6 @@ int main(){
 	if( c == '3' ) threes.emplace_back(i, j);
       }
       c = getchar(); // catch the newline
-      if( c == '\r' ) c = getchar();
     }
     for( auto x : ones ){
       dists.clear();

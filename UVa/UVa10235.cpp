@@ -1,5 +1,5 @@
 #include <bits/stdc++.h>
-constexpr int MAXN = 1000000, MAXP = 78498;
+constexpr int MAXN = 1000100, MAXP = 78498;
 using namespace std;
 
 bool sieve[MAXN]{}; // Check list
@@ -39,8 +39,35 @@ void atkin(){
       primes[pidx ++] = a;
 }
 
+bool is_prime( int n ){
+  if( n < MAXN ) return sieve[n];
+  bool is = true;
+  for( auto p : primes ){
+    if( p > sqrt(n) )
+      break;
+    if( n % p == 0 ){
+      is = false;
+      break;
+    }
+  }
+  return is;
+}
+
 int main(){
+  ios_base::sync_with_stdio(0);
+  cin.tie(0);
+  cout.tie(0);
   atkin();
-  
+  int n {};
+  while( cin >> n ){
+    if( is_prime( n ) ){
+      string s = to_string( n );
+      string t( s.rbegin(), s.rend() );
+      int m = stoi( t );
+      if( is_prime( m ) and m != n ) cout << n << " is emirp.\n";
+      else cout << n << " is prime.\n";
+    }
+    else cout << n << " is not prime.\n";
+  }
   return 0;
 }
