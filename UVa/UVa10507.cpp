@@ -1,46 +1,62 @@
-#include <iostream>
-#include <vector>
-#include <bitset>
-#include <cstring>
+#include <bits/stdc++.h>
 
 using namespace std;
+constexpr int MAXCELL = 26;
+vector<vector<int>> AL( MAXCELL );
+bitset<MAXCELL> awake( 0 );
 
-typedef vector<int> vi;
+int check_neighbours( int u ){
+  int cnt {};
+  for( auto v : AL[u] ){
+    if( cnt == 3 )
+      return cnt;
+    if( awake[v] )
+      ++ cnt;
+  }
+  return cnt;
+}
 
 int main(){
-  int n;
-  while( scanf("%d", &n) != EOF ){
-    int m;
-    scanf("%d ", &m);
-    string line;
-    if( m == 0 ){
-      cout << "THIS BRAIN NEVER WAKES UP" << endl;
-      getline(cin, line);
-      continue;
-    }
+  ios_base::sync_with_stdio(0);
+  cin.tie(0);
+  cout.tie(0);
+  string line {};
+  while( getline( cin, line ) ){
+    AL.assign( MAXCELL, vector<int>() );
+    awake.reset();
+    int n {}, m {};
+    n = stoi( line );
     getline( cin, line );
-    vector<vector<int>> adjList(26);
-    bitset<26> awaken(0UL);
-    awaken.set(line[0]-'A', 1);
-    awaken.set(line[1]-'A', 1);
-    awaken.set(line[2]-'A', 1);
-    // Build adjList
-    for( int i = 0; i < m; ++i ){
+    m = stoi( line );
+    getline( cin, line );
+    for( unsigned i {}; i < line.length(); ++ i )
+      awake[line[i] - 'A'] = true;
+    for( int i {}; i < m; ++ i ){
       getline( cin, line );
-      adjList[line[0]-'A'].emplace_back((int)(line[1]-'A'));
-      adjList[line[1]-'A'].emplace_back((int)(line[0]-'A'));
+      AL[line[0] - 'A'].emplace_back( line[1] - 'A' );
+      AL[line[1] - 'A'].emplace_back( line[0] - 'A' );
     }
-    int years = 0;
-    while( !awaken.all() ){
+    bool changed = true;
+    int cnt {};
+    while( changed ){
+      changed = false; // to ensure it halts
       vector<int> to_awake;
-      for( int i = 0; i < 26; ++i )
-	if( adjList[i].size() >= 3 ) to_awake.push_back(i);
-      for( auto& x : to_awake )	awaken.set(x, 1);
-      years++;
-      
+      for( int i {}; i < MAXCELL; ++ i )
+	if( not awake[i] )
+	  if( check_neighbours( i ) == 3 )
+	    to_awake.emplace_back( i );
+      if( to_awake.size() )
+	changed = true;
+      for( auto x : to_awake )
+	awake[x] = true;
+      if( changed )
+	++ cnt;
     }
-    // simulate the process for some "years" but if you get stuck
-    // with a node asleep and no more than 2 nodes to it, exit and print false
+    if( awake.count() == n )
+      cout << "WAKE UP IN, " << cnt << ", YEARS\n";
+    else
+      cout << "THIS BRAIN NEVER WAKES UP\n";
+    getline( cin, line ); // blank line
   }
   return 0;
 }

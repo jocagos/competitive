@@ -1,20 +1,4 @@
-#include <iostream>
-#include <cstdio>
-#include <algorithm>
-#include <cstring>
-#include <string>
-#include <cctype>
-#include <stack>
-#include <queue>
-#include <list>
-#include <vector>
-#include <map>
-#include <sstream>
-#include <cmath>
-#include <bitset>
-#include <utility>
-#include <set>
-#include <numeric>
+#include <bits/stdc++.h>
  
 #define INF_MAX 2147483647
 #define INF_MIN -2147483647
@@ -36,7 +20,7 @@ int main(int argc, char** argv) {
         int n, ar [N + 10], previous_position [N + 10];
         scanf ("%d", &n);
  
-        map <int, int> m;
+        unordered_map <int, int> m;
         int cnt = 0;
         int maxi = 0;
  
