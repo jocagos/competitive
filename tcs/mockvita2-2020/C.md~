@@ -1,0 +1,12 @@
+# Philaland Coin
+
+## Problem Description
+
+The problem solvers have found a new island for coding and named it as Philaland.
+
+These smart people were given a task to make purchase of the items at the island easier by distributing various coins with different value.
+
+Manish has come up with a solution that, if we make the coins categories starting from $1 till the maximum price of the item present on the Island, then we can purchase any item easily. He added the following example to prove his point.
+
+Let's suppose the maximum price of an item is $5, then we can make coins with denominations {$1, $2, $3, $4, $5} to purchase any item ranging from $1 to $5.
+
