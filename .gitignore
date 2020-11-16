@@ -24,6 +24,7 @@
 *.py~
 *.out
 *.out~
+*.md~
 \#*
 *s*.cpp
 *.txt*
