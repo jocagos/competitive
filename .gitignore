@@ -28,6 +28,8 @@
 \#*
 *s*.cpp
 *.txt*
+*.h~
+*.hpp~
 
 # Ignore `bin` dir
 bin/
@@ -40,3 +42,10 @@ bin/
 
 # Ignore all `library.jar` in `bin` dir
 */bin/library.jar
+
+# Ignore .tgz
+*.tgz
+
+# Ignore some folders
+/UVa/get-pip.py
+/UVa/Python-3.5.1*
