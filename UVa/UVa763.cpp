@@ -94,13 +94,20 @@ public:
       s[i] = '0' + data[i];
     return s;
   }
+  
+  friend ostream& operator<<( ostream& os, BigInt& bi );
 };
+
+ostream& operator<<( ostream& os, BigInt& bi ){
+  os << bi.to_string();
+  return os;
+}
 
 int main(){
   ios_base::sync_with_stdio(0);
   cin.tie(0);
   cout.tie(0);
   BigInt a(5);
-  cout << a.to_string() << endl;
+  cout << a << endl;
   return 0;
 }

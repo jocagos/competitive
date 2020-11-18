@@ -10,8 +10,8 @@ for i in range(len(l)):
         if k not in l[i]:
             l[i][k] = 0
             
-n = sys.stdin.readline()
-while n != '0':
+n = sys.stdin.readline().split()[0]
+while n and n != '0':
     n = int(n)
     print(n, '! --', sep='')
     for key in sorted(l[n]):
