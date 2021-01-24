@@ -1,24 +1,36 @@
 #include <iostream>
+#include <sstream>
 #include <vector>
+#include <string>
 
 using namespace std;
-
-struct card{
-  int val;
-  char suit;
-
-  card() : val(0), suit('0') {};
-  card( int v, char s ) : val(v), suit(s) {};
-};
-
-typedef struct card Card;
+constexpr int MAX_CARD = 60;
+string card {}, word {};
+bool used[MAX_CARD] {};
 
 int main(){
-  int cards[13] = {3, 3, 5, 4, 4, 3, 5, 5, 4, 3, 4, 5, 4};
-  int n;
-  scanf("%d", &n);
-  vector<Card> v(n);
-  int idx = 2;
-  
+  ios_base::sync_with_stdio(0);
+  cin.tie(0);
+  cout.tie(0);
+  int n {};
+  while( cin >> n, n ){
+    for( int i = 0; i < MAX_CARD; ++ i )
+      used[i] = false;
+    vector<string> pos( n );
+    int curr_pos {-1};
+    for( int i = 0; i < n; ++ i ){
+      cin >> card >> word;
+      int len = word.length();
+      while( len ){
+	curr_pos = (curr_pos + 1) % n;
+	if( not used[curr_pos] )
+	  -- len;
+      }
+      pos[curr_pos] = card;
+      used[curr_pos] = true;
+    }
+    for( int i = 0; i < n; ++ i )
+      cout << pos[i] << ( i + 1 == n ? '\n' : ' ' );
+  }
   return 0;
 }

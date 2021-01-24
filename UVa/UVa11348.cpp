@@ -1,3 +1,5 @@
+// Quick improvement: Swap `set` and `map` for their `unordered` version
+// Still, this is not the best way due to all the boilerplate and clutter
 #include <bits/stdc++.h>
 #include <ext/pb_ds/tree_policy.hpp>
 #include <ext/pb_ds/trie_policy.hpp>
@@ -105,8 +107,8 @@ int main(void){
   FOR( _, 1, tc + 1 ){
     int n, x;
     cin >> n;
-    set<int> repeated;
-    map<int, int> keys, people;
+    unordered_set<int> repeated;
+    unordered_map<int, int> keys, people;
     vector<vector<int>> input( n );
     // save input to check again
     REP( i, n ){
@@ -121,7 +123,7 @@ int main(void){
       }
     }
     cout << "Case " << _ << ":";
-    cerr << "Case " << _ << ":";
+    // cerr << "Case " << _ << ":";
     REP( i, n ){
       set<int> already;
       int a = (int)keys.size();
@@ -135,7 +137,7 @@ int main(void){
       double ans = k;
       ans /= a - repeated.size();
       cout << " " << fixed << setprecision(6) << ans * 100 << "%";
-      cerr << " a: " << a << " k: " << k << endl;
+      // cerr << " a: " << a << " k: " << k << endl;
     }
     cout << '\n';
     

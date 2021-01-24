@@ -1,24 +1,44 @@
 #include <iostream>
-#include <set>
-#include <cstdlib>
+
 using namespace std;
-// slow, uses set. should be improved by using an array of values (instead of set) and using binary search that returns -1 or the min value greater/max value lesser than X.
+constexpr int MAXN = 100100;
+constexpr int NONE = -1;
+int P[MAXN] {}, N[MAXN] {}; // prev, next
+
+// using 1-based indexing
+void init( int n = MAXN ){
+  for( int i = 1; i <= n; ++ i ){
+    P[i] = i - 1;
+    N[i] = i + 1;
+  }
+}
+
 int main(){
-  int s, b;
-  while( scanf("%d %d ", &s, &b), s || b ){
-    int arr[s];
-    for( int i = 0; i < s; ++i ) arr[i] = i+1;
-    set<int> elements(arr, arr+s);
-    for( int i = 0; i < b; ++i ){
-      int l, r;
-      scanf("%d %d ", &l, &r);
-      auto _l = elements.find(l), _r = elements.upper_bound(r);
-      elements.erase(_l, _r);
-      _l = elements.lower_bound(r);
-      _r = elements.upper_bound(l);
-      cout << (_l != elements.begin() ? to_string(*(--_l)) : "*") << " " << (_r != elements.end() ? to_string(*_r) : "*") << endl;
+  ios_base::sync_with_stdio(0);
+  cin.tie(0);
+  cout.tie(0);
+  int s {}, b {};
+  while( cin >> s >> b, s | b ){
+    init( s );
+    int L {}, R {};
+    for( int i = 0; i < b; ++ i ){
+      cin >> L >> R;
+      int prev_tmp_L = P[L];
+      int next_tmp_R = N[R];
+      N[prev_tmp_L] = next_tmp_R;
+      P[next_tmp_R] = prev_tmp_L;
+      if( prev_tmp_L > 0 )
+	cout << prev_tmp_L;
+      else
+	cout << "*";
+      cout << " ";
+      if( next_tmp_R <= s )
+	cout << next_tmp_R;
+      else
+	cout << "*";
+      cout << '\n';
     }
-    printf("-\n");
+    cout << "-\n";
   }
   return 0;
 }

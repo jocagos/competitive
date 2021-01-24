@@ -1,95 +1,64 @@
-#include<iostream>
-#include<vector>
-#include<map>
-#include<set>
-#include<queue>
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <unordered_map>
+#include <set>
+#include <queue>
+
 using namespace std;
-struct book{
-	string Title;
-	map<string,set<book> >::iterator Author;
-	bool* state; //0:Shelf 1:Borrowed 2:Returned
-	book(){}
-	book(const char* a):
-		Title(a),
-		state(new bool(false)) {}
-	bool operator<(const book& rhs) const{ return Title < rhs.Title; }
-} temp;
-struct cmp{
-	bool operator()(const set<book>::iterator lhs, const set<book>::iterator rhs) const{
-		int Cmp = lhs->Author->first.compare(rhs->Author->first);
-		if(!Cmp) return lhs->Title > rhs->Title;
-		return Cmp>0;
-	}
-};
-map<string,set<book> > byAuthor;
-map<string,set<book>::iterator> byTitle,Borrowed;
-priority_queue<set<book>::iterator,vector<set<book>::iterator>,cmp> Returned;
-map<string,set<book> >::iterator it;
-set<book>::iterator it2,it4;
-map<string,set<book>::iterator>::iterator it3;
-char c[100],d[100];
-bool getPrev(){
-	it = it2->Author;
-	it4 = it2;
-	if(it4==it->second.begin() && it==byAuthor.begin()) return false;
-	else if(it4==it->second.begin()){
-		it--;
-		it4 = it->second.end();
-	}
-	while(it4!=it->second.begin() || it!=byAuthor.begin()){
-		if(it4==it->second.begin()){
-			it--;
-			it4 = it->second.end();
-		}
-		if(!*(--it4)->state) return true;
-	}
-	return false;
-}
-void printstates(){
-	for(it = byAuthor.begin();it!=byAuthor.end();it++){
-		cout << it->first << ":";
-		for(it2 = it->second.begin();it2!=it->second.end();it2++){
-			cout << ' ' << it2->Title << '(' << *it2->state << ')';
-		}
-		cout << endl;
-	}
-}
+
 int main(){
-	while(cin.get()!='E'){
-		cin.getline(c,100,'"').getline(d,100);
-		it = byAuthor.insert(pair<string,set<book> >(d+4,set<book>())).first;
-		temp = book(c);
-		temp.Author = it;
-		it2 = it->second.insert(temp).first;
-		byTitle[c] = it2;
+  ios_base::sync_with_stdio(0);
+  cin.tie(0);
+  cout.tie(0);
+  string line {};
+  pair<string, string> tmp;
+  set<pair<string, string>> ordered;
+  unordered_map<string, int> idxs;
+  vector<pair<string, string>> names;
+  while( getline( cin, line ), line != "END" ){
+    int second_ticks = line.find( '\"', 1 );
+    string book = line.substr( 0, second_ticks + 1 );
+    string author = line.substr( second_ticks + 5 );
+    names.emplace_back( author, book );
+  }
+  sort( names.begin(), names.end() );
+  for( int i = 0; i < (int)names.size(); ++ i ){
+    idxs[names[i].second] = i;
+    ordered.emplace( names[i] );
+  }
+  // get the queries
+  priority_queue<pair<string, string>, vector<pair<string, string>>, std::greater<pair<string, string>>> pq;
+  while( getline( cin, line ), line != "END" ){
+    if( line[0] == 'B' ){ // Borrow
+      string book = line.substr( 7 ); 
+      int IDX = idxs[book];
+      ordered.erase( names[IDX] );
+    }
+    else if( line[0] == 'R' ){ // Return
+      string book = line.substr( 7 );
+      int IDX = idxs[book];
+      // cerr << "Emplaced " << book << " into the pq\n";
+      pq.emplace( names[IDX] );
+    }
+    else if( line[0] == 'S' ){ // Shelve
+      while( not pq.empty() ){
+	auto tmp = pq.top();
+	pq.pop();
+	auto it = ordered.emplace( tmp );
+	auto curr = it.first;
+	if( it.second ){ // emplace took place
+	  if( curr == ordered.begin() ) // first
+	    cout << "Put " << curr->second << " first\n";
+	  else{
+	    auto PREV = it.first;
+	    PREV --;
+	    cout << "Put " << curr->second << " after " << PREV->second << "\n";
+	  }
 	}
-	cin.ignore().ignore().ignore();
-	while(c[0]=cin.get()){
-		switch(c[0]){
-			case 'E': return 0; break;
-			case 'B':
-				cin.getline(c,10,'"').getline(d,100,'"').ignore();
-				it2 = byTitle.find(d)->second;
-				*it2->state = true;
-				Borrowed[d] = it2;
-				break;
-			case 'R':
-				cin.getline(c,10,'"').getline(d,100,'"').ignore();
-				it3 = Borrowed.find(d);
-				Returned.push(it3->second);
-				Borrowed.erase(it3);
-				break;
-			case 'S':
-				cin.getline(c,8);
-				while(!Returned.empty()){	
-					it2 = Returned.top();
-					Returned.pop();
-					*it2->state = false;
-					if(getPrev()) cout << "Put \"" << it2->Title << "\" after \"" << it4->Title << '"' << endl;
-					else cout << "Put \"" << it2->Title << "\" first" << endl;
-				}
-				cout << "END" << endl;
-				break;
-		}
-	}
+      } // end pq;
+      cout << "END\n";
+    }
+  }
+  return 0;
 }

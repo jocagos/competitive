@@ -1,25 +1,55 @@
 #include <iostream>
 #include <algorithm>
 #include <vector>
+#include <queue>
 using namespace std;
+constexpr int MAXN = 10001;
 
 int main(){
-  vector<long long> v;
-  long long t;
-  while( scanf("%lld ", &t) != EOF ){
-    v.push_back(t);
-    if( v.size() % 2 ){
-      nth_element(v.begin(),v.begin()+(v.size()-1)/2, v.end());
-      cout << v[v.size()/2] << endl;
+  ios_base::sync_with_stdio(0);
+  cin.tie(0);
+  cout.tie(0);
+  priority_queue<int> LEFT;
+  priority_queue<int, vector<int>, greater<int>> RIGHT;
+  int val, idx {}, med {};
+  cin >> val;
+  med = val;
+  cout << med << '\n';
+  LEFT.push( val );
+  while( cin >> val ){
+    if( LEFT.size() > RIGHT.size() ){
+      if( val < med ){
+	RIGHT.push( LEFT.top() );
+	LEFT.pop();
+	LEFT.push( val );
+      }
+      else
+	RIGHT.push( val );
+      med = (LEFT.top() + RIGHT.top());
+      med >>= 1; // divide by 2
+    }
+    else if( LEFT.size() == RIGHT.size() ){
+      if( val < med ){
+	LEFT.push( val );
+	med = LEFT.top();
+      }
+      else{
+	RIGHT.push( val );
+	med = RIGHT.top();
+      }
     }
     else{
-      long long ans = 0;
-      nth_element(v.begin(), v.begin()+(v.size()-1)/2, v.end());
-      ans += v[(v.size()-1)/2];
-      nth_element(v.begin(), v.begin()+(v.size()-1)/2+1, v.end());
-      ans += v[(v.size()-1)/2+1];
-      cout << ans/2 << endl;
+      if( val > med ){
+	LEFT.push( RIGHT.top() );
+	RIGHT.pop();
+	RIGHT.push( val );
+      }
+      else
+	LEFT.push( val );
+      med = (LEFT.top() + RIGHT.top());
+      med >>= 1;
     }
+    cout << med << '\n';
   }
   return 0;
 }
