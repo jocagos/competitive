@@ -1,55 +1,84 @@
-#include <iostream>
-#include <vector>
-#include <sstream>
+#include <cstdio>
 
 using namespace std;
+constexpr int MAXN = 1000100;
+constexpr int MAXBUF = 1000;
 
-typedef vector<int> vi;
+int parent[MAXN] {}, rank[MAXN] {}, set_size[MAXN] {};
+int num_sets = MAXN;
 
-/* The following class was imported from `Competitive Programming 3' */
-/* If you need more info about how it works, check the book! */
-class UnionFind {
-private:
-  vi p, rank, setSize;
-  int numSets;
-public:
-  UnionFind(int N) {
-    setSize.assign(N, 1); numSets = N; rank.assign(N, 0);
-    p.assign(N, 0); for (int i = 0; i < N; i++) p[i] = i; }
-  int findSet(int i) { return (p[i] == i) ? i : (p[i] = findSet(p[i])); }
-  bool isSameSet(int i, int j) { return findSet(i) == findSet(j); }
-  void unionSet(int i, int j) { 
-    if (!isSameSet(i, j)) { numSets--; 
-    int x = findSet(i), y = findSet(j);
-    if (rank[x] > rank[y]) { p[y] = x; setSize[x] += setSize[y]; }
-    else                   { p[x] = y; setSize[y] += setSize[x];
-                             if (rank[x] == rank[y]) rank[y]++; } } }
-  int numDisjointSets() { return numSets; }
-  int sizeOfSet(int i) { return setSize[findSet(i)]; }
-};
+inline void init( int n ){
+  num_sets = n;
+  for( int i = 0; i < num_sets; ++ i ){
+    parent[i] = i;
+    rank[i] = set_size[i] = 1;
+  }
+}
+
+inline int find_set( int i ){
+  return parent[i] == i ? i : parent[i] = find_set( parent[i] );
+}
+
+inline bool is_same_set( int i, int j ){
+  return find_set( i ) == find_set( j );
+}
+
+inline bool union_set( int i, int j ){
+  int x = find_set( i ), y = find_set( j );
+  if( x != y ){
+    -- num_sets;
+    if( rank[x] > rank[y] ){
+      parent[y] = x;
+      set_size[x] += set_size[y];
+    }
+    else{
+      parent[x] = y;
+      set_size[y] += set_size[x];
+      if( rank[x] == rank[y] ) ++ rank[y];
+    }
+    return true;
+  }
+  return false;
+}
+
+inline int size_of_set( int i ){
+  return set_size[find_set( i )];
+}
 
 int main(){
-  int t;
-  scanf("%d", &t);
-  for( int i = 0; i < t; ++i ){
-    int n, a, b;
-    string line, c;
-    scanf("%d\n", &n);
-    UnionFind computers(n+1);
-    long success = 0, unsuccess = 0;
-    while( getline(cin, line) and line.length() ){
-      // Without this line this blatantly fails. Try it!
-      if( line == "\n" or line == "\r" or line == "\r\n" ) break;
-      istringstream iss(line);
-      iss >> c >> a >> b;
-      // Pretty straightforward problem:
-      // If connection then join sets
-      if( c == "c" ) computers.unionSet(a, b);
-      // else just query and log it
-      else (computers.isSameSet( a, b ) ? success++ : unsuccess++ );
+  // fprintf( stderr, "\n is the same as %d\n", '\n' );
+  int tc {}, n {}, a {}, b {};
+  char line[MAXBUF] {};
+  fgets( line, MAXBUF, stdin );
+  // fprintf( stderr, "LINE: >%s<\n", line );
+  sscanf( line, "%d ", &tc );
+  bool once {};
+  while( tc -- ){
+    int success {}, unsuccess {};
+    if( not once ){
+      fgets( line, MAXBUF, stdin );
+      once = true;
     }
-    cout << success << "," << unsuccess << endl;
-    if( t != i + 1 ) cout << endl;
+    fgets( line, MAXBUF, stdin );
+    // fprintf( stderr, "LINE: >%s<\n", line );
+    sscanf( line, "%d", &n );
+    init( n + 1 );
+    while( fgets( line, MAXBUF, stdin ), line[0] != '\n' ){
+      if( feof( stdin ) ) break;
+      char q {};
+      sscanf( line, "%c %d %d", &q, &a, &b );
+      // fprintf( stderr, "Query: (%c, %d, %d)\n", q, a, b);
+      if( q == 'c' )
+	union_set( a, b );
+      else if( q == 'q' ){
+	if( is_same_set( a, b ) )
+	  ++ success;
+	else
+	  ++ unsuccess;
+      }
+    }
+    printf("%d,%d\n", success, unsuccess);
+    if( tc ) printf("\n");
   }
   return 0;
 }
