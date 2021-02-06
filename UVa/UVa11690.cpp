@@ -1,17 +1,14 @@
-#include <iostream>
-#include <string>
-#include <unordered_map>
+#include <cstdio>
 
 using namespace std;
-
 /*
  * UnionFind DisjointSets - C++11
  * With Path Compressing and Union by Rank
  * @zagerer
  */
 
-constexpr int MAXSIZE = 1000001;
-int pa[MAXSIZE], ra[MAXSIZE], set_size[MAXSIZE];
+constexpr int MAXSIZE = 10010;
+int pa[MAXSIZE], ra[MAXSIZE], set_size[MAXSIZE], set_sum[MAXSIZE];
 int num_sets = MAXSIZE;
 
 inline void init( int n, int idx = 0 ){
@@ -19,11 +16,18 @@ inline void init( int n, int idx = 0 ){
   for( int i = 0; i < num_sets; ++ i ){
     pa[i] = i;
     ra[i] = set_size[i] = 1;
+    set_sum[i] = 0;
   }
 }
 
 inline int find_set( int i ){
-  return pa[i] == i ? i : pa[i] = find_set( pa[i] );
+  if( pa[i] == i )
+    return i;
+  else{
+    pa[i] = find_set( pa[i] );
+    set_sum[i] = set_sum[pa[i]];
+    return pa[i];
+  }
 }
 
 inline bool is_same_set( int i, int j ){
@@ -37,10 +41,12 @@ inline bool union_set( int i, int j ){
     if( ra[x] > ra[y] ){
       pa[y] = x;
       set_size[x] += set_size[y];
+      set_sum[x] += set_sum[y];
     }
     else{
       pa[x] = y;
       set_size[y] += set_size[x];
+      set_sum[y] += set_sum[x];
       if( ra[x] == ra[y] ) ra[y] ++;
     }
     return true;
@@ -52,28 +58,33 @@ inline int size_of_set( int i ){
   return set_size[find_set( i )];
 }
 
+inline int sum_of( int i ){
+  return set_sum[i];
+}
 
 int main(){
-  ios_base::sync_with_stdio(0);
-  cin.tie(0);
-  cout.tie(0);
   int tc {};
-  cin >> tc;
+  scanf("%d", &tc);
   while( tc -- ){
-    int n {};
-    cin >> n;
-    init( 2 * n );
-    unordered_map<string, int> people;
-    int idx {};
-    string lhs {}, rhs {};
-    while( n -- ){
-      cin >> lhs >> rhs;
-      if( people.find( lhs) == people.end() ) people[lhs] = idx++;
-      if( people.find( rhs ) == people.end() ) people[rhs] = idx++;
-      int x = people[lhs], y = people[rhs];
-      union_set( x, y );
-      cout << size_of_set( x ) << '\n';
+    int n {}, m {}, x {}, y {};
+    scanf("%d %d", &n, &m);
+    init( n );
+    for( int i = 0; i < n; ++ i ){
+      scanf("%d", &x);
+      set_sum[i] = x;
     }
+    for( int i = 0; i < m; ++ i ){
+      scanf("%d %d", &x, &y);
+      union_set( x, y );
+    }
+    bool able = true;
+    for( int i = 0; i < n and able; ++ i )
+      if( set_sum[find_set(i)] != 0 )
+	able = false;
+    if( able )
+      printf("POSSIBLE\n");
+    else
+      printf("IMPOSSIBLE\n");
   }
   return 0;
 }

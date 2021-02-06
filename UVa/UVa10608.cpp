@@ -1,6 +1,4 @@
-#include <iostream>
-#include <string>
-#include <unordered_map>
+#include <cstdio>
 
 using namespace std;
 
@@ -52,28 +50,22 @@ inline int size_of_set( int i ){
   return set_size[find_set( i )];
 }
 
-
 int main(){
-  ios_base::sync_with_stdio(0);
-  cin.tie(0);
-  cout.tie(0);
   int tc {};
-  cin >> tc;
+  scanf("%d", &tc);
   while( tc -- ){
-    int n {};
-    cin >> n;
-    init( 2 * n );
-    unordered_map<string, int> people;
-    int idx {};
-    string lhs {}, rhs {};
-    while( n -- ){
-      cin >> lhs >> rhs;
-      if( people.find( lhs) == people.end() ) people[lhs] = idx++;
-      if( people.find( rhs ) == people.end() ) people[rhs] = idx++;
-      int x = people[lhs], y = people[rhs];
-      union_set( x, y );
-      cout << size_of_set( x ) << '\n';
+    int m {}, n {}, a {}, b {};
+    scanf("%d %d", &n, &m);
+    init( n );
+    for( int i = 0; i < m; ++ i ){
+      scanf("%d %d", &a, &b);
+      union_set( a - 1, b - 1 );
     }
+    int max_size {};
+    for( int i = 0; i < n; ++ i )
+      if( set_size[i] > max_size )
+	max_size = set_size[i];
+    printf("%d\n", max_size);
   }
   return 0;
 }
