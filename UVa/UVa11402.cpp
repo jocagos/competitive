@@ -1,102 +1,34 @@
 /* Ahoy, Pirates!
-   Lazy propagation with sqrt decomposition
-*/
-#include <cmath>
-#include <cstdio>
+ * Simulating a BIT with a bitset
+ */
 
-const int N = 1048576;
-bool bucaneer[N];
-int root, sections;
+#include <iostream>
+#include <string>
 
-struct section { 
-  int b, e, v, z;
-  void flip(){ v = e - b + 1 - v; } // flip a section
-  void cnt(){ for(int i = b, &j = v = 0; i <= e; ++i) j += bucaneer[i]; } // count buccaneers in a section
-} s[1024];
+using namespace std;
 
-int max(int a, int b){ return a > b ? a : b; }
-int min(int a, int b){ return a < b ? a : b; }
+constexpr int MAXN = 1024000;
+constexpr int BIT_STR = 64;
+unsigned long long vals[MAXN / BIT_STR + 1] {};
 
-
-void init(int sn, int left, int right){
-  s[sn].b = left;
-  s[sn].e = right;
-  s[sn].z = ' '; // no command for update initially
-  s[sn].cnt(); // set the count in every section
-}
-
-void update_interval(int left, int right, char u){
-  switch(u){
-    // flip
-  case 'I': for(int i = left; i <= right; ++i) bucaneer[i] = !bucaneer[i]; break;
-    // set to 0
-  case 'E': for(int i = left; i <= right; ++i) bucaneer[i] = 0; break;
-    // set to 1
-  case 'F': for(int i = left; i <= right; ++i) bucaneer[i] = 1; break;
-  }
-}
-
-void update(int left, int right, char u){
-  for(int i = 0; i < sections; ++i){
-    if(left > s[i].e || right < s[i].b) continue;
-    if(left <= s[i].b && s[i].e <= right){
-      if(u == 'I'){
-	s[i].flip();
-	switch(s[i].z){
-	case 'I': s[i].z = ' '; break;
-	case ' ': s[i].z = 'I'; break;
-	case 'E': s[i].z = 'F'; break;
-	case 'F': s[i].z = 'E'; break;
-	}
-      } else {
-	s[i].z = u;
-	if(u == 'E') s[i].v = 0;
-	else s[i].v = s[i].e - s[i].b + 1;
+int main(){
+  ios_base::sync_with_stdio(0);
+  cin.tie(0);
+  cout.tie(0);
+  int TC {}, Q {}, M {}, N {}, t {};
+  string s {};
+  cin >> TC;
+  for( int _ = 1; _ <= TC; ++ _ ){
+    N = 0;
+    cin >> M;
+    while( M -- ){
+      cin >> t >> s;
+      int idx {};
+      for( int i = 0; i < (int)s.length(); ++ i ){
+	vals[idx] |= ((s[i] - '0') << 
       }
-    } else {
-      if(s[i].z != ' ') update_interval(s[i].b, s[i].e, s[i].z);
-      s[i].z = ' ';
-      update_interval(max(left, s[i].b), min(right, s[i].e), u);
-      s[i].cnt();
     }
-  }
-}
-
-int query(int left, int right){
-  int r = 0;
-  for(int i = 0; i < sections; ++i){
-    if(left > s[i].e || right < s[i].b) continue;
-    if(left <= s[i].b && s[i].e <= right) r += s[i].v;
-    else{
-      if(s[i].z != ' ') update_interval(s[i].b, s[i].e, s[i].z);
-      s[i].z = ' ';
-      for(int j = max(left, s[i].b); j <= min(right, s[i].e); ++j) r += bucaneer[j];
-    }
-  }
-  return r;
-}
-
-int main(void){
-  int tcn; scanf("%d", &tcn);
-  for(int i = 0, j, k, l; i++ < tcn; ){
-    int a, b, pirates = 0, reps, queries, qc = 0, specs;
-    char cmd, pattern[64];
-    for(scanf("%d", &specs); specs--; ){
-      scanf("%d %s", &reps, pattern);
-      for(j = 0; pattern[j]; ++j) pattern[j] -= '0';
-      for(k = 0; k < reps; ++k)
-	for(l = 0; l < j; ++l) 
-	  bucaneer[pirates++] = pattern[l];
-    }
-    root = int(sqrt(pirates));
-    sections = root + (root * root < pirates);
-    for(int j = 0; j < sections; ++j) init(j, j * root, min((j + 1) * root, pirates) - 1);
-    printf("Case %d:\n", i);
-    for(scanf("%d", &queries); queries--; ){
-      scanf(" %c %d %d", &cmd, &a, &b);
-      if(cmd == 'S') printf("Q%d: %d\n", ++qc, query(a, b));
-      else update(a, b, cmd);
-    }
+    cout << "Case " << _ << ":\n";
   }
   return 0;
 }

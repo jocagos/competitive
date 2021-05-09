@@ -1,6 +1,7 @@
 #include <bits/stdc++.h>
-constexpr int MAXN = 1000000, MAXP = 78498;
+
 using namespace std;
+constexpr int MAXN = 1000000, MAXP = 78498;
 
 bool sieve[MAXN]{}; // Check list
 vector<int> primes(MAXP);

@@ -5,9 +5,11 @@
 using namespace std;
 
 int main(){
+  ios_base::sync_with_stdio(0);
+  cin.tie(0);
+  cout.tie(0);
   string line;
   while( getline(cin, line) ){
-    if( line[line.length()-1] == '\r' ) line = line.substr(0, line.length()-1);
     int pos = 0;
     string s {};
     list<string> l;
